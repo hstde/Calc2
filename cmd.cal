@@ -1,0 +1,122 @@
+/*
+ * This is a simple commanline interpreter written in calclang
+ */
+using "Runtime";
+
+var commandPromt = "$> ";
+
+var commandList = {};
+var quit = false;
+
+function Main()
+{
+	commandList = {
+		help = Help,
+		quit = Quit,
+		echo = Echo,
+		throw = function(args) { Fault(args); },
+		writeFile = WriteFile,
+		appendFile = AppendFile,
+		readFile = ReadFile
+	};
+
+	PrintGreeting();
+	Run();
+}
+
+function PrintGreeting()
+{
+	Console.WriteLine("Small commandline interpreter in CalcLang V 0.0");
+	Console.WriteLine("Type \"help\" to get a list of commands.");
+}
+
+function Run()
+{
+	while(!quit)
+	{
+		Console.Write(commandPromt);
+		var input = Console.ReadLine();
+
+		input = String.Split(input, " ");
+
+		var cmd = input[0];
+		var command = commandList[cmd];
+
+		if(command == null)
+			Console.WriteLine("Unknown command \"" + input[0] + "\".");
+		else
+		{
+			var args = {};
+			Array.Copy(input, 1, args, 0);
+			command(args);
+		}
+	}
+}
+
+function Help(args)
+{
+	Console.WriteLine("help - Prints a list of commands.");
+	Console.WriteLine("quit - Quits the program.");
+	Console.WriteLine("echo - Prints the inputted strings.");
+	Console.WriteLine("writeFile - writes a file to disk.");
+	Console.WriteLine("appendFile - appends text to a file and saves it.");
+	Console.WriteLine("readFile - reads a file and outputs it's content");
+}
+
+function Quit(args)
+{
+	Console.WriteLine("Bye!");
+	quit = true;
+}
+
+function Echo(args)
+{
+	var s = "";
+	for(var i = 0; i < args.Length; i++)
+	{
+		s = s + args[i];
+		if(i < args.Length - 1)
+			s = s + ' ';
+	}
+	Console.WriteLine(s);
+}
+
+function WriteFile(args)
+{
+	if(args.Length < 2) return;
+	var stream = IO.File.CreateText(args[0]);
+	var cont = {};
+	Array.Copy(args, 1, cont, 0);
+	var text = String.Join(" ", cont);
+	stream.WriteLine(text);
+	stream.Flush();
+	stream.Close();
+}
+
+function AppendFile(args)
+{
+	if(args.Length < 2) return;
+	var stream = IO.File.AppendText(args[0]);
+	var cont = {};
+	Array.Copy(args, 1, cont, 0);
+	var text = String.Join(' ', cont);
+	stream.WriteLine(text);
+	stream.Flush();
+	stream.Close();
+}
+
+function ReadFile(args)
+{
+	Console.WriteLine("Not implemtented yet.");
+}
+
+function Fault(args)
+{
+	var msg = "This is deliberate";
+	if(args.Length > 0)
+		Throw(msg, "\"" + String.Join(" ", args) + "\"");
+	else
+		Throw(msg);
+}
+
+Main();
