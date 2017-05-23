@@ -1,0 +1,33 @@
+﻿var IO = {FileAccess = null, FileMode = null, FileIOPermissionAccess = null, FileShare = null, SeekOrigin = null};
+IO.FileAccess = {Read = 1, Write = 2, ReadWrite = 3};
+IO.FileMode = { CreateNew = 1, Create = 2, Open = 3, OpenOrCreate = 4, Truncate = 5, Append = 6};
+IO.FileIOPermissionAccess = { NoAccess = 0x00, Read = 0x01, Write = 0x02, Append = 0x04, PathDiscovery = 0x08, AllAccess = 0x0F };
+IO.FileShare = { None = 0, Read = 1, Write = 2, ReadWrite = 3, Delete = 4, Inheritable = 16};
+IO.SeekOrigin = { Begin = 0, Current = 1, End = 2};
+
+IO["Encoding"] = {GetEncoding = null, UTF8 = null };
+IO.Encoding.GetEncoding = function(cp) {
+	return {
+		GetBytes = function(buffer, start, count) {
+			return Microsoft.Win32.Win32Native.GetEncodingBytes(cp, buffer, start, count);
+		},
+		GetMaxCharCount = function(bufferSize) {
+			return Microsoft.Win32.Win32Native.GetEncodingMaxCharCount(cp, bufferSize);
+		},
+		GetPreamble = function() {
+			return Microsoft.Win32.Win32Native.GetEncodingPreamble(cp);
+		},
+		GetChars = function(bytes, byteIndex, byteCount, chars, charIndex) {
+			return Microsoft.Win32.Win32Native.GetEncodingChars(cp, bytes, byteIndex, byteCount, chars, charIndex);
+		}
+	};
+};
+
+IO.Encoding.UTF8 = (function() {
+	return IO.Encoding.GetEncoding(65001);
+})();
+
+using "Runtime\IO\Path";
+using "Runtime\IO\Stream";
+using "Runtime\IO\Console";
+using "Runtime\IO\File";

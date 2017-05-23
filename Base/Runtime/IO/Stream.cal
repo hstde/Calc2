@@ -1,0 +1,285 @@
+﻿IO["Stream"] = function(baseStream) {
+	//baseStream has to implement WriteBuffer(buffer, offset, count)
+	//baseStream has to implement ReadBuffer(buffer, offset, count)
+	
+	 function WriteByte(byte) {
+		var oneByteArray = { byte };
+		baseStream.WriteBuffer(oneByteArray, 0, 1);
+	}
+	
+	function Read() {
+		var oneByteArray = { 0 };
+		var r = baseStream.ReadBuffer(oneByteArray, 0, 1);
+		if(r == 0)
+			return -1;
+		return oneByteArray[0];
+	}
+	
+	return {
+		WriteByte = WriteByte,
+		Write = function(buffer, offset, count) { baseStream.Write(buffer, offset, count); },
+		Read = Read,
+		Read = function(buffer, offset, count) { baseStream.Read(buffer, offset, count); },
+		Close = function() { baseStream.Close(); }
+	};
+};
+
+IO["StreamWriter"] = function(stream, encoding) {
+	
+	var charBuffer = {};
+	var charPos = 0;
+	var CoreNewLine = "\r\n";
+	
+	function WriteChar(char) {
+		charBuffer[charPos] = char;
+		charPos++;
+		if(this.AutoFlush) this.Flush();
+	};
+	
+	function Flush() {
+		if(charPos == 0)
+			return;
+		
+		var byteBuffer = encoding.GetBytes(charBuffer, 0, charPos);
+		charPos = 0;
+		stream.Write(byteBuffer, 0, byteBuffer.Length);
+	};
+	
+	function Write(str) {
+		if(str == null)
+			return;
+		if(str.GetType() != "String")
+			str = str.ToString();
+			
+		for(var i = 0; i < str.Length(); i++)
+			this.WriteChar(str[i]);
+	};
+	
+	function Write(format, args){
+		this.Write(String.Format(format, args));
+	}
+	
+	function Write(format, arg1, arg2) {
+		this.Write(String.Format(format, arg1, arg2));
+	}
+	
+	function Write(format, arg1, arg2, arg3) {
+		this.Write(String.Format(format, arg1, arg2, arg3));
+	}
+	
+	function Write(format, arg1, arg2, arg3, arg4) {
+		this.Write(String.Format(format, arg1, arg2, arg3, arg4));
+	}
+	
+	function Write(format, arg1, arg2, arg3, arg4, arg5) {
+		this.Write(String.Format(format, arg1, arg2, arg3, arg4, arg5));
+	}
+	
+	function WriteLine(str) {
+		if(str != null)
+			this.Write(str);
+		this.Write(CoreNewLine);
+	};
+	
+	function WriteLine(format, args) {
+		this.WriteLine(String.Format(format, args));
+	}
+	
+	function WriteLine(format, arg1, arg2) {
+		this.WriteLine(String.Format(format, arg1, arg2));
+	}
+	
+	function WriteLine(format, arg1, arg2, arg3) {
+		this.WriteLine(String.Format(format, arg1, arg2, arg3));
+	}
+	
+	function WriteLine(format, arg1, arg2, arg3, arg4) {
+		this.WriteLine(String.Format(format, arg1, arg2, arg3, arg4));
+	}
+	
+	function WriteLine(format, arg1, arg2, arg3, arg4, arg5) {
+		this.WriteLine(String.Format(format, arg1, arg2, arg3, arg4, arg5));
+	}
+	
+	return {
+		AutoFlush = false,
+		Write = Write,
+		Flush = Flush,
+		Write = function(buffer, offset, count) { stream.Write(buffer, offset, count); },
+		WriteLine = WriteLine,
+		WriteChar = WriteChar,
+		Close = function() { Flush(); stream.Close(); }
+	};
+};
+
+IO["StreamReader"] = function(stream, encoding, bufferSize) {
+
+	//stream has to implement ReadBuffer(buffer, offset, count)
+
+	var byteBuffer = {};
+	var charBuffer = {};
+	var byteLen = 0;
+	var bytePos = 0;
+	var charPos = 0;
+	var charLen = 0;
+	var _preamble = encoding.GetPreamble();
+	var _checkPreamble = (_preamble.Length > 0);
+	
+	function IsPreamble() {
+		if(!_checkPreamble)
+			return _checkPreamble;
+		var len = (byteLen >= _preamble.Length) ? (_preamble.Length - bytePos) : (byteLen - bytePos);
+		
+		for(var i = 0; i < len; i++, bytePos++)
+		{
+			if(byteBuffer[bytePos] != _preamble[bytePos])
+			{
+				bytePos = 0;
+				_checkPreamble = false;
+				break;
+			}
+		}
+		
+		if(_checkPreamble)
+		{
+			if(bytePos == _preamble.Length)
+			{
+				CompressBuffer(_preamble.Length);
+				bytePos = 0;
+				_checkPreamble = false;
+			}
+		}
+		
+		return _checkPreamble;
+	}
+	
+	function CompressBuffer(n) {
+		Buffer.BlockCopy(byteBuffer, n, byteBuffer, 0, byteLen - n);
+		byteLen = byteLen - n;
+	}
+
+	function ReadBuffer() {
+		charLen = 0;
+		charPos = 0;
+		
+		if(!_checkPreamble)
+			byteLen = 0;
+		
+		do
+		{
+			if(_checkPreamble)
+			{
+				var len = stream.Read(byteBuffer, bytePos, bufferSize - bytePos);
+				if(len == 0)
+				{
+					if(byteLen > 0)
+					{
+						charLen = charLen + encoding.GetChars(byteBuffer, 0, byteLen, charBuffer, charLen);
+						bytePos = 0;
+						byteLen = 0;
+					}
+					return charLen;
+				}
+				
+				byteLen = byteLen + len;
+			}
+			else
+			{
+				byteLen = stream.Read(byteBuffer, 0, bufferSize);
+				
+				if(byteLen == 0)
+				{
+					return charLen;
+				}
+			}
+			
+			if(IsPreamble())
+				continue;
+			
+			charLen = charLen + encoding.GetChars(byteBuffer, 0, byteLen, charBuffer, charLen);
+		} while(charLen == 0);
+		
+		return charLen;
+	}
+	
+	function ReadLine() {
+		
+		if(stream == null)
+			return null;
+			
+		if(charPos == charLen)
+		{
+			if(ReadBuffer() == 0) return null;
+		}
+		
+		var sb = null;
+		
+		do
+		{
+			var i = charPos;
+			do
+			{
+				var ch = charBuffer[i];
+				if(ch == "\r" || ch == "\n")
+				{
+					var s = "";
+					if(sb != null)
+					{
+						sb.Append(charBuffer, charPos, i - charPos);
+						s = sb.ToString();
+					}
+					else
+					{
+						var _sb = Text.StringBuilder();
+						_sb.Append(charBuffer, charPos, i - charPos);
+						s = _sb.ToString();
+					}
+					charPos = i + 1;
+					if(ch == "\r" && (charPos < charLen || ReadBuffer() > 0))
+					{
+						if(charBuffer[charPos] == "\n") charPos++;
+					}
+					return s;
+				}
+				i++;
+			} while(i < charLen);
+			i = charLen - charPos;
+			if(sb == null) sb = Text.StringBuilder();
+			sb.Append(charBuffer, charPos, i);
+		} while(ReadBuffer() > 0);
+		return sb.ToString();
+	};
+	
+	function ReadToEnd() {
+		if(stream == null)
+			return null;
+			
+		var sb = Text.StringBuilder();
+		do
+		{
+			sb.Append(charBuffer, charPos, charLen - charPos);
+			charPos = charLen;
+			ReadBuffer();
+		} while(charLen > 0);
+		return sb.ToString();
+	};
+	
+	function Read() {
+		if(stream == null)
+			return null;
+			
+		if(charPos == charLen)
+			if(ReadBuffer() == 0) return -1;
+		var result = charBuffer[charPos];
+		charPos++;
+		return result;
+	};
+	
+	return {
+		ReadLine = ReadLine,
+		ReadToEnd = ReadToEnd,
+		Read = Read,
+		Read = function(buffer, offset, count) { baseStream.Write(buffer, offset, count); },
+		Close = function() { stream.Close(); }
+	};
+};

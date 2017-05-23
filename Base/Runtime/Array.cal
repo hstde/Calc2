@@ -1,0 +1,9 @@
+﻿var Array = (function() {
+	function Copy(src, srcOff, dst, dstOff) {
+		Buffer.BlockCopy(src, srcOff, dst, dstOff, src.Length - srcOff);
+	}
+	
+	return {
+		Copy = Copy
+	};
+})();

@@ -1,0 +1,35 @@
+﻿using "Base";
+
+var Int32 = (function() {
+	return {
+		MaxValue = 0x7fff_ffff,
+		MinValue = -0x7fff_ffff
+	};
+})();
+
+var Byte = (function() {
+	return {
+		MaxValue = 0xff,
+		MinValue = 0
+	};
+})();
+
+var Environment = (function() {
+	function GetTickCount() {
+		return Microsoft.Win32.Win32Native.GetTickCount();
+	}
+	
+	return {
+		GetTickCount = GetTickCount
+	};
+})();
+
+using "Runtime\Win32Native\Win32Native";
+using "Runtime\Array";
+using "Runtime\Buffer";
+using "Runtime\String";
+using "Runtime\Linq";
+using "Runtime\Math";
+using "Runtime\Random";
+using "Runtime\Text\Text";
+using "Runtime\IO\IO";

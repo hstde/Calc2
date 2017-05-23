@@ -1,0 +1,154 @@
+﻿IO["__ConsoleStream"] = function(handle, access, useFileAPIs) {
+	var CanRead = (access & IO.FileAccess.Read) != 0;
+	var CanWrite = (access & IO.FileAccess.Write) != 0;
+	
+	function WriteFileNative(hFile, bytes, offset, count) {
+		if(bytes.Length == 0)
+			return 0;
+		
+		var written = Microsoft.Win32.Win32Native.WriteFile(hFile, bytes, offset, count);
+		
+		if(written != 0)
+			return 0;
+	};
+	function ReadFileNative(hfile, buffer, offset, count) {
+		Microsoft.Win32.Win32Native.WaitForAvailableConsoleInput(hfile);
+		
+		var read = Microsoft.Win32.Win32Native.ReadFile(hfile, buffer, offset, count);
+		
+		if(read != 0)
+			return {bytesRead = read};
+	};
+	
+	function Write(buffer, offset, count) {
+		if(buffer == null || offset < 0 || count < 0)
+			return;
+		if(buffer.Length - offset < count)
+			return;
+		
+		WriteFileNative(handle, buffer, offset, count);
+	};
+	
+	function Read(buffer, offset, count) {
+		
+		if(buffer == null || count == null || offset < 0 || count < 0)
+			return;
+		
+		var res = ReadFileNative(handle, buffer, offset, count);
+		
+		return res.bytesRead;
+	};
+	
+	
+	return {
+		CanRead = CanRead,
+		CanWrite = CanWrite,
+		Write = Write,
+		Read = Read,
+		Close = function() {}
+	};
+};
+
+var Console = (function() {
+	
+	var DefaultConsoleBufferSize = 256;
+	
+	function GetStandardFile(handleName, access, bufferSize) {
+		var handle = Microsoft.Win32.Win32Native.GetStdHandle(handleName);
+		return IO.__ConsoleStream(handle, access, false);
+	};
+	function GetOutputEncoding() {
+		var cp = Microsoft.Win32.Win32Native.GetConsoleOutputCP();
+		return IO.Encoding.GetEncoding(cp);
+	};
+	
+	function GetInputEncoding() {
+		var cp = Microsoft.Win32.Win32Native.GetConsoleCP();
+		return IO.Encoding.GetEncoding(cp);
+	};
+	
+	function OpenStandardOutput(bufferSize) {
+		var outStream = GetStandardFile(Microsoft.Win32.Win32Native.STD_OUTPUT_HANDLE,
+									IO.FileAccess.Write, bufferSize);
+		var encoding = GetOutputEncoding();
+		var stdxxx = IO.StreamWriter(outStream, encoding);
+		//stdxxx.AutoFlush = true;
+		return stdxxx;
+	};
+	
+	function OpenStandardInput(bufferSize) {
+		var inStream = GetStandardFile(Microsoft.Win32.Win32Native.STD_INPUT_HANDLE,
+									IO.FileAccess.Read, bufferSize);
+		var encoding = GetInputEncoding();
+		var stdxxx = IO.StreamReader(inStream, encoding, bufferSize);
+		return stdxxx;
+	};
+
+	var writer = OpenStandardOutput(DefaultConsoleBufferSize);
+	var reader = OpenStandardInput(DefaultConsoleBufferSize);
+	
+	function Write(str) {
+		writer.Write(str);
+		writer.Flush();
+	}
+	
+	function Write(format, args){
+		this.Write(String.Format(format, args));
+	}
+	
+	function Write(format, arg1, arg2) {
+		this.Write(String.Format(format, arg1, arg2));
+	}
+	
+	function Write(format, arg1, arg2, arg3) {
+		this.Write(String.Format(format, arg1, arg2, arg3));
+	}
+	
+	function Write(format, arg1, arg2, arg3, arg4) {
+		this.Write(String.Format(format, arg1, arg2, arg3, arg4));
+	}
+	
+	function Write(format, arg1, arg2, arg3, arg4, arg5) {
+		this.Write(String.Format(format, arg1, arg2, arg3, arg4, arg5));
+	}
+	
+	function WriteLine(str) {
+		writer.WriteLine(str);
+		writer.Flush();
+	}
+	
+	function WriteLine(format, args) {
+		this.WriteLine(String.Format(format, args));
+	}
+	
+	function WriteLine(format, arg1, arg2) {
+		this.WriteLine(String.Format(format, arg1, arg2));
+	}
+	
+	function WriteLine(format, arg1, arg2, arg3) {
+		this.WriteLine(String.Format(format, arg1, arg2, arg3));
+	}
+	
+	function WriteLine(format, arg1, arg2, arg3, arg4) {
+		this.WriteLine(String.Format(format, arg1, arg2, arg3, arg4));
+	}
+	
+	function WriteLine(format, arg1, arg2, arg3, arg4, arg5) {
+		this.WriteLine(String.Format(format, arg1, arg2, arg3, arg4, arg5));
+	}
+	
+	function Read() {
+		return reader.Read();
+	}
+	
+	function ReadLine() {
+		return reader.ReadLine();
+	}
+
+	return {
+		Write = Write,
+		WriteLine = WriteLine,
+		Read = Read,
+		ReadLine = ReadLine
+	};
+})();

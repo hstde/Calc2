@@ -1,0 +1,217 @@
+﻿IO["Path"] = (function() {
+	var DevicePrefixLength = 4;
+	var MaxShortPath = 260;
+	var MaxLongPath = 0x7FFF;
+	var MaxShortDirectoryPath = 248;
+	var DirectorySeparatorChar = "\\";
+	var AltDirectorySeparatorChar = "/";
+	var VolumeSeparatorChar = ":";
+	var MaxComponentLength = 255;
+	var ExtendedPathPrefix = @"\\?\";
+	var UncPathPrefix = @"\\";
+	var UncExtendedPathPrefix = @"\\?\UNC\";
+	var UncExtendedPrefixToInsert = @"?\UNC\";
+
+	function IsPathTooLong(fullPath) {
+		return fullPath.Length() > MaxLongPath;
+	}
+
+	function AreSegmentsTooLong(fullPath) {
+		var length = fullPath.Length();
+		var lastSeparator = 0;
+		
+		for(var i = 0; i < length; i++)
+		{
+			if(IsDirectorySeparator(fullPath[i]))
+			{
+				if(i - lastSeparator > MaxComponentLength)
+					return true;
+				lastSpeparator = i;
+			}
+		}
+		
+		if(length - 1 - lastSeparator > MaxComponentLength)
+			return true;
+		
+		return false;
+	}
+
+	function IsExtended(path) {
+		return path.Length() >= DevicePrefixLength
+			&& path[0] == "\\"
+			&& (path[1] == "\\" || path[1] == "?")
+			&& path[2] == "?"
+			&& path[3] == "\\";
+	}
+
+	function IsDirectorySeparator(char) {
+		return char == DirectorySeparatorChar || char == AltDirectorySeparatorChar;
+	}
+
+	function IsDevice(path) {
+		return IsExtended(path)
+			||
+			(
+				path.Length() >= DevicePrefixLength
+				&& IsDirectorySeparator(path[0])
+				&& IsDirectorySeparator(path[1])
+				&& (path[2] == "." || path[2] == "?")
+				&& IsDirectorySeparator(path[3])
+			);
+	}
+
+	function IsValidDriveChar(value) {
+		return ((value >= "A" && value <= "Z") || (value >= "a" && value <= "z"));
+	}
+
+	function NormalizeDirectorySeparators(path) {
+		if(String.IsNullOrEmpty(path)) return path;
+		
+		function PathStartSkip(p) {
+			var startIndex = 0;
+			while(startIndex < p.Length() && path[startIndex] == " ") startIndex++;
+			
+			if(startIndex > 0 && (startIndex < p.Length() && IsDirectorySeparator(path[startIndex]))
+				|| (startIndex + 1 < path.Length() && path[startIndex + 1] == IO.Path.VolumeSeparatorChar && IO.Path.IsValidDriveChar(path[startIndex])))
+				return startIndex;
+			
+			return 0;
+		}
+		
+		var current = "";
+		var start = PathStartSkip(path);
+		
+		if(start == 0)
+		{
+			var normalized = true;
+			
+			for(var i = 0; i < path.Length(); i++)
+			{
+				current = path[i];
+				if(IsDirectorySeparator(current)
+					&& (current != DirectorySeperatorChar
+						|| (i > 0 && i + 1 < path.Length() && IsDirectorySeparator(path[i + 1]))))
+				{
+					normalized = false;
+					break;
+				}
+			}
+			if(normalized) return path;
+		}
+		
+		var sb = Text.StringBuilder();
+		if(IsDirectorySeparator(path[start]))
+		{
+			start++;
+			sb.Append(IO.Path.DirectorySeperatorChar);
+		}
+		
+		for(var i = start; i < path.Length(); i++)
+		{
+			current = path[i];
+			
+			if(IsDirectorySeparator(current))
+			{
+				if(i + 1 < path.Length() && IsDirectorySeparator(path[i+1]))
+				{
+					continue;
+				}
+				
+				current = DirectorySeperatorChar;
+			}
+			
+			sb.Append(current);
+		}
+		
+		return sb.ToString();
+	}
+
+	function NormalizePath(path, fullCheck, maxPathLength, expandShortPaths) {
+		if(IsExtended(path))
+		{
+			return path;
+		}
+		
+		var normalizedPath = null;
+		
+		if(!fullCheck)
+		{
+			normalizedPath = NewNormalizePathLimitedChecks(path, maxPathLength, expandShortPaths);
+		}
+		else
+		{
+			normalizedPath = NewNormalizePath(path, maxPathLength, true);
+		}
+		
+		if(String.IsNullOrWhiteSpace(normalizedPath))
+			Throw("ArgumentException", "normalizedPath", normalizedPath);
+		
+		return normalizedPath;
+	}
+
+	function NewNormalizePathLimitedChecks(path, maxPathLength, expandShortPaths) {
+
+		var normalized = NormalizeDirectorySeparators(path);
+		if(IsPathTooLang(normalized) || AreSegmentsTooLong(normalized))
+			Throw("PathTooLongException");
+		
+		return normalized;
+	}
+
+	function NewNormalizePath(path, maxPathLength, expandShortPaths) {
+		if(String.IndexOf(path, "\0") != -1)
+			Throw("ArgumentException", "invalid Path chars", path);
+		
+		if(String.IsNullOrWhiteSpace(path))
+			Throw("ArgumentException", "illegal Path");
+		
+		var normalized = path;
+		
+		return normalized;
+	}
+
+	function IsPartiallyQualified(path) {
+		if(path.Length() < 2)
+		{
+			return true;
+		}
+		if(IsDirectorySeparator(path[0]))
+		{
+			return !(path[1] == "?" || IsDirectorySeparator(path[1]));
+		}
+		
+		return !((path.Length() >= 3)
+			&& (path[1] == VolumeSeparatorChar)
+			&& IsDirectorySeparator(path[2])
+			&& IsValidDriveChar(path[0]));
+	}
+
+	function AddLongPathPrefix(path) {
+		
+		if(IsPartiallyQualified(path) || IsDevice(path))
+		{
+			return path;
+		}
+		
+		if(String.StartsWith(UncPathPrefix))
+		{
+			return String.Insert(path, 2, UncExtendedPrefixToInsert);
+		}
+		
+		return ExtendedPathPrefix + path;
+	}
+	
+	function GetFullPathInternal(path) {
+		return NormalizePath(path, true, MaxLongPath, true);
+	}
+	
+	return {
+		MaxLongPath = MaxLongPath,
+		MaxShortPath = MaxShortPath,
+		MaxShortDirectoryPath = MaxShortDirectoryPath,
+		NormalizePath = NormalizePath,
+		AddLongPathPrefix = AddLongPathPrefix,
+		GetFullPathInternal = GetFullPathInternal,
+		IsDirectorySeparator = IsDirectorySeparator
+	};
+})();

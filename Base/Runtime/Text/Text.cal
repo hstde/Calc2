@@ -1,0 +1,4 @@
+﻿var Text = {};
+
+
+using "Runtime\Text\StringBuilder";

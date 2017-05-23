@@ -1,0 +1,289 @@
+﻿var String = (function() {
+	var Empty = "";
+
+	function Split(str, split) {
+
+		if(split.GetType() == "Table")
+		{
+			//Do nothing
+		}
+		else if(split.GetType() == "String")
+		{
+			split = { split }; //wrap it in an array
+		}
+		else if(split.GetType() == "Char")
+		{
+			split = { Empty + split };
+		}
+		else
+			return {str};
+
+		var ret = {};
+		var splitIndex = 0;
+		var sb = Text.StringBuilder();
+
+		for(var i = 0; i < str.Length(); i++)
+		{
+			var ch = str[i];
+			var splitted = false;
+
+			for(var j = 0; j < split.Length; j++)
+			{
+				if(ch == split[j])
+				{
+					ret[splitIndex] = sb.ToString();
+					splitIndex++;
+					sb.Clear();
+					splitted = true;
+					break;
+				}
+			}
+			if(!splitted)
+				sb.Append(ch);
+		}
+
+		ret[splitIndex] = sb.ToString();
+
+		return ret;
+	};
+
+	function Join(separator, value) {
+		if(value == null) Throw("ArgumentNullException", "value");
+		
+		return Join(separator, value, 0, value.Length);
+	};
+	
+	function Join(separator, value, startIndex, count) {
+		if(value == null) Throw("ArgumentNullException", "value");
+		
+		if(separator == null) separator = String.Empty;
+		if(value.Length < 1) return String.Empty;
+		
+		var ret = Microsoft.Win32.Win32Native.FastStringJoin(separator, value, startIndex, count);
+		
+		return ret;
+	}
+	
+	function Concat(arr) {
+		if(arr == null) Throw("ArgumentNullException", "arr");
+		if(arr.Length < 1) return "";
+		
+		return Join("", arr);
+	}
+
+	function IsNullOrEmpty(str) {
+		return str == null || str.Length() == 0;
+	};
+
+	function IsNullOrWhiteSpace(str) {
+		var ws = {' ', '\t', '\n', '\r'};
+		
+		if(str == null) return true;
+		for(var i = 0; i < str.Length(); i++)
+		{
+			var found = false;
+			for(var j = 0; j < ws.Length; j++)
+			{
+				if(str[i] == ws[j])
+				{
+					found = true;
+					break;
+				}
+			}
+			if(found)
+				return true;
+		}
+		return false;
+	};
+
+	function IndexOf(str, char) {
+		var index = -1;
+		if(str == null) return -1;
+		for(var i = 0; i < str.Length(); i++)
+			if(char == str[i])
+			{
+				index = i;
+				break;
+			}
+		return index;
+	};
+
+	function LastIndexOf(str, char) {
+		var index = -1;
+		if(str == null) return -1;
+		
+		for(var i = str.Length() - 1; i > -1; i++)
+		{
+			if(char == str[i])
+			{
+				index = i;
+				break;
+			}
+		}
+		return index;
+	};
+
+	function IndexOfSubstring(str, value) {
+		if(value == null)
+			Throw("ArgumentException", "value");
+		if(str == null)
+			Throw("ArgumentException", "str");
+		
+		if(str == value) return 0;
+		if(value.Length() == 0) return 0;
+		if(str.Length() < value.Length()) return -1;
+		
+		var index = -1;
+		for(var i = 0; i < str.Length() - value.Length(); i++)
+		{
+			var abort = false;
+			for(var j = 0; j < value.Length(); j++)
+			{
+				if(i + j >= str.Length() || str[j + i] != value[j])
+				{
+					abort = true;
+					break;
+				}
+			}
+			if(!abort)
+			{
+				index = i;
+				break;
+			}
+		}
+		
+		return index;
+	};
+
+	function LastIndexOfSubstring(str, value) {
+		if(value == null)
+			Throw("ArgumentException", "value");
+		if(str == null)
+			Throw("ArgumentException", "str");
+		
+		if(str == value) return 0;
+		if(value.Length() == 0) return str.Length() - 1;
+		if(str.Length() < value.Length()) return -1;
+		
+		var index = -1;
+		
+		for(var i = str.Length() - value.Length(); i > -1; i--)
+		{
+			var abort = false;
+			for(var j = value.Length() - 1; j > -1; j--)
+			{
+				var strIndex = i + j;
+				if(strIndex < 0 || str[strIndex] != value[j])
+				{
+					abort = true;
+					break;
+				}
+			}
+			if(!abort)
+			{
+				index = i;
+				break;
+			}
+		}
+		
+		return index;
+	};
+
+	function StartsWith(str, value) {
+		if(value == null)
+			Throw("ArgumentException", "value");
+		if(str == null)
+			Throw("ArgumentException", "str");
+		
+		if(str == value) return true;
+		if(value.Length() == 0) return true;
+		if(str.Length() < value.Length()) return false;
+		
+		return String.IndexOfSubstring(str, value) == 0;
+	};
+
+	function EndsWith(str, value) {
+		if(value == null)
+			Throw("ArgumentException", "value");
+		if(str == null)
+			Throw("ArgumentException", "str");
+		
+		if(str == value) return true;
+		if(value.Length() == 0) return true;
+		if(str.Length() < value.Length()) return false;
+		
+		var res = String.LastIndexOfSubstring(str, value);
+		var exp = str.Length() - value.Length();
+		
+		return  res == exp;
+	};
+
+	function Insert(str, startIndex, value) {
+		if(value == null) Throw("ArgumentNullException", "value");
+		if(str == null) Throw("ArgumentNullException", "str");
+		if(startIndex < 0 || startIndex > str.Length())
+			Throw("ArgumentOutOfRangeException", "startIndex");
+		
+		var oldLength = str.Length();
+		var insertLength = value.Length();
+		
+		var newLength = oldLength + insertLength;
+		
+		var result = {};
+		Buffer.Memcpy(str, 0, result, 0, startIndex);
+		Buffer.Memcpy(value, 0, result, startIndex, insertLength);
+		Buffer.Memcpy(str, startIndex, result, startIndex + insertLength, oldLength - startIndex);
+		
+		return String.Join("", result);
+	};
+
+	function Format(format, args) {
+		if(args.GetType() != "Table")
+			args = { args };
+
+		var sb = Text.StringBuilder();
+		sb.AppendFormat(format, args);
+		return sb.ToString();
+	};
+
+	function Format(format, arg1, arg2) {
+		var sb = Text.StringBuilder();
+		sb.AppendFormat(format, {arg1, arg2});
+		return sb.ToString();
+	};
+
+	function Format(format, arg1, arg2, arg3) {
+		var sb = Text.StringBuilder();
+		sb.AppendFormat(format, {arg1, arg2, arg3});
+		return sb.ToString();
+	}
+
+	function Format(format, arg1, arg2, arg3, arg4) {
+		var sb = Text.StringBuilder();
+		sb.AppendFormat(format, {arg1, arg2, arg3, arg4});
+		return sb.ToString();
+	}
+
+	function Format(format, arg1, arg2, arg3, arg4, arg5) {
+		var sb = Text.StringBuilder();
+		sb.AppendFormat(format, {arg1, arg2, arg3, arg4, arg5});
+		return sb.ToString();
+	};
+	
+	return {
+		Empty = Empty,
+		Split = Split,
+		Join = Join,
+		Concat = Concat,
+		IsNullOrEmpty = IsNullOrEmpty,
+		IsNullOrWhiteSpace = IsNullOrWhiteSpace,
+		IndexOf = IndexOf,
+		LastIndexOf = LastIndexOf,
+		IndexOfSubstring = IndexOfSubstring,
+		LastIndexOfSubstring = LastIndexOfSubstring,
+		StartsWith = StartsWith,
+		EndsWith = EndsWith,
+		Insert = Insert,
+		Format = Format
+	};
+})();

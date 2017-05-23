@@ -1,0 +1,48 @@
+﻿start:			block*
+block:			('{' instruction* '}') | instruction
+intruction:		'if' ifclause |
+				'function' functiondef |
+				'return' returnclause |
+				'for' forclause |
+				'while' whileclause |
+				(name (functioncall? | (array? '=' assignmentval)) ';'
+
+ifclause:		'(' boolexpr ')' block
+				('else' block)?
+forclause:		'(' assignment ';' boolexpr ';' assignment ')' block
+whileclause:	'('	boolexpr ')' block
+returnclause:	assignmentval? ';'
+
+assignment:		name array? '=' assignmentval
+assignmentval:	boolexpr | anonfunction | arraydef
+
+functiondef:	name function
+anonfunction:	'function' function
+function:		'(' paramlist? ')' block
+paramlist:		name (',' name)*
+
+arraydef:		'{' (arraydefentry (',' arraydefentry)*)? '}'
+arraydefentry:	( ?name '=')? assignmentval)
+
+boolexpr:		relexpr (boolop relexpr)*
+relexpr:		addexpr (relop addexpr)*
+addexpr:		mulexpr (addop mulexpr)*
+mulexpr:		var (mulop var)*
+var:			(unaryop? (named | number)) | boolval | ( '(' boolexpr ')' ) |
+				string | ternaryif | null
+
+named:			name (functioncall | array)?
+ternaryif:		?boolexpr '?' boolexpr ':' boolexpr
+functioncall:	'(' varlist? ')'
+varlist:		boolexpr (',' boolexpr)*
+array:			'[' varlist ']'
+name:			['a'-'Z'] ['a'-'Z' '0'-'9']*
+number:			['0'-'9'] + (('.' | ',') ['0'-'9']+)?
+string:			'"' char* '"'
+boolval:		'true' | 'false'
+boolop:			'&&' | '||'
+relop:			'==' | '<=' | '>=' | '<' | '>'
+addop:			'+' | '-'
+mulop:			'*' | '/'
+unaryop:		'-'
+null:			'null'

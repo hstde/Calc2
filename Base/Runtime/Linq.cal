@@ -1,0 +1,375 @@
+﻿var Enumerable = (function() {
+	function Sequence(start, end, step) {
+		var ret = {};
+		var val = start;
+		
+		for(var i = 0; val < end; val = val + step, i++)
+		{
+			ret[i] = val;
+		}
+		
+		return ret;
+	}
+	
+	function Range(start, count) {
+		var ret = {};
+		
+		for(var i = 0; i < count; i++)
+		{
+			ret[i] = i + start;
+		}
+		return ret;
+	}
+	
+	function Repeat(element, count) {
+		var ret = {};
+		for(var i = 0; i < count; i++)
+		{
+			ret[i] = element;
+		}
+		return ret;
+	}
+	
+	function Generate(creator, count) {
+		var ret = {};
+		
+		for(var i = 0; i < count; i++)
+			ret[i] = creator(i);
+		
+		return ret;
+	}
+	
+	function Where(filter) extension {
+		if(this.GetType() != "Table") Throw("ArgumentException");
+		
+		var ret = {};
+		retIndex = 0;
+		for(var i = 0; i < this.Length; i++)
+		{
+			if(filter(this[i], i))
+			{
+				ret[retIndex] = this[i];
+				retIndex++;
+			}
+		}
+		return ret;
+	}
+	
+	function Select(selector) extension {
+		if(this.GetType() != "Table") Throw("ArgumentException");
+		
+		var ret = {};
+		for(var i = 0; i < this.Length; i++)
+		{
+			ret[i] = selector(this[i], i);
+		}
+		return ret;
+	}
+	
+	function Reverse() extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var ret = {};
+		for(var i = 0; i < this.Length; i++)
+			ret[i] = this[this.Length - i - 1];
+		
+		return ret;
+	}
+	
+	function SequenceEqual(other) extension {
+		if(this == null || other == null || this.GetType() != "Table" || other.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		if(this.Length != other.Length) return false;
+		
+		for(var i = 0; i < this.Length; i++)
+			if(this[i] != other[i])
+				return false;
+		
+		return true;
+	}
+	
+	function ToDictionary(keySelector, valueSelector) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var ret = {};
+		for(var i = 0; i < this.Length; i++)
+		{
+			var e = this[i];
+			ret[keySelector(e, i)] = valueSelector(e, i);
+		}
+		
+		return ret;
+	}
+	
+	function Take(number) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		if(number > this.Length)
+			Throw("ArgumentOutOfRangeException", "number > this.Length");
+		
+		var ret = {};
+		Buffer.BlockCopy(this, 0, ret, 0, number);
+		return ret;
+	}
+	
+	function TakeWhile(predicate) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var ret = {};
+		for(var i = 0; i < this.Length; i++)
+		{
+			if(!predicate(this[i], i)) break;
+			ret[i] = this[i];
+		}
+		
+		return ret;
+	}
+	
+	function Skip(number) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		if(number > this.Length)
+			Throw("ArgumentOutOfRangeException", "number > this.Length");
+		
+		var ret = {};
+		Array.Copy(this, number, ret, 0);
+		return ret;
+	}
+	
+	function SkipWhile(predicate) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var ret = {};
+		var retIndex = 0;
+		var yielding = false;
+		for(var i = 0; i < this.Length; i++)
+		{
+			if(!yielding && !predicate(this[i], i)) yielding = true;
+			if(yielding) ret[retIndex++] = this[i];
+		}
+		
+		return ret;
+	}
+	
+	function ForEach(action) extension {
+		if(this.GetType() != "Table") Throw("ArgumentException");
+		
+		for(var i = 0; i < this.Length; i++)
+		{
+			action(this[i], i);
+		}
+	}
+	
+	function First() extension {
+		if(this.GetType() != "Table") Throw("ArgumentException");
+		
+		if(this == null || this.Length < 1)
+			Throw("ArgumentException");
+		
+		return this[0];
+	}
+	
+	function FirstOrDefault() extension {
+		if(this.GetType() != "Table") Throw("ArgumentException");
+		
+		if(this == null) Throw("ArgumentException");
+		
+		if(this.Length < 1) return null;
+		
+		return this[0];
+	}
+	
+	function Last() extension {
+		if(this == null || this.GetType() != "Table" || this.Length < 1)
+			Throw("ArgumentException");
+		return this[this.Length - 1];
+	}
+	
+	function LastOrDefault() extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+			
+		if(this.Length < 1) return null;
+		
+		return this[this.Length - 1];
+	}
+	
+	function Single() extension {
+		return this.First();
+	}
+	
+	function Single(what) extension {
+		return this.Where(what).First();
+	}
+	
+	function Any() extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		return this.Length > 0;
+	}
+	
+	function Any(what) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		for(var i = 0; i < this.Length; i++)
+		{
+			if(what(this[i], i))
+				return true;
+		}
+		return false;
+	}
+	
+	function All(what) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		for(var i = 0; i < this.Length; i++)
+			if(!what(this[i], i))
+				return false;
+		return true;
+	}
+	
+	function Concat(other) extension {
+		if(this == null || other == null || this.GetType() != "Table" || other.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var ret = {};
+		for(var i = 0; i < this.Length; i++)
+			ret[i] = this[i];
+		for(var i = 0; i < other.Length; i++)
+			ret[i + this.Length] = other[i];
+		
+		return ret;
+	}
+	
+	function Zip(other, selector) extension {
+		if(this == null || other == null || this.GetType() != "Table" || other.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var ret = {};
+		var length = Math.Min(this.Length, other.Length);
+		
+		for(i = 0; i < length; i++)
+			ret[i] = selector(this[i], other[i]);
+		
+		return ret;
+	}
+	
+	function Aggregate(func) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		if(this.Length < 1) return null;
+		
+		var result = this[0];
+		for(var i = 1; i < this.Length; i++)
+		{
+			result = func(result, this[i]);
+		}
+		
+		return result;
+	}
+	
+	function Contains(what) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		return this.Any(function(e, i) return e == what);
+	}
+	
+	function Min() extension {
+		if(this == null || this.GetType() != "Table" || this.Length < 1)
+			Throw("ArgumentException");
+		
+		var min = this[0];
+		for(var i = 1; i < this.Length; i++)
+		{
+			if(this[i] < min)
+				min = this[i];
+		}
+		
+		return min;
+	}
+	
+	function Min(selector) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		return this.Select(selector).Min();
+	}
+	
+	function Max() extension {
+		if(this == null || this.GetType() != "Table" || this.Length < 1)
+			Throw("ArgumentException");
+		
+		var max = this[0];
+		for(var i = 1; i < this.Length; i++)
+		{
+			if(this[i] > max)
+				max = this[i];
+		}
+		
+		return max;
+	}
+	
+	function Max(selector) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		return this.Select(selector).Max();
+	}
+	
+	function Average() extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var sum = 0;
+		var count = 0;
+		for(var i = 0; i < this.Length; i++)
+		{
+			sum = sum + this[i];
+			count++;
+		}
+		
+		if(count > 0) return sum / count;
+		Throw("ArgumentException");
+	}
+	
+	function Average(selector) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		return this.Select(selector).Average();
+	}
+	
+	function Sum() extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var sum = 0;
+		
+		for(var i = 0; i < this.Length; i++)
+			sum = sum + this[i];
+		
+		return sum;
+	}
+	
+	function Sum(selector) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		return this.Select(selector).Sum();
+	}
+	
+	return {
+		Range = Range,
+		Sequence = Sequence,
+		Repeat = Repeat,
+		Generate = Generate
+	};
+})();

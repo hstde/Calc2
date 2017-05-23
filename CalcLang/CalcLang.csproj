@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BE672E73-7B1B-4C63-AABE-89F711A2126C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CalcLang</RootNamespace>
+    <AssemblyName>CalcLang</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>..\dlls\Irony.dll</HintPath>
+    </Reference>
+    <Reference Include="Irony.Interpreter">
+      <HintPath>..\dlls\Irony.Interpreter.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Ast\ArrayDefNode.cs" />
+    <Compile Include="Ast\AssignmentNode.cs" />
+    <Compile Include="Ast\AstContext.cs" />
+    <Compile Include="Ast\AstNode.cs" />
+    <Compile Include="Ast\BinaryOperationNode.cs" />
+    <Compile Include="Ast\BlockNode.cs" />
+    <Compile Include="Ast\BoolValNode.cs" />
+    <Compile Include="Ast\BreakNode.cs" />
+    <Compile Include="Ast\ContinueNode.cs" />
+    <Compile Include="Ast\DoWhileNode.cs" />
+    <Compile Include="Ast\ExpressionListNode.cs" />
+    <Compile Include="Ast\ForeachNode.cs" />
+    <Compile Include="Ast\ForNode.cs" />
+    <Compile Include="Ast\FunctionCallNode.cs" />
+    <Compile Include="Ast\FunctionDefNode.cs" />
+    <Compile Include="Ast\IdentifierNode.cs" />
+    <Compile Include="Ast\IfNode.cs" />
+    <Compile Include="Ast\IncDecNode.cs" />
+    <Compile Include="Ast\IndexedAccessNode.cs" />
+    <Compile Include="Ast\LambdaNode.cs" />
+    <Compile Include="Ast\LiteralValueNode.cs" />
+    <Compile Include="Ast\MemberAccessNode.cs" />
+    <Compile Include="Ast\NothingNode.cs" />
+    <Compile Include="Ast\NullValueNode.cs" />
+    <Compile Include="Ast\ParamListNode.cs" />
+    <Compile Include="Ast\ReturnNode.cs" />
+    <Compile Include="Ast\StatementListNode.cs" />
+    <Compile Include="Ast\ThisNode.cs" />
+    <Compile Include="Ast\UnaryExpressionNode.cs" />
+    <Compile Include="Ast\UsingNode.cs" />
+    <Compile Include="Ast\VarDeclarationNode.cs" />
+    <Compile Include="Ast\WhileNode.cs" />
+    <Compile Include="CalcGrammar.cs" />
+    <Compile Include="Evaluator.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Interpreter\AppDataMap.cs" />
+    <Compile Include="Interpreter\Binding.cs" />
+    <Compile Include="Interpreter\BindingRequest.cs" />
+    <Compile Include="Interpreter\BuiltInMethods.cs" />
+    <Compile Include="CalcCallableMethodAttribute.cs" />
+    <Compile Include="Interpreter\Closure.cs" />
+    <Compile Include="Interpreter\DataTable.cs" />
+    <Compile Include="Interpreter\MethodTable.cs" />
+    <Compile Include="Interpreter\ModuleInfo.cs" />
+    <Compile Include="Interpreter\NullBinding.cs" />
+    <Compile Include="Interpreter\OperationHandler.cs" />
+    <Compile Include="Interpreter\OperatorImplementation.cs" />
+    <Compile Include="Interpreter\Operators.cs" />
+    <Compile Include="Interpreter\Runtime.cs" />
+    <Compile Include="Interpreter\Scope.cs" />
+    <Compile Include="Interpreter\ScopeInfo.cs" />
+    <Compile Include="Interpreter\ScopeValuesDictionary.cs" />
+    <Compile Include="Interpreter\ScriptApp.cs" />
+    <Compile Include="Interpreter\ScriptException.cs" />
+    <Compile Include="Interpreter\ScriptStackTrace.cs" />
+    <Compile Include="Interpreter\ScriptThread.cs" />
+    <Compile Include="Interpreter\SlotBinding.cs" />
+    <Compile Include="Interpreter\SlotInfo.cs" />
+    <Compile Include="Interpreter\SourceLocation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="syntax.txt" />
+    <Content Include="syntax_rev.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
