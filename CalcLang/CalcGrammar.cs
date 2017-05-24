@@ -63,9 +63,7 @@ namespace CalcLang
             NonTerminal functionCall = new NonTerminal("functionCall", typeof(FunctionCallNode));
             NonTerminal varList = new NonTerminal("varList", typeof(ExpressionListNode));
             NonTerminal array = new NonTerminal("array");
-            //NonTerminal multiDimArray = new NonTerminal("multiDimArray");
             NonTerminal singleDimArray = new NonTerminal("singleDimArray", typeof(IndexedAccessNode));
-            //NonTerminal arrayIndex = new NonTerminal("arrayIndex");
 
             IdentifierTerminal name = new IdentifierTerminal("name", IdOptions.IsNotKeyword);
             IdentifierTerminal newName = new IdentifierTerminal("newName", IdOptions.IsNotKeyword);
@@ -141,8 +139,7 @@ namespace CalcLang
             arrayDef.Rule = ToTerm("{") + arrayDefList + "}";
             arrayDefList.Rule = MakeStarRule(arrayDefList, ToTerm(","), arrayDefListItem);
             arrayDefListItem.Rule = namedArrayItem | expr;
-            namedArrayItem.Rule = name + "=" + expr;
-
+            namedArrayItem.Rule = (name | _string) + "=" + expr;
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | var | unExpr | binExpr
@@ -177,8 +174,6 @@ namespace CalcLang
 
             array.Rule = singleDimArray;
             singleDimArray.Rule = var + PreferShiftHere() + "[" + expr + "]";
-            //multiDimArray.Rule = var + PreferShiftHere() + "[" + arrayIndex + "]";
-            //arrayIndex.Rule = arrayIndex + "," + expr | expr + "," + expr;
 
             boolVal.Rule = ToTerm("true") | "false";
             nullVal.Rule = ToTerm("null");

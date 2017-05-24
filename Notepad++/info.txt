@@ -1,0 +1,3 @@
+This folder contains some files to make CalcLang work in Notepad++.
+CalcLang.xml is the UDL definition file to make syntax highlighting work
+and functionList.xml is a modified function list definition file, to make the function list work.

@@ -55,6 +55,7 @@
 	
 	function Join(separator, value, startIndex, count) {
 		if(value == null) Throw("ArgumentNullException", "value");
+		if(separator.GetType() != "String") separator = separator.ToString();
 		
 		if(separator == null) separator = String.Empty;
 		if(value.Length < 1) return String.Empty;

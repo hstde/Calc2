@@ -158,10 +158,9 @@
 	
 	function ForEach(action) extension {
 		if(this.GetType() != "Table") Throw("ArgumentException");
-		
-		for(var i = 0; i < this.Length; i++)
+		foreach(var e in this)
 		{
-			action(this[i], i);
+			action(e.Value, e.Key);
 		}
 	}
 	

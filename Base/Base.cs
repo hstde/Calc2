@@ -73,11 +73,5 @@ namespace Base
 
         [CalcCallableMethod("Break", -1)]
         public static object Break(ScriptThread thread, object thisRef, object[] parameters) => null;
-
-        [CalcCallableMethod("__Sin", 1)]
-        public static object Sin(ScriptThread thread, object thisRef, object[] parameters) => (decimal)Math.Sin(Convert.ToDouble(parameters[0]));
-
-        [CalcCallableMethod("__Int", 1)]
-        public static object Int(ScriptThread thread, object thisRef, object[] parameters) => (long)Convert.ToDecimal(parameters[0]);
     }
 }

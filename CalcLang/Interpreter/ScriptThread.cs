@@ -14,24 +14,12 @@ namespace CalcLang.Interpreter
         public readonly Runtime Runtime;
         public Stack<FunctionInfo> CallStack;
 
-        public AstNode CurrentNode
-        {
-            get;
-            set;
-        }
-        public Scope CurrentScope
-        {
-            get;
-            set;
-        }
+        public AstNode CurrentNode { get; set; }
+        public Scope CurrentScope { get; set; }
 
         public Scope RootScope => App.MainScope;
 
-        public FunctionInfo CurrentFuncInfo
-        {
-            get;
-            set;
-        }
+        public FunctionInfo CurrentFuncInfo { get; set; }
 
         public ScriptThread(ScriptApp app)
         {
@@ -80,7 +68,7 @@ namespace CalcLang.Interpreter
 
         public void ThrowScriptError(string message, bool withHere, object[] args)
         {
-            if(args != null && args.Length > 0)
+            if(args?.Length > 0)
             {
                 message = string.Format(message, args);
             }

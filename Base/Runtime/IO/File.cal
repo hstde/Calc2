@@ -1,16 +1,10 @@
-﻿IO["FileStream"] = function(path, mode, access) {
-	//TODO: Check arguments, let's focus on the actual implementation for now
+﻿IO["FileStream"] = (function() {
+	//TODO: Implement File.Read()
 	var Win32Native = Microsoft.Win32.Win32Native;
 	var SeekOrigin = IO.SeekOrigin;
 	
 	var useLongPath = true;
 	var bufferSize = 4096;
-	var _buffer = {};
-	var _handle = null;
-	var _handleNative = null;
-	
-	var GENERIC_READ = 0x8000_0000;
-	var GENERIC_WRITE = 0x4000_0000;
 	
 	var FILE_BEGIN = 0;
 	var FILE_CURRENT = 1;
@@ -18,251 +12,276 @@
 	
 	var ERROR_NO_DATA = 232;
 	
-	var fAccess = access == IO.FileAccess.Read? GENERIC_READ :
-			(access == IO.FileAccess.Write? GENERIC_WRITE :
-			GENERIC_READ | GENERIC_WRITE);
+	var GENERIC_READ = 0x8000_0000;
+	var GENERIC_WRITE = 0x4000_0000;
+	
+	function ctor(path, mode, access) {
+		var _buffer = {};
+		var _handle = null;
+		var _handleNative = null;
+		
+		var _canRead;
+		var _canWrite;
+		
+		var _canSeek;
+		var _isPipe;
+		var _pos;
+		var _bufferSize;
+		var _readPos;
+		var _readLen;
+		var _writePos;
+		var _appendStart;
+		
+		function subctor(path, mode, access) {
+			var fAccess = access == IO.FileAccess.Read? GENERIC_READ :
+				(access == IO.FileAccess.Write? GENERIC_WRITE :
+				GENERIC_READ | GENERIC_WRITE);
+				
+			var maxPathLength = IO.Path.MaxLongPath;
+			var _path = IO.Path.NormalizePath(path, true, maxPathLength, true);
 			
-	var maxPathLength = IO.Path.MaxLongPath;
-	var _path = IO.Path.NormalizePath(path, true, maxPathLength, true);
-	
-	if(String.StartsWith(_path, "\\\\.\\"))
-		Throw("ArgumentException", "Device not supportet");
-	
-	var seekToEnd = (mode == IO.FileMode.Append);
-	if(mode == IO.FileMode.Append)
-		mode = IO.FileMode.OpenOrCreate;
-	
-	var options = 0; //fixme
-	var flagsAndAttributes = options;
-	flagsAndAttributes = flagsAndAttributes | (Win32Native.SECURITY_SQOS_PRESENT | Win32Native.SECURITY_ANONYMOUS);
-	
-	var oldMode = Win32Native.SetErrorMode(Win32Native.SEM_FAILCRITICALERRORS);
-	
-	var share = IO.FileShare.Read;
+			if(String.StartsWith(_path, "\\\\.\\"))
+				Throw("ArgumentException", "Device not supportet");
+			
+			var seekToEnd = (mode == IO.FileMode.Append);
+			if(mode == IO.FileMode.Append)
+				mode = IO.FileMode.OpenOrCreate;
+			
+			var options = 0; //fixme
+			var flagsAndAttributes = options;
+			flagsAndAttributes = flagsAndAttributes | (Win32Native.SECURITY_SQOS_PRESENT | Win32Native.SECURITY_ANONYMOUS);
+			
+			var oldMode = Win32Native.SetErrorMode(Win32Native.SEM_FAILCRITICALERRORS);
+			
+			var share = IO.FileShare.Read;
 
-	var secAttrs = null;
-	
-	{
-		var tempPath = _path;
-		if(useLongPath)
-		{
-			tempPath = IO.Path.AddLongPathPrefix(tempPath);
-		}
-		_handleNative = Win32Native.SafeCreateFile(tempPath, fAccess, share, secAttrs, mode, flagsAndAttributes, 0);
-		_handle = _handleNative.Handle;
-		
-	}
-	
-	Win32Native.SetErrorMode(oldMode);
-	
-	var fileType = Win32Native.GetFileType(_handle);
-	if(fileType != Win32Native.FILE_TYPE_DISK)
-	{
-		__Win32Native_DisposeNativeHandle(_handleNative);
-		Throw("NotSupportedException", "FileStreamOnNoneFiles");
-	}
-	
-	var _canRead = (access & IO.FileAccess.Read) != 0;
-	var _canWrite = (access & IO.FileAccess.Write) != 0;
-	
-	var _canSeek = true;
-	var _isPipe = false;
-	var _pos = 0;
-	var _bufferSize = bufferSize;
-	var _readPos = 0;
-	var _readLen = 0;
-	var _writePos = 0;
-	var _appendStart = -1;
-	
-	function SeekCore(offset, origin) {
-		var hr = 0;
-		var ret = 0;
-		
-		var res = Win32Native.SetFilePointer(_handle, offset, origin);
-		ret = res.res;
-		hr = res.hr;
-		
-		if(ret == -1)
-		{
-			if(hr == Win32Native.ERROR_INVALID_HANDLE)
+			var secAttrs = null;
+			
+			{
+				var tempPath = _path;
+				if(useLongPath)
+				{
+					tempPath = IO.Path.AddLongPathPrefix(tempPath);
+				}
+				_handleNative = Win32Native.SafeCreateFile(tempPath, fAccess, share, secAttrs, mode, flagsAndAttributes, 0);
+				_handle = _handleNative.Handle;
+				
+			}
+			
+			Win32Native.SetErrorMode(oldMode);
+			
+			var fileType = Win32Native.GetFileType(_handle);
+			if(fileType != Win32Native.FILE_TYPE_DISK)
+			{
 				__Win32Native_DisposeNativeHandle(_handleNative);
-			Throw("IOException", "hr = " + hr);
-		}
-		
-		_pos = ret;
-		return ret;
-	}
-	
-	if(seekToEnd)
-	{
-		_appendStart = SeekCore(0, SeekOrigin.End);
-	}
-	
-	function FlushWrite() {
-		WriteCore(_buffer, 0, _writePos);
-		_writePos = 0;
-	}
-	
-	function Write(array, offset, count) {
-		if(array == null) Throw("ArgumentNullException", "array");
-		if(offset < 0) Throw("ArgumentOutOfRangeException", "offset");
-		if(count < 0) Throw("ArgumentOutOfRangeException", "count");
-		if(array.Length - offset < count)
-			Throw("ArgumentException", "InvalidOffsetLength");
-		
-		if(_writePos == 0)
-		{
-			if(!_canWrite) Throw("IOException", "WriteNotSupportet");
-			if(_readPos < _readLen) FlushRead();
+				Throw("NotSupportedException", "FileStreamOnNoneFiles");
+			}
+			
+			_canRead = (access & IO.FileAccess.Read) != 0;
+			_canWrite = (access & IO.FileAccess.Write) != 0;
+			
+			_canSeek = true;
+			_isPipe = false;
+			_pos = 0;
+			_bufferSize = bufferSize;
 			_readPos = 0;
 			_readLen = 0;
+			_writePos = 0;
+			_appendStart = -1;
+			
+			if(seekToEnd)
+			{
+				_appendStart = SeekCore(0, SeekOrigin.End);
+			}
 		}
 		
-		if(_writePos > 0)
-		{
-			var numBytes = _bufferSize - _writePos;
-			if(numBytes > 0)
+		function SeekCore(offset, origin) {
+			var hr = 0;
+			var ret = 0;
+			
+			var res = Win32Native.SetFilePointer(_handle, offset, origin);
+			ret = res.res;
+			hr = res.hr;
+			
+			if(ret == -1)
 			{
-				if(numBytes > count)
-					numBytes = count;
-				Buffer.BlockCopy(array, offset, _buffer, _writePos, numBytes);
-				
-				_writePos = _writePos + numBytes;
-				if(count == numBytes) return;
-				offset = offset + numBytes;
-				count = count - numBytes;
+				if(hr == Win32Native.ERROR_INVALID_HANDLE)
+					__Win32Native_DisposeNativeHandle(_handleNative);
+				Throw("IOException", "hr = " + hr);
 			}
+			
+			_pos = ret;
+			return ret;
+		}
+		
+		function FlushWrite() {
 			WriteCore(_buffer, 0, _writePos);
 			_writePos = 0;
 		}
 		
-		if(count >= _bufferSize)
-		{
-			WriteCore(array, offset, count);
-			return;
-		}
-		else if(count == 0)
-			return;
-		if(_buffer == null) _buffer = {};
-		
-		Buffer.BlockCopy(array, offset, _buffer, _writePos, count);
-		_writePos = count;
-		return;
-	}
-	
-	function WriteFileNative(handle, bytes, offset, count, overlapped)
-	{
-		if(bytes.Length - offset < count)
-			Throw("IndexOutOfRangeException", "IORaceCondition");
-		
-		if(bytes.Length == 0)
-			return { r = 0, hr = 0 };
-		
-		Win32Native = Microsoft.Win32.Win32Native;
-		
-		var numBytesWritten = Win32Native.WriteFile(handle, bytes, offset, count);
-		var hr = 0;
-		if(numBytesWritten == 0)
-		{
-			hr = Win32Native.GetLastWin32Error();
+		function Write(array, offset, count) {
+			if(array == null) Throw("ArgumentNullException", "array");
+			if(offset < 0) Throw("ArgumentOutOfRangeException", "offset");
+			if(count < 0) Throw("ArgumentOutOfRangeException", "count");
+			if(array.Length - offset < count)
+				Throw("ArgumentException", "InvalidOffsetLength");
 			
-			if(hr == ERROR_NO_DATA)
-				return { r = -1, hr = hr};
-			if(hr == Win32Native.ERROR_INVALID_HANDLE)
-				__Win32Native_DisposeNativeHandle(_handleNative);
-			return { r = -1, hr = hr };
-		}
-		else
-			hr = 0;
-		
-		return { hr = hr, r = numBytesWritten };
-	}
-	
-	function WriteCore(buffer, offset, count) {
-		var res = WriteFileNative(_handle, buffer, offset, count, null);
-		var hr = res.hr;
-		var r = res.r;
-		
-		if(r == -1)
-		{
-			if(hr == ERROR_NO_DATA)
-				r = 0;
-			else
-				Throw("IOException");
-		}
-		
-		_pos = _pos + r;
-		return;
-	}
-	
-	function Close() {
-		FlushWrite();
-		
-		_canRead = false;
-		_canSeek = false;
-		_canWrite = false;
-		__Win32Native_DisposeNativeHandle(_handleNative);
-	}
-	
-	function Seek(offset, origin) {
-		if(!_canSeek) Throw("IOException", "SeekNotSupported");
-		
-		if(_writePos > 0)
-		{
-			FlushWrite();
-		}
-		else if (origin == SeekOrigin.Current)
-		{
-			offset = offset - (_readLen - _readPos);
-		}
-		
-		var oldPos = _pos + (_readPos - _readLen);
-		var pos = SeekCore(offset, origin);
-		if(_appendStart != -1 && pos < _appendStart)
-		{
-			SeekCore(oldPos, SeekOrigin.Begin);
-			Close();
-			Throw("IOException", "SeekAppendOverwrite");
-		}
-		
-		if(_readLen > 0)
-		{
-			if(oldPos == pos)
+			if(_writePos == 0)
 			{
-				if(_readPos > 0)
-				{
-					Buffer.BlockCopy(_buffer, _readPos, _buffer, 0, _readLen - _readPos);
-					_readLen = _readLen - _readPos;
-					_readPos = 0;
-				}
-				if(_readLen > 0)
-					SeekCore(_readLen, SeekOrigin.Current);
-			}
-			else if(oldPos - _readPos < pos && pos < oldPos + _readLen - _readPos)
-			{
-				var diff = pos - oldPos;
-				Buffer.BlockCopy(_buffer, _readPos + diff, _buffer, 0, _readLen - (_readPos + diff));
-				_readLen = _readLen - (_readPos + diff);
-				_readPos = 0;
-				if(_readLen > 0)
-					SeekCore(_readLen, SeekOrigin.Current);
-			}
-			else
-			{
+				if(!_canWrite) Throw("IOException", "WriteNotSupportet");
+				if(_readPos < _readLen) FlushRead();
 				_readPos = 0;
 				_readLen = 0;
 			}
+			
+			if(_writePos > 0)
+			{
+				var numBytes = _bufferSize - _writePos;
+				if(numBytes > 0)
+				{
+					if(numBytes > count)
+						numBytes = count;
+					Buffer.BlockCopy(array, offset, _buffer, _writePos, numBytes);
+					
+					_writePos = _writePos + numBytes;
+					if(count == numBytes) return;
+					offset = offset + numBytes;
+					count = count - numBytes;
+				}
+				WriteCore(_buffer, 0, _writePos);
+				_writePos = 0;
+			}
+			
+			if(count >= _bufferSize)
+			{
+				WriteCore(array, offset, count);
+				return;
+			}
+			else if(count == 0)
+				return;
+			if(_buffer == null) _buffer = {};
+			
+			Buffer.BlockCopy(array, offset, _buffer, _writePos, count);
+			_writePos = count;
+			return;
 		}
 		
-		return pos;
+		function WriteFileNative(handle, bytes, offset, count, overlapped) {
+			if(bytes.Length - offset < count)
+				Throw("IndexOutOfRangeException", "IORaceCondition");
+			
+			if(bytes.Length == 0)
+				return { r = 0, hr = 0 };
+			
+			Win32Native = Microsoft.Win32.Win32Native;
+			
+			var numBytesWritten = Win32Native.WriteFile(handle, bytes, offset, count);
+			var hr = 0;
+			if(numBytesWritten == 0)
+			{
+				hr = Win32Native.GetLastWin32Error();
+				
+				if(hr == ERROR_NO_DATA)
+					return { r = -1, hr = hr};
+				if(hr == Win32Native.ERROR_INVALID_HANDLE)
+					__Win32Native_DisposeNativeHandle(_handleNative);
+				return { r = -1, hr = hr };
+			}
+			else
+				hr = 0;
+			
+			return { hr = hr, r = numBytesWritten };
+		}
+		
+		function WriteCore(buffer, offset, count) {
+			var res = WriteFileNative(_handle, buffer, offset, count, null);
+			var hr = res.hr;
+			var r = res.r;
+			
+			if(r == -1)
+			{
+				if(hr == ERROR_NO_DATA)
+					r = 0;
+				else
+					Throw("IOException");
+			}
+			
+			_pos = _pos + r;
+			return;
+		}
+		
+		function Close() {
+			FlushWrite();
+			
+			_canRead = false;
+			_canSeek = false;
+			_canWrite = false;
+			__Win32Native_DisposeNativeHandle(_handleNative);
+		}
+		
+		function Seek(offset, origin) {
+			if(!_canSeek) Throw("IOException", "SeekNotSupported");
+			
+			if(_writePos > 0)
+			{
+				FlushWrite();
+			}
+			else if (origin == SeekOrigin.Current)
+			{
+				offset = offset - (_readLen - _readPos);
+			}
+			
+			var oldPos = _pos + (_readPos - _readLen);
+			var pos = SeekCore(offset, origin);
+			if(_appendStart != -1 && pos < _appendStart)
+			{
+				SeekCore(oldPos, SeekOrigin.Begin);
+				Close();
+				Throw("IOException", "SeekAppendOverwrite");
+			}
+			
+			if(_readLen > 0)
+			{
+				if(oldPos == pos)
+				{
+					if(_readPos > 0)
+					{
+						Buffer.BlockCopy(_buffer, _readPos, _buffer, 0, _readLen - _readPos);
+						_readLen = _readLen - _readPos;
+						_readPos = 0;
+					}
+					if(_readLen > 0)
+						SeekCore(_readLen, SeekOrigin.Current);
+				}
+				else if(oldPos - _readPos < pos && pos < oldPos + _readLen - _readPos)
+				{
+					var diff = pos - oldPos;
+					Buffer.BlockCopy(_buffer, _readPos + diff, _buffer, 0, _readLen - (_readPos + diff));
+					_readLen = _readLen - (_readPos + diff);
+					_readPos = 0;
+					if(_readLen > 0)
+						SeekCore(_readLen, SeekOrigin.Current);
+				}
+				else
+				{
+					_readPos = 0;
+					_readLen = 0;
+				}
+			}
+			
+			return pos;
+		}
+		
+		subctor(path, mode, access);
+		return {
+			Write = Write,
+			Close = Close,
+			Seek = Seek
+		};
 	}
 	
-	return {
-		Write = Write,
-		Close = Close,
-		Seek = Seek
-	};
-};
+	return ctor;
+})();
 
 IO["File"] = (function(){
 	
