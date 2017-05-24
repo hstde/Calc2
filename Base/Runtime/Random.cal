@@ -3,121 +3,125 @@
 	var MSEED = 161803398;
 	var MZ = 0;
 	
-	var inext = 0;
-	var inextp = 0;
-	var SeedArray = {};
-	
-	function Sample() {
-		return (InternalSample() * (1.0 / MBIG));
-	}
-	
-	function InternalSample() {
-		var retVal = 0;
-		var locINext = inext;
-		var locINextp = inextp;
-		
-		if(++locINext >= 56) locINext = 1;
-		if(++locINextp >= 56) locINextp = 1;
-		
-		retVal = SeedArray[locINext] - SeedArray[locINextp];
-		
-		if(retVal == MBIG) retVal--;
-		if(retVal < 0) retVal = retVal + MBIG;
-		
-		SeedArray[locINext] = retVal;
-		inext = locINext;
-		inextp = locINextp;
-		
-		return retVal;
-	}
-	
-	function GetSampleForLargeRange() {
-		var result = InternalSample();
-		var negative = (InternalSample() % 2 == 0);
-		if(negative)
-			result = -result;
-		
-		var d = result * 1.0;
-		d = d + (Int32.MaxValue - 1);
-		d = d / (2.0 * Int32.MaxValue - 1);
-		return d;
-	}
-	
-	function Next() {
-		return InternalSample();
-	}
-	
-	function Next(minValue, maxValue) {
-		if(minValue > maxValue)
-			Throw("ArgumentOutOfRangeException", "minValue");
-		
-		var range = 1.0 * maxValue - minValue;
-		
-		if(range <= Int32.MaxValue)
-			return Sample() * range + minValue;
-		else
-			return GetSampleForLargeRange() * range + minValue;
-	}
-	
-	function Next(maxValue) {
-		if(maxValue < 0)
-			Throw("ArgumentOutOfRangeException", "maxValue");
-		
-		return Sample() * maxValue;
-	}
-	
-	function NextDouble() {
-		return Sample();
-	}
-	
-	function NextBytes(buffer) {
-		NextBytes(buffer, buffer.Length);
-	}
-	
-	function NextBytes(buffer, count) {
-		if(buffer == null)
-			Throw("ArgumentNullException", "buffer");
-		
-		for(var i = 0; i < count; i++)
-		{
-			buffer[i] = InternalSample() % (Byte.MaxValue + 1);
-		}
-	}
-
 	function ctor() {
 		return ctor(Environment.GetTickCount());
 	}
 	
 	function ctor(seed) {
-		var ii = 0;
-		var mj = 0;
-		var mk = 0;
+		var inext = 0;
+		var inextp = 0;
+		var SeedArray = {};
 		
-		var subtraction = (seed == Int32.MinValue) ? Int32.MaxValue : Math.Abs(seed);
-		mj = MSEED - subtraction;
-		SeedArray[55] = mj;
-		mk = 1;
-		for(var i = 1; i < 55; i++)
-		{
-			ii = (21 * i) % 55;
-			SeedArray[ii] = mk;
-			mk = mj - mk;
-			if(mk < 0) mk = mk + MBIG;
-			mj = SeedArray[ii];
+		function subctor(seed) {
+			var ii = 0;
+			var mj = 0;
+			var mk = 0;
+			
+			var subtraction = (seed == Int32.MinValue) ? Int32.MaxValue : Math.Abs(seed);
+			mj = MSEED - subtraction;
+			SeedArray[55] = mj;
+			mk = 1;
+			for(var i = 1; i < 55; i++)
+			{
+				ii = (21 * i) % 55;
+				SeedArray[ii] = mk;
+				mk = mj - mk;
+				if(mk < 0) mk = mk + MBIG;
+				mj = SeedArray[ii];
+			}
+			
+			for(var k = 1; k < 5; k++)
+			{
+				for(var i = 1; i < 56; i++)
+				{
+					SeedArray[i] = SeedArray[i] - SeedArray[1 + (i + 30) % 55];
+					if(SeedArray[i] < 0) SeedArray[i] = SeedArray[i] + MBIG;
+				}
+			}
+			
+			inext = 0;
+			inextp = 21;
+		}
+	
+		function Sample() {
+			return (InternalSample() * (1.0 / MBIG));
 		}
 		
-		for(var k = 1; k < 5; k++)
-		{
-			for(var i = 1; i < 56; i++)
+		function InternalSample() {
+			var retVal = 0;
+			var locINext = inext;
+			var locINextp = inextp;
+			
+			if(++locINext >= 56) locINext = 1;
+			if(++locINextp >= 56) locINextp = 1;
+			
+			retVal = SeedArray[locINext] - SeedArray[locINextp];
+			
+			if(retVal == MBIG) retVal--;
+			if(retVal < 0) retVal = retVal + MBIG;
+			
+			SeedArray[locINext] = retVal;
+			inext = locINext;
+			inextp = locINextp;
+			
+			return retVal;
+		}
+		
+		function GetSampleForLargeRange() {
+			var result = InternalSample();
+			var negative = (InternalSample() % 2 == 0);
+			if(negative)
+				result = -result;
+			
+			var d = result * 1.0;
+			d = d + (Int32.MaxValue - 1);
+			d = d / (2.0 * Int32.MaxValue - 1);
+			return d;
+		}
+		
+		function Next() {
+			return InternalSample();
+		}
+		
+		function Next(minValue, maxValue) {
+			if(minValue > maxValue)
+				Throw("ArgumentOutOfRangeException", "minValue");
+			
+			var range = 1.0 * maxValue - minValue;
+			
+			if(range <= Int32.MaxValue)
+				return Sample() * range + minValue;
+			else
+				return GetSampleForLargeRange() * range + minValue;
+		}
+		
+		function Next(maxValue) {
+			if(maxValue < 0)
+				Throw("ArgumentOutOfRangeException", "maxValue");
+			
+			return Sample() * maxValue;
+		}
+		
+		function NextDouble() {
+			return Sample();
+		}
+		
+		function NextBytes(buffer) {
+			NextBytes(buffer, buffer.Length);
+		}
+		
+		function NextBytes(buffer, count) {
+			if(buffer == null)
+				Throw("ArgumentNullException", "buffer");
+			
+			for(var i = 0; i < count; i++)
 			{
-				SeedArray[i] = SeedArray[i] - SeedArray[1 + (i + 30) % 55];
-				if(SeedArray[i] < 0) SeedArray[i] = SeedArray[i] + MBIG;
+				buffer[i] = InternalSample() % (Byte.MaxValue + 1);
 			}
 		}
 		
-		inext = 0;
-		inextp = 21;
 		
+		subctor(seed);
 		
 		return {
 			Next = Next,
