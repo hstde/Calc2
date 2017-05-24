@@ -80,6 +80,7 @@ namespace CalcLang.Ast
             base.Init(context, parseNode);
             var nodes = parseNode.GetMappedChildNodes();
             name = nodes[0].FindTokenAndGetText();
+            if (name.StartsWith("\"")) name = name.Remove(name.Length - 1, 1).Remove(0, 1);
             value = AddChild("Value", nodes[2]);
 
             AsString = "[" + name + "] = " + value.AsString;

@@ -141,8 +141,7 @@ namespace CalcLang
             arrayDef.Rule = ToTerm("{") + arrayDefList + "}";
             arrayDefList.Rule = MakeStarRule(arrayDefList, ToTerm(","), arrayDefListItem);
             arrayDefListItem.Rule = namedArrayItem | expr;
-            namedArrayItem.Rule = name + "=" + expr;
-
+            namedArrayItem.Rule = (name | _string) + "=" + expr;
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | var | unExpr | binExpr
