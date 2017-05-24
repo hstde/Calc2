@@ -24,11 +24,11 @@ var Math = (function() {
 	}
 	
 	function Floor(value) {
-		
+		return __Floor(value);
 	}
 	
 	function Ceiling(value) {
-		
+		return __Ceiling(value);
 	}
 	
 	function InternalRound(value, digits, mode) {
@@ -73,6 +73,95 @@ var Math = (function() {
 			return 0;
 	}
 	
+	function Acos(value) {
+		return __Acos(value);
+	}
+	
+	function Asin(value) {
+		return __Asin(value);
+	}
+	
+	function Atan(value) {
+		return __Atan(value);
+	}
+	
+	function Atan2(y, x) {
+		return __Atan2(y, x);
+	}
+	
+	function Cos(value) {
+		return __Cos(value);
+	}
+	
+	function Cosh(value) {
+		return __Cosh(value);
+	}
+	
+	function Sin(value) {
+		return __Sin(value);
+	}
+	
+	function Tan(value) {
+		return __Tan(value);
+	}
+	
+	function Sinh(value) {
+		return __Sinh(value);
+	}
+	
+	function Tanh(value) {
+		return __Tanh(value);
+	}
+	
+	function Sqrt(value) {
+		return __Sqrt(value);
+	}
+	
+	function Log(value) {
+		return __Log(value);
+	}
+	
+	function Log10(value) {
+		return __Log10(value);
+	}
+	
+	function Exp(value) {
+		return __Exp(value);
+	}
+	
+	function Pow(x, y) {
+		return __Pow(x, y);
+	}
+	
+	function IEEERemainder(x, y) {
+		var regularMod = x % y;
+		if(regularMod == 0 && x < 0)
+			return -0;
+		
+		var alternativeResult = regularMod - (Math.Abs(y) * Math.Sign(x));
+		if(Math.Abs(alternativeResult) == Math.Abs(regularMod))
+		{
+			var divisionResult = x / y;
+			var roundedResult = Math.Round(regularMod);
+			if(Math.Abs(roundedResult) > Math.Abs(divisionResult)) 
+			{
+				return alternativeResult;
+			}
+			else
+			{
+				return regularMod;
+			}
+		}
+		if(Math.Abs(alternativeResult) < Math.Abs(regularMod))
+		{
+			return alternativeResult;
+		}
+		else
+		{
+			return regularMod;
+		}
+	}
+	
 	function DivRem(a, b) {
 		return { div = a / b, rem = a % b };
 	}
@@ -88,6 +177,22 @@ var Math = (function() {
 		Round = Round,
 		Int = Int,
 		Sign = Sign,
+		Acos = Acos,
+		Asin = Asin,
+		Atan = Atan,
+		Atan2 = Atan2,
+		Cos = Cos,
+		Cosh = Cosh,
+		Sin = Sin,
+		Tan = Tan,
+		Sinh = Sinh,
+		Tanh = Tanh,
+		Sqrt = Sqrt,
+		Log = Log,
+		Log10 = Log10,
+		Exp = Exp,
+		Pow = Pow,
+		IEEERemainder = IEEERemainder,
 		DivRem = DivRem
 	};
 })();
