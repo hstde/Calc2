@@ -42,7 +42,7 @@ var Math = (function() {
 				value += Sign(fraction);
 		}
 		else
-			Throw("What");
+			value = Round(value);
 		value /= power10;
 		
 		return value;
@@ -56,7 +56,7 @@ var Math = (function() {
 	}
 	
 	function Round(value) {
-		return Round(value, 0);
+		return __Round(value);
 	}
 	
 	function Int(value) {
