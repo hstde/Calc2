@@ -1,162 +1,166 @@
-﻿Text["StringBuilder"] = function() {
-	
+﻿Text["StringBuilder"] = (function() {
 	var NewLine = "\r\n";
-	var _string = null;
-	var _buffer = {};
-	var _pos = 0;
 	
-	function ToString() {
-		if(_string == null)
-			_string = String.Concat(_buffer);
-		return _string;
-	}
-	
-	function Append(value, startIndex, charCount) {
+	function ctor() {
+		var _string = null;
+		var _buffer = {};
+		var _pos = 0;
 		
-		var len = charCount + startIndex < value.Length ? charCount : value.Length - startIndex;
-		
-		Buffer.BlockCopy(value, startIndex, _buffer, _pos, len);
-		_pos += len;
-		
-		_string = null;
-		return this;
-	}
-	
-	function Append(value) {
-		_buffer[_pos++] = value;
-		_string = null;
-		return this;
-	}
-	
-	function Append(value, times) {
-		for(var i = 0; i < times; i++)
-			_buffer[_pos + i] = value;
-		_pos += times;
-		_string = null;
-		return this;
-	}
-	
-	function AppendLine(value) {
-		Append(value);
-		Append(NewLine);
-		return this;
-	}
-	
-	function AppendFormat(value, args) {
-		if(value == null) Throw("ArgumentNullException", "value");
-		if(args == null) Throw("ArgumentNullException", "args");
-		
-		var format = value;
-		
-		var pos = 0;
-		var len = value.Length();
-		var ch = "\0";
-		
-		while(true)
-		{
-			var p = pos;
-			var i = pos;
-			while(pos < len)
-			{
-				ch = value[pos];
-				pos++;
-				
-				if(ch == '}')
-					if(pos < len && value[pos] == '}')
-						pos++;
-					else
-						Throw("FormatException", "} without {");
-				
-				if(ch == '{')
-					if(pos < len && value[pos] == '{')
-						pos++;
-					else
-					{
-						pos--;
-						break;
-					}
-				
-				Append(ch);
-			}
-			
-			if(pos == len) break;
-			pos++;
-			if(pos == len) Throw("FormatException");
-			ch = value[pos];
-			if(ch < '0' || ch > '9') Throw("FormatException");
-			
-			var index = 0;
-			do
-			{
-				index = index * 10 + ch - '0';
-				pos++;
-				if(pos == len) Throw("FormatException");
-				ch = value[pos];
-			} while(ch >= '0' && ch <= '9' && index < 1000000);
-			
-			if(index >= args.Length) Throw("FormatIndexOutOfRange", index, args.Length);
-			while(pos < len && value[pos] == ' ') pos++;
-			ch = value[pos];
-			
-			var leftJustify = false;
-			var width = 0;
-			if(ch == ',')
-			{
-				pos++;
-				while(pos < len && value[pos] == ' ') pos++;
-				
-				if(pos == len) Throw("FormatException");
-				ch = value[pos];
-				if(ch == '-')
-				{
-					leftJustify = true;
-					pos++;
-					if(pos == len) Throw("FormatException");
-					ch = value[pos];
-				}
-				if(ch < '0' || ch > '9') Throw("FormatException");
-				do
-				{
-					width = width * 10 + ch - '0';
-					pos++;
-					if(pos == len) Throw("FormatException");
-					ch = value[pos];
-				} while(ch >= '0' && ch <= '9' && width < 1000000);
-			}
-			
-			while(pos < len && value[pos] == ' ') pos++;
-			ch = value[pos];
-			var arg = args[index];
-			
-			if(ch != '}') Throw("FormatException");
-			pos++;
-			
-			var s = null;
-			if(arg != null)
-				s = arg.ToString();
-			
-			if(s == null) s = String.Empty;
-			var pad = width - s.Length();
-			if(!leftJustify && pad > 0) Append(' ', pad);
-			Append(s);
-			if(leftJustify && pad > 0) Append(' ', pad);
+		function ToString() {
+			if(_string == null)
+				_string = String.Concat(_buffer);
+			return _string;
 		}
 		
-		_string = null;
-		return this;
+		function Append(value, startIndex, charCount) {
+			
+			var len = charCount + startIndex < value.Length ? charCount : value.Length - startIndex;
+			
+			Buffer.BlockCopy(value, startIndex, _buffer, _pos, len);
+			_pos += len;
+			
+			_string = null;
+			return this;
+		}
+		
+		function Append(value) {
+			_buffer[_pos++] = value;
+			_string = null;
+			return this;
+		}
+		
+		function Append(value, times) {
+			for(var i = 0; i < times; i++)
+				_buffer[_pos + i] = value;
+			_pos += times;
+			_string = null;
+			return this;
+		}
+		
+		function AppendLine(value) {
+			Append(value);
+			Append(NewLine);
+			return this;
+		}
+		
+		function AppendFormat(value, args) {
+			if(value == null) Throw("ArgumentNullException", "value");
+			if(args == null) Throw("ArgumentNullException", "args");
+			
+			var format = value;
+			
+			var pos = 0;
+			var len = value.Length();
+			var ch = "\0";
+			
+			while(true)
+			{
+				var p = pos;
+				var i = pos;
+				while(pos < len)
+				{
+					ch = value[pos];
+					pos++;
+					
+					if(ch == '}')
+						if(pos < len && value[pos] == '}')
+							pos++;
+						else
+							Throw("FormatException", "} without {");
+					
+					if(ch == '{')
+						if(pos < len && value[pos] == '{')
+							pos++;
+						else
+						{
+							pos--;
+							break;
+						}
+					
+					Append(ch);
+				}
+				
+				if(pos == len) break;
+				pos++;
+				if(pos == len) Throw("FormatException");
+				ch = value[pos];
+				if(ch < '0' || ch > '9') Throw("FormatException");
+				
+				var index = 0;
+				do
+				{
+					index = index * 10 + ch - '0';
+					pos++;
+					if(pos == len) Throw("FormatException");
+					ch = value[pos];
+				} while(ch >= '0' && ch <= '9' && index < 1000000);
+				
+				if(index >= args.Length) Throw("FormatIndexOutOfRange", index, args.Length);
+				while(pos < len && value[pos] == ' ') pos++;
+				ch = value[pos];
+				
+				var leftJustify = false;
+				var width = 0;
+				if(ch == ',')
+				{
+					pos++;
+					while(pos < len && value[pos] == ' ') pos++;
+					
+					if(pos == len) Throw("FormatException");
+					ch = value[pos];
+					if(ch == '-')
+					{
+						leftJustify = true;
+						pos++;
+						if(pos == len) Throw("FormatException");
+						ch = value[pos];
+					}
+					if(ch < '0' || ch > '9') Throw("FormatException");
+					do
+					{
+						width = width * 10 + ch - '0';
+						pos++;
+						if(pos == len) Throw("FormatException");
+						ch = value[pos];
+					} while(ch >= '0' && ch <= '9' && width < 1000000);
+				}
+				
+				while(pos < len && value[pos] == ' ') pos++;
+				ch = value[pos];
+				var arg = args[index];
+				
+				if(ch != '}') Throw("FormatException");
+				pos++;
+				
+				var s = null;
+				if(arg != null)
+					s = arg.ToString();
+				
+				if(s == null) s = String.Empty;
+				var pad = width - s.Length();
+				if(!leftJustify && pad > 0) Append(' ', pad);
+				Append(s);
+				if(leftJustify && pad > 0) Append(' ', pad);
+			}
+			
+			_string = null;
+			return this;
+		}
+		
+		function Clear() {
+			_buffer = {};
+			_pos = 0;
+			_string = null;
+		}
+		
+		return {
+			ToString = ToString,
+			Append = Append,
+			AppendLine = AppendLine,
+			AppendFormat = AppendFormat,
+			Clear = Clear
+		};
 	}
 	
-	function Clear() {
-		_buffer = {};
-		_pos = 0;
-		_string = null;
-	}
-	
-	return {
-		ToString = ToString,
-		Append = Append,
-		AppendLine = AppendLine,
-		AppendFormat = AppendFormat,
-		Clear = Clear
-	};
-};
+	return ctor;
+})();
