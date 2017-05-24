@@ -15,27 +15,32 @@ namespace CalcLang.Ast
         {
             base.Init(context, parseNode);
             foreach (var child in parseNode.GetMappedChildNodes())
+            {
                 if (child != null)
+                {
                     AddChild("ArrayItem", child);
+                }
+            }
+
             AsString = "Array[" + ChildNodes.Count + "]";
         }
 
         protected override object DoEvaluate(ScriptThread thread)
         {
             thread.CurrentNode = this;
-            DataTable result = new DataTable(ChildNodes.Count);
+            var result = new DataTable(ChildNodes.Count);
             int indexCounter = 0;
 
             foreach (AstNode t in ChildNodes)
             {
-                object tmp = t.Evaluate(thread);
-                object[] arr = tmp as object[];
+                var tmp = t.Evaluate(thread);
+                var arr = tmp as object[];
                 if(arr != null)
                 {
                     if (arr.Length != 2)
                         thread.ThrowScriptError("Failed to create array.");
 
-                    string name = (string)arr[0];
+                    var name = (string)arr[0];
 
                     var iCall = arr[1] as ICallTarget;
 
@@ -90,7 +95,7 @@ namespace CalcLang.Ast
         {
             thread.CurrentNode = this;
 
-            object[] result = new object[2];
+            var result = new object[2];
             result[0] = name;
             result[1] = value.Evaluate(thread);
 

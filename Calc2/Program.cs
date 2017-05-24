@@ -8,14 +8,12 @@ using CalcLang;
 
 namespace Calc2
 {
-    class Program
+    internal static class Program
     {
-        static string promt = "> ";
-        static string morePromt = ". ";
+        private const string promt = "> ";
+        private const string morePromt = ". ";
 
-        static bool isDebug = true;
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Evaluator eval = new Evaluator();
             string input = "";
@@ -67,50 +65,19 @@ namespace Calc2
                             Console.WriteLine(screx.InnerException?.ToString());
                         }
                         else
+                        {
                             Console.WriteLine(ex.Message);
-                        break;
-                    default:
+                        }
                         break;
                 }
 
-                if (isDebug && eval.App.Status != CalcLang.Interpreter.AppStatus.WaitingForMoreInput)
+#if DEBUG
+                if (eval.App.Status != CalcLang.Interpreter.AppStatus.WaitingForMoreInput)
                 {
-                    //Console.WriteLine("[Debug] Evaluation time: " + sw.Elapsed);
-                    //Console.WriteLine("[Debug] GC Collections: " + collections);
+                    Console.WriteLine("[Debug] Evaluation time: " + sw.Elapsed);
+                    Console.WriteLine("[Debug] GC Collections: " + collections);
                 }
-            }
-        }
-
-        static void PrintParseTree(ParseTree tree)
-        {
-            PrintParseTreeNode(tree.Root, 0);
-        }
-        static void PrintParseTreeNode(ParseTreeNode node, int indent = 0)
-        {
-            string pre = new string(' ', indent * 4);
-            if (node == null)
-            {
-                Console.WriteLine(pre + "NULL");
-                return;
-            }
-            if (node.ChildNodes == null || node.ChildNodes.Count < 1)
-            {
-                if (node.Token != null)
-                {
-                    Console.WriteLine(pre + node.Token.ToString());
-                }
-                else
-                {
-                    Console.WriteLine(pre + node.ToString());
-                }
-            }
-            else
-            {
-                Console.WriteLine(pre + node.ToString());
-                foreach (var child in node.ChildNodes)
-                {
-                    PrintParseTreeNode(child, indent + 1);
-                }
+#endif
             }
         }
     }
