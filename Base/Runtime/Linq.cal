@@ -104,6 +104,20 @@
 		return ret;
 	}
 	
+	function ToListDictionary(keySelector, valueSelector) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+			
+		var ret = {};
+		for(var i = 0; i < this.Length; i++)
+		{
+			var e = this[i];
+			ret[i] = {Key = keySelector(e, i), Value = valueSelector(e, i)};
+		}
+		
+		return ret;
+	}
+	
 	function Take(number) extension {
 		if(this == null || this.GetType() != "Table")
 			Throw("ArgumentException");

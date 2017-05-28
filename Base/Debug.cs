@@ -10,7 +10,6 @@ namespace Base
 {
     public static class Debug
     {
-
         [CalcCallableMethod("DebugPrint", -1)]
         public static object Print(ScriptThread thread, object thisRef, object[] parameters)
         {
@@ -25,15 +24,15 @@ namespace Base
             decimal coll = 0;
             int pre = GC.CollectionCount(0);
             GC.Collect(0);
-            coll += (GC.CollectionCount(0) - pre);
+            coll += GC.CollectionCount(0) - pre;
 
             pre = GC.CollectionCount(1);
             GC.Collect(1);
-            coll += (GC.CollectionCount(1) - pre);
+            coll += GC.CollectionCount(1) - pre;
 
             pre = GC.CollectionCount(2);
             GC.Collect(2);
-            coll += (GC.CollectionCount(2) - pre);
+            coll += GC.CollectionCount(2) - pre;
 
             return coll;
         }

@@ -51,3 +51,6 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Pending>", Scope = "member", Target = "~M:Base.MathLib.Tan(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Pending>", Scope = "member", Target = "~M:Base.MathLib.Tanh(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Pending>", Scope = "member", Target = "~M:Base.MathLib.Round(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Ausstehend>", Scope = "member", Target = "~M:Base.Debug.CollectAll(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Ausstehend>", Scope = "member", Target = "~M:Base.Debug.Print(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
+

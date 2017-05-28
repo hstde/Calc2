@@ -146,8 +146,6 @@ namespace CalcLang.Interpreter
         {
             foreach (var e in intIndexed)
                 yield return new DataTable() { stringIndexed = new Dictionary<string, object> { ["Key"] = e.Key, ["Value"] = e.Value } };
-            foreach (var e in stringIndexed)
-                yield return new DataTable() { stringIndexed = new Dictionary<string, object> { ["Key"] = e.Key, ["Value"] = e.Value } };
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
