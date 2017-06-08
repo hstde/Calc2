@@ -43,7 +43,7 @@ namespace CalcLang.Interpreter
             }
             //now we have to check every method if the last arg is a params arg
 
-            foreach (var e in elements.Where(x => x.Key <= key).OrderByDescending(x => x.Key)) // take the method with the fewest params first
+            foreach (var e in elements.Where(x => x.Key - 1 <= key).OrderByDescending(x => x.Key)) // take the method with the fewest params first; why the Key - 1, because params could be empty
             {
                 if (e.Value.GetFunctionInfo().HasParamsArg)
                     return e.Value;
