@@ -18,6 +18,14 @@ namespace Base
             return null;
         }
 
+        [CalcCallableMethod("ScriptPrint", -1)]
+        public static object ScriptPrint(ScriptThread thread, object instance, object[] parameters)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en");
+            thread.App.WriteLine(string.Join("\t", parameters.Select(x => x?.ToString() ?? "NULL")));
+            return null;
+        }
+
         [CalcCallableMethod("CollectAll")]
         public static object CollectAll(ScriptThread t, object th, object[] par)
         {
