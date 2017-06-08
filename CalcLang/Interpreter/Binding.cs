@@ -95,6 +95,7 @@ namespace CalcLang.Interpreter
         public readonly BuiltInMethod Method;
         public readonly int ParamCount;
         public string[] ParamNames;
+        public bool HasParamsArg;
 
         public BuiltInCallTarget(BuiltInMethod method, string name, int paramCount, string paramNames = null)
         {
@@ -107,10 +108,12 @@ namespace CalcLang.Interpreter
 
         public object Call(ScriptThread thread, object thisRef, object[] parameters) => Method(thread, thisRef, parameters);
 
-        public FunctionInfo GetFunctionInfo() => new FunctionInfo(Name, ParamCount, ParamNames);
+        public FunctionInfo GetFunctionInfo() => new FunctionInfo(Name, ParamCount, ParamNames, HasParamsArg);
 
         public override string ToString() => "Function";
 
         public int GetParameterCount() => ParamCount;
+
+        public bool GetHasParamsArg() => HasParamsArg;
     }
 }

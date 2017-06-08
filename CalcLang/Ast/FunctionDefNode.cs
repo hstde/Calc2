@@ -14,6 +14,7 @@ namespace CalcLang.Ast
         public IdentifierNode NameNode;
         public LambdaNode Lambda;
         public bool IsExtension;
+        public bool HasParamsArg;
 
         public override void Init(Irony.Ast.AstContext context, ParseTreeNode parseNode)
         {
@@ -25,6 +26,7 @@ namespace CalcLang.Ast
             Lambda = new LambdaNode(context, NameNode, parseNode, nodes[1], nodes[3]) {Parent = this};
             ChildNodes.Add(Lambda);
             AsString = "<" + (IsExtension ? " Extension " : "") + "Function " + NameNode.AsString + "[" + Lambda.Parameters.ChildNodes.Count + "]" + ">";
+            HasParamsArg = Lambda.Parameters.HasParamsArg;
             parseNode.AstNode = this;
         }
 

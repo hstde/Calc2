@@ -32,15 +32,23 @@ namespace CalcLang.Interpreter
         public ICallTarget GetIndex(int key)
         {
             ICallTarget res;
-            if(elements.TryGetValue(key, out res))
+            if (elements.TryGetValue(key, out res))
             {
                 return res;
             }
-            if(elements.TryGetValue(-1, out res))
+            if (elements.TryGetValue(-1, out res))
             {
                 //if we have a method that takes varargs, than hey, return that
                 return res;
             }
+            //now we have to check every method if the last arg is a params arg
+
+            foreach (var e in elements.Where(x => x.Key <= key).OrderByDescending(x => x.Key)) // take the method with the fewest params first
+            {
+                if (e.Value.GetFunctionInfo().HasParamsArg)
+                    return e.Value;
+            }
+
             return null;
         }
 

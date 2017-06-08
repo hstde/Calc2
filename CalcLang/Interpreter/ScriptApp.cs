@@ -165,7 +165,7 @@ namespace CalcLang.Interpreter
             {
                 thread = new ScriptThread(this);
 
-                thread.CurrentFuncInfo = new FunctionInfo("<global>", -1, null);
+                thread.CurrentFuncInfo = new FunctionInfo("<global>", -1, null, false);
 
                 var result = root.Evaluate(thread);
 
