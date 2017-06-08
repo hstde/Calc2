@@ -238,36 +238,12 @@
 		return String.Join("", result);
 	};
 
-	function Format(format, args) {
+	function Format(format, params args) {
 		if(args.GetType() != "Table")
 			args = { args };
 
 		var sb = Text.StringBuilder();
 		sb.AppendFormat(format, args);
-		return sb.ToString();
-	};
-
-	function Format(format, arg1, arg2) {
-		var sb = Text.StringBuilder();
-		sb.AppendFormat(format, {arg1, arg2});
-		return sb.ToString();
-	};
-
-	function Format(format, arg1, arg2, arg3) {
-		var sb = Text.StringBuilder();
-		sb.AppendFormat(format, {arg1, arg2, arg3});
-		return sb.ToString();
-	}
-
-	function Format(format, arg1, arg2, arg3, arg4) {
-		var sb = Text.StringBuilder();
-		sb.AppendFormat(format, {arg1, arg2, arg3, arg4});
-		return sb.ToString();
-	}
-
-	function Format(format, arg1, arg2, arg3, arg4, arg5) {
-		var sb = Text.StringBuilder();
-		sb.AppendFormat(format, {arg1, arg2, arg3, arg4, arg5});
 		return sb.ToString();
 	};
 	
