@@ -52,7 +52,7 @@ namespace CalcLang.Ast
 
             var args = (object[])Arguments.Evaluate(thread);
 
-            if(iCall.GetHasParamsArg())
+            if(iCall.GetHasParamsArg() && (iCall.GetParameterCount() != argCount || !(args[args.Length - 1] is DataTable)))
             {
                 var tempArgs = new object[iCall.GetParameterCount()];
                 Array.Copy(args, tempArgs, tempArgs.Length - 1);
