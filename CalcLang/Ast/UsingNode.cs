@@ -30,24 +30,18 @@ namespace CalcLang.Ast
             thread.CurrentNode = this;
             object ret = null;
 
-            string path = target.Evaluate(thread) as string;
+            string originalPath = target.Evaluate(thread) as string;
 
             List<Type> delegetateParamsHelper = new List<Type> { typeof(ScriptThread), typeof(object), typeof(object[]) };
 
-            path = Path.GetFullPath(path);
+            string path = Path.GetFullPath(originalPath);
 
-            var hasExtension = Path.GetExtension(path).Length > 0;
-
-            if(!hasExtension)
+            if (!GetFilePath(ref path))
             {
-                if (File.Exists(path + ".dll"))
-                    path += ".dll";
-                else if (File.Exists(path + ".cal"))
-                    path += ".cal";
+                path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), originalPath);
+                if (!GetFilePath(ref path))
+                    thread.ThrowScriptError("LibraryNotFoundException. " + path + " could not be found.");
             }
-
-            if (!File.Exists(path))
-                thread.ThrowScriptError("LibraryNotFoundException. " + path + " could not be found.");
 
             if (Path.GetExtension(path) == ".dll")
                 ret = LoadAssembly(thread, path, delegetateParamsHelper);
@@ -56,6 +50,26 @@ namespace CalcLang.Ast
 
             thread.CurrentNode = Parent;
             return ret;
+        }
+
+        private bool GetFilePath(ref string path)
+        {
+            var tPath = path;
+            var hasExtension = Path.GetExtension(tPath).Length > 0;
+
+            if (!hasExtension)
+            {
+                if (File.Exists(tPath + ".dll"))
+                    tPath += ".dll";
+                else if (File.Exists(tPath + ".cal"))
+                    tPath += ".cal";
+            }
+
+            if (!File.Exists(tPath))
+                return false;
+
+            path = tPath;
+            return true;
         }
 
         private bool LoadFile(string path, ScriptThread thread)
@@ -121,7 +135,7 @@ namespace CalcLang.Ast
                         (attr.ParameterNames == null ? null : string.Join(",", attr.ParameterNames)));
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 error = true;
             }
