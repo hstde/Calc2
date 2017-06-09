@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Irony.Parsing;
+using System.IO;
 using CalcLang;
 
 namespace Calc2
@@ -14,6 +15,60 @@ namespace Calc2
         private const string morePromt = ". ";
 
         private static void Main(string[] args)
+        {
+            if (args.Length > 0)
+                DoFile(args[0]);
+            else
+                LiveInterpreter();
+        }
+
+        private static void DoFile(string file)
+        {
+            var eval = new Evaluator();
+            if (File.Exists(file + ".cal"))
+                file += ".cal";
+            if (!File.Exists(file))
+            {
+                Console.WriteLine("File {0} could not be found.", file);
+                return;
+            }
+            string input = File.ReadAllText(file);
+            GC.Collect(0);
+            eval.ClearOutput();
+            var res = eval.Evaluate(input);
+
+            switch (eval.App.Status)
+            {
+                case CalcLang.Interpreter.AppStatus.SyntaxError:
+                    Console.WriteLine(eval.GetOutput());
+                    foreach (var err in eval.App.GetParserMessages())
+                    {
+                        Console.WriteLine(err.Message);
+                    }
+                    break;
+                case CalcLang.Interpreter.AppStatus.Ready:
+                    if (eval.GetOutput().Length > 0)
+                        Console.WriteLine(eval.GetOutput());
+                    break;
+                case CalcLang.Interpreter.AppStatus.Crash:
+                case CalcLang.Interpreter.AppStatus.RuntimeError:
+                    var ex = eval.App.LastException;
+                    var screx = ex as CalcLang.Interpreter.ScriptException;
+                    if (screx != null)
+                    {
+                        Console.WriteLine(screx.ToString());
+                        Console.WriteLine(screx.InnerException?.ToString());
+                    }
+                    else
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    break;
+            }
+
+        }
+
+        private static void LiveInterpreter()
         {
             Evaluator eval = new Evaluator();
             string input = "";
