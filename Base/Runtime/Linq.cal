@@ -379,6 +379,31 @@
 		return this.Select(selector).Sum();
 	}
 	
+	function OrderBy(selector) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		var keys = {};
+		var ret = {};
+		
+		for(var i = 0; i < this.Length; i++)
+		{
+			keys[i] = selector(this[i]);
+			ret[i] = this[i];
+		}
+		
+		Array.Sort(keys, ret);
+		
+		return ret;
+	}
+	
+	function OrderByDescending(selector) extension {
+		if(this == null || this.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		return this.OrderBy(selector).Reverse();
+	}
+	
 	return {
 		Range = Range,
 		Sequence = Sequence,
