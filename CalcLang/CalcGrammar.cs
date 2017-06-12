@@ -71,11 +71,11 @@ namespace CalcLang
             IdentifierTerminal newName = new IdentifierTerminal("newName", IdOptions.IsNotKeyword);
             NumberLiteral number = new NumberLiteral("number", NumberOptions.AllowUnderscore);
 
-            StringLiteral escapedString = new StringLiteral("string", "\"");
+            StringLiteral escapedString = new StringLiteral("string", "\"", StringOptions.AllowsAllEscapes);
             StringLiteral nonEscapedString = new StringLiteral("nonEscapedString", "\"", StringOptions.NoEscapes);
             NonTerminal _string = new NonTerminal("String");
 
-            StringLiteral _char = new StringLiteral("Char", "'", StringOptions.IsChar);
+            StringLiteral _char = new StringLiteral("Char", "'", StringOptions.IsChar | StringOptions.AllowsAllEscapes);
 
             NonTerminal boolVal = new NonTerminal("boolVal", typeof(BoolValNode));
             NonTerminal nullVal = new NonTerminal("nullVal", typeof(NullValueNode));
