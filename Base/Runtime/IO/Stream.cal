@@ -20,10 +20,6 @@
 			stream.Write(byteBuffer, 0, byteBuffer.Length);
 		}
 		
-		function Write(buffer, offset, count) {
-			stream.Write(buffer, offset, count);
-		}
-		
 		function Write(str) {
 			if(str == null)
 				return;
