@@ -9,7 +9,7 @@ using CalcLang.Ast;
 
 namespace CalcLang
 {
-    [Language("CalcLang", "0.6", "A simple language inspired by C# and Lua")]
+    [Language("CalcLang", "0.7", "A simple language inspired by C# and Lua")]
     public class CalcGrammar : Grammar, ICanRunSample
     {
         public CalcGrammar() : base(true)
@@ -144,12 +144,13 @@ namespace CalcLang
             arrayDef.Rule = ToTerm("{") + arrayDefList + "}";
             arrayDefList.Rule = MakeStarRule(arrayDefList, ToTerm(","), arrayDefListItem);
             arrayDefListItem.Rule = namedArrayItem | expr;
-            namedArrayItem.Rule = (name | _string) + "=" + expr;
+            namedArrayItem.Rule = (name + ReduceHere() | _string) + "=" + expr;
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | var | unExpr | binExpr
                         | inlineFunctionDef
-                        | arrayDef;
+                        | arrayDef
+                        | assignment;
             binExpr.Rule = expr + binOp + expr;
             binOp.Rule = ToTerm("&&") | "||" | "&" | "|" | "^"
                         | ToTerm("==") | "<=" | ">=" | "<" | ">" | "!="
