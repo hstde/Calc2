@@ -1,39 +1,4 @@
-﻿IO["Stream"] = (function() {
-	//baseStream has to implement WriteBuffer(buffer, offset, count)
-	//baseStream has to implement ReadBuffer(buffer, offset, count)
-	
-	function ctor(baseStream) {
-		
-		function subctor() {
-		}
-	
-		function WriteByte(byte) {
-			var oneByteArray = { byte };
-			baseStream.WriteBuffer(oneByteArray, 0, 1);
-		}
-		
-		function Read() {
-			var oneByteArray = { 0 };
-			var r = baseStream.ReadBuffer(oneByteArray, 0, 1);
-			if(r == 0)
-				return -1;
-			return oneByteArray[0];
-		}
-		
-		subctor();
-		return {
-			WriteByte = WriteByte,
-			Write = function(buffer, offset, count) { baseStream.Write(buffer, offset, count); },
-			Read = Read,
-			Read = function(buffer, offset, count) { baseStream.Read(buffer, offset, count); },
-			Close = function() { baseStream.Close(); }
-		};
-	}
-	
-	return ctor;
-})();
-
-IO["StreamWriter"] = (function() {
+﻿IO["StreamWriter"] = (function() {
 	
 	function ctor(stream, encoding) {
 		var charBuffer = {};
