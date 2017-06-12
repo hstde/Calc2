@@ -185,7 +185,7 @@ namespace CalcLang
             nullVal.Rule = ToTerm("null");
             thisVal.Rule = ToTerm("this");
 
-            unaryOp.Rule = ToTerm("-") | "!";
+            unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
             MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in");
@@ -199,7 +199,7 @@ namespace CalcLang
             RegisterOperators(25, "<<", ">>");
             RegisterOperators(30, "+", "-");
             RegisterOperators(40, "*", "/", "%");
-            RegisterOperators(60, "!");
+            RegisterOperators(60, "!", "~");
             RegisterOperators(70, "++", "--");
             MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl, paramsOrEmpty);
 
