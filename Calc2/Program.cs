@@ -35,10 +35,11 @@ namespace Calc2
                 Console.WriteLine("File {0} could not be found.", file);
                 return;
             }
+            file = Path.GetFullPath(file);
             string input = File.ReadAllText(file);
             GC.Collect(0);
             eval.ClearOutput();
-            var res = eval.Evaluate(input);
+            var res = eval.Evaluate(input, file);
 
             switch (eval.App.Status)
             {

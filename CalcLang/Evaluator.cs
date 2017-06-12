@@ -33,6 +33,8 @@ namespace CalcLang
 
         public object Evaluate(string script) => App.Evaluate(script);
 
+        public object Evaluate(string script, string fileName) => App.Evaluate(script, fileName);
+
         public object Evaluate(ParseTree parsedScript) => App.Evaluate(parsedScript);
 
         public object Evaluate() => App.Evaluate();
