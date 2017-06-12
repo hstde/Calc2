@@ -12,6 +12,7 @@ namespace CalcLang.Ast
     public class ParamListNode : AstNode
     {
         public string[] ParamNames;
+        public bool HasParamsArg;
 
         public override void Init(Irony.Ast.AstContext context, ParseTreeNode parseNode)
         {
@@ -21,13 +22,17 @@ namespace CalcLang.Ast
             AsString = "param list[" + ChildNodes.Count + "]";
 
             var paras = new List<string>();
-            foreach (var child in ChildNodes)
+            for(int i = 0; i < ChildNodes.Count; i++)
             {
-                var idNode = child as IdentifierNode;
+                var idNode = ChildNodes[i] as ParamNode;
                 if (idNode != null)
                 {
-                    paras.Add(idNode.Symbol);
+                    paras.Add(idNode.Ident.Symbol);
                 }
+                if (i < ChildNodes.Count - 1 && idNode.IsParams)
+                    context.AddMessage(Irony.ErrorLevel.Error, Location.SourceLocation, "only the last parameter may be flagged with params");
+                else if (i < ChildNodes.Count && idNode.IsParams)
+                    HasParamsArg = true;
             }
             ParamNames = paras.ToArray();
         }

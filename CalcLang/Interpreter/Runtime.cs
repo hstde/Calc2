@@ -466,6 +466,7 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(string), (x, y) => string.Equals(x as string, y as string));
             AddBinary(op, typeof(char), (x, y) => (char)x == (char)y);
             AddBinary(op, typeof(NullClass), (x, y) => x.Equals(y));
+            AddBinary(op, typeof(bool), (x, y) => (bool)x == (bool)y);
 
             op = ExpressionType.NotEqual;
             AddBinary(op, typeof(int), (x, y) => checked((int)x != (int)y));
@@ -475,6 +476,7 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(string), (x, y) => !string.Equals(x as string, y as string));
             AddBinary(op, typeof(char), (x, y) => (char)x != (char)y);
             AddBinary(op, typeof(NullClass), (x, y) => !x.Equals(y));
+            AddBinary(op, typeof(bool), (x, y) => (bool)x != (bool)y);
 
             op = ExpressionType.And;
             AddBinary(op, typeof(bool), (x, y) => (bool)x & (bool)y);

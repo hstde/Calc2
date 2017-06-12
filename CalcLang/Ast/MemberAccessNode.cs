@@ -32,32 +32,22 @@ namespace CalcLang.Ast
 
             var targetValue = Target.Evaluate(thread);
             lastTargetValue = targetValue;
-            if (targetValue == null)
-                thread.ThrowScriptError("Target object is null");
-            else if (targetValue == thread.Runtime.NullValue)
-            {
-                thread.ThrowScriptError("NullReferenceException! target was null (" + Target.AsString + ")");
-            }
-            var type = targetValue.GetType();
+
+            var type = targetValue == null || targetValue == thread.Runtime.NullValue ? typeof(NullClass) : targetValue.GetType();
             if (type == typeof(DataTable))
             {
                 result = ((DataTable)targetValue).GetString(memberName);
-
-                if (result == thread.Runtime.NullValue)
-                    result = GetExtension(thread, memberName);
-
-                if (result == thread.Runtime.NullValue)
-                    result = GetBuiltIn(thread, "." + memberName);
             }
-            else
-            {
+
+            if (result == thread.Runtime.NullValue)
                 result = GetExtension(thread, memberName);
-
-                if (result == thread.Runtime.NullValue)
-                    result = GetBuiltIn(thread, "." + memberName);
-                if (result == thread.Runtime.NullValue)
-                    thread.ThrowScriptError("MemberAccessException");
-            }
+            if (result == thread.Runtime.NullValue)
+                result = GetBuiltIn(thread, "." + memberName);
+            if (result == thread.Runtime.NullValue)
+                if (type == typeof(NullClass))
+                    thread.ThrowScriptError("NullReferenceException: \"" + Target.AsString + "\" was null.");
+                else
+                    thread.ThrowScriptError("MemberAccessException: \"" + memberName + "\" is not a member of \"" + Target.AsString + "\".");
 
             thread.CurrentNode = Parent;
             return result;

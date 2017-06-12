@@ -257,7 +257,7 @@ http://notepad-plus-plus.org/features/function-list.html
 			</parser>
 			<parser id="CalcLang_Parser" displayName="CalcLang" commentExpr="((/\*.*?\*)/|(//.*?$))">
 				<function 
-					mainExpr="((^|[\s]+|[;\}\.])([_A-Za-z][\w_]*\.)*[_A-Za-z][\w_]*[\s]*[=:]|^|[\s;\}]+)[\s]*function([\s]+[_A-Za-z]?[\w_]*\([^\)\(]*\)|\([^\)\(]*\))[\n\s]*(extension)?[\n\s]\{"
+					mainExpr="((^|[\s]+|[;\}\.])([_A-Za-z][\w_]*\.)*[_A-Za-z][\w_]*[\s]*[=:]|^|[\s;\}]+)[\s]*function([\s]+[_A-Za-z]?[\w_]*\([^\)\(]*\)|\([^\)\(]*\))[\n\s]*(extension)?[\n\s](\{|(return))"
 					displayMode="$className->$functionName">
 					<functionName>
 						<nameExpr expr="[_A-Za-z][\w_]*[\s]*[=:]|[_A-Za-z]?[\w_]*[\s]*\("/>

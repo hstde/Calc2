@@ -11,9 +11,9 @@ namespace CalcLang.Ast
 {
     public class FunctionCallNode : AstNode
     {
-        AstNode TargetRef;
-        AstNode Arguments;
-        string targetName;
+        private AstNode TargetRef;
+        private AstNode Arguments;
+        private string targetName;
 
         public override void Init(Irony.Ast.AstContext context, ParseTreeNode parseNode)
         {
@@ -47,10 +47,22 @@ namespace CalcLang.Ast
             if (iCall == null)
                 thread.ThrowScriptError("Variable {0} of type {1} is not a callable function.", targetName, target.GetType().Name);
 
-            if(iCall.GetParameterCount() != argCount && iCall.GetParameterCount() != -1)
+            if(iCall.GetParameterCount() != argCount && iCall.GetParameterCount() != -1 && !iCall.GetHasParamsArg())
                 thread.ThrowScriptError("{0}() does not take {1} arguments.", targetName, argCount);
 
             var args = (object[])Arguments.Evaluate(thread);
+
+            if(iCall.GetHasParamsArg() && (iCall.GetParameterCount() != argCount || !(args[args.Length - 1] is DataTable)))
+            {
+                var tempArgs = new object[iCall.GetParameterCount()];
+                Array.Copy(args, tempArgs, tempArgs.Length - 1);
+                int lastIndex = tempArgs.Length - 1;
+                var tempDT = new DataTable(args.Length - lastIndex);
+                for (int i = lastIndex; i < args.Length; i++)
+                    tempDT.SetInt(i - lastIndex, args[i]);
+                tempArgs[lastIndex] = tempDT;
+                args = tempArgs;
+            }
 
             var fi = iCall.GetFunctionInfo();
 

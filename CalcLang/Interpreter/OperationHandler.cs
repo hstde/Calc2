@@ -56,8 +56,8 @@ namespace CalcLang.Interpreter
             {
                 case "+": return ExpressionType.UnaryPlus;
                 case "-": return ExpressionType.Negate;
-                case "!":
-                    return ExpressionType.Not;
+                case "!": return ExpressionType.Not;
+                case "~": return ExpressionType.Not;
                 default:
                     return (ExpressionType)(-1);
             }

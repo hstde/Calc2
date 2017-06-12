@@ -39,7 +39,11 @@ namespace CalcLang.Ast
             {
                 var sTarget = targetValue as string;
                 var iIndex = Convert.ToInt32(indexValue);
-                result = sTarget[iIndex];
+
+                if (iIndex < sTarget.Length)
+                    result = sTarget[iIndex];
+                else
+                    result = '\0';
             }
             else if (type == typeof(Interpreter.DataTable))
             {

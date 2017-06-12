@@ -3,7 +3,105 @@
 		Buffer.BlockCopy(src, srcOff, dst, dstOff, src.Length - srcOff);
 	}
 	
+	function QuickSort(map, left, right, comparer) {
+		do
+		{
+			var i = left;
+			var j = right;
+			var x = map[i + ((j - i) >> 1)];
+			
+			do
+			{
+				while(i < map.Length && comparer(x, map[i]) > 0) i++;
+				while(j >= 0 && comparer(x, map[j]) < 0) j--;
+				if(i > j) break;
+				if(i < j)
+				{
+					var temp = map[i];
+					map[i] = map[j];
+					map[j] = temp;
+				}
+				i++;
+				j--;
+			} while(i <= j);
+			
+			if(j - left <= right - i)
+			{
+				if(left < j) QuickSort(map, left, j, comparer);
+				left = i;
+			}
+			else
+			{
+				if(i < right) QuickSort(map, i, right, comparer);
+				right = j;
+			}
+		} while(left < right);
+	}
+	
+	function Sort(keys, items, index, length, comparer) {
+		if(keys == null)
+			Throw("ArgumentNullException", "keys");
+		if(index < 0 || length < 0)
+			Throw("ArgumentOutOfRangeException", length < 0 ? "length" : "index");
+		if(keys.Length - index < length || (items != null && index > items.Length - length))
+			Throw("ArgumentException", "Invalid offset length");
+		
+		if(length > 1)
+		{
+			if(comparer == null)
+				comparer = function(x, y) {
+					var diff = keys[x] - keys[y];
+					return diff == 0 ? x - y : diff;};
+			var map = Enumerable.Range(index, length - index);
+			QuickSort(map, index, index + length - 1, comparer);
+			
+			var temp = {};
+			for(var i = index; i < length; i++)
+				temp[i] = keys[map[i]];
+			Array.Copy(temp, index, keys, index);
+			
+			if(items == null)
+				return;
+				
+			temp = {};
+			for(var i = index; i < length; i++)
+				temp[i] = items[map[i]];
+			Array.Copy(temp, index, items, index);
+		}
+	}
+	
+	function Sort(array) {
+		if(array == null)
+			Throw("ArgumentNullException");
+		if(array.GetType() != "Table")
+			Throw("ArgumentException");
+		
+		Sort(array, null, 0, array.Length, null);
+	}
+	
+	function Sort(keys, items) {
+		if(keys == null)
+			Throw("ArgumentNullException");
+		
+		Sort(keys, items, 0, keys.Length, null);
+	}
+	
+	function Sort(array, index, length) {
+		if(array == null)
+			Throw("ArgumentNullException");
+		
+		Sort(array, null, index, length, null);
+	}
+	
+	function Sort(keys, items, index, length) {
+		if(keys == null)
+			Throw("ArgumentNullException");
+		
+		Sort(keys, items, index, length, null);
+	}
+	
 	return {
-		Copy = Copy
+		Copy = Copy,
+		Sort = Sort
 	};
 })();

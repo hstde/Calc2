@@ -9,7 +9,7 @@ using CalcLang.Ast;
 
 namespace CalcLang
 {
-    [Language("CalcLang", "0.5", "A simple language inspired by C# and Lua")]
+    [Language("CalcLang", "0.7", "A simple language inspired by C# and Lua")]
     public class CalcGrammar : Grammar, ICanRunSample
     {
         public CalcGrammar() : base(true)
@@ -47,6 +47,8 @@ namespace CalcLang
             NonTerminal functionBody = new NonTerminal("functionBody", typeof(StatementListNode));
             NonTerminal inlineFunctionDef = new NonTerminal("inlineFunctionDef", typeof(LambdaNode));
             NonTerminal paramList = new NonTerminal("paramList", typeof(ParamListNode));
+            NonTerminal param = new NonTerminal("param", typeof(ParamNode));
+            NonTerminal paramsOrEmpty = new NonTerminal("paramsOrEmpty");
             NonTerminal arrayDef = new NonTerminal("arrayDef");
             NonTerminal arrayDefList = new NonTerminal("arrayDefList", typeof(ArrayDefNode));
             NonTerminal arrayDefListItem = new NonTerminal("arrayDefListItem");
@@ -69,11 +71,11 @@ namespace CalcLang
             IdentifierTerminal newName = new IdentifierTerminal("newName", IdOptions.IsNotKeyword);
             NumberLiteral number = new NumberLiteral("number", NumberOptions.AllowUnderscore);
 
-            StringLiteral escapedString = new StringLiteral("string", "\"");
+            StringLiteral escapedString = new StringLiteral("string", "\"", StringOptions.AllowsAllEscapes);
             StringLiteral nonEscapedString = new StringLiteral("nonEscapedString", "\"", StringOptions.NoEscapes);
             NonTerminal _string = new NonTerminal("String");
 
-            StringLiteral _char = new StringLiteral("Char", "'", StringOptions.IsChar);
+            StringLiteral _char = new StringLiteral("Char", "'", StringOptions.IsChar | StringOptions.AllowsAllEscapes);
 
             NonTerminal boolVal = new NonTerminal("boolVal", typeof(BoolValNode));
             NonTerminal nullVal = new NonTerminal("nullVal", typeof(NullValueNode));
@@ -134,17 +136,21 @@ namespace CalcLang
             inlineFunctionDef.NodeCaptionTemplate = "function(...)";
             functionBody.Rule = block | returnClause;
 
-            paramList.Rule = MakeStarRule(paramList, ToTerm(","), name);
+            paramList.Rule = MakeStarRule(paramList, ToTerm(","), param);
+
+            param.Rule = paramsOrEmpty + name;
+            paramsOrEmpty.Rule = ToTerm("params") | Empty;
 
             arrayDef.Rule = ToTerm("{") + arrayDefList + "}";
             arrayDefList.Rule = MakeStarRule(arrayDefList, ToTerm(","), arrayDefListItem);
             arrayDefListItem.Rule = namedArrayItem | expr;
-            namedArrayItem.Rule = (name | _string) + "=" + expr;
+            namedArrayItem.Rule = (name + ReduceHere() | _string) + "=" + expr;
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | var | unExpr | binExpr
                         | inlineFunctionDef
-                        | arrayDef;
+                        | arrayDef
+                        | assignment;
             binExpr.Rule = expr + binOp + expr;
             binOp.Rule = ToTerm("&&") | "||" | "&" | "|" | "^"
                         | ToTerm("==") | "<=" | ">=" | "<" | ">" | "!="
@@ -179,7 +185,7 @@ namespace CalcLang
             nullVal.Rule = ToTerm("null");
             thisVal.Rule = ToTerm("this");
 
-            unaryOp.Rule = ToTerm("-") | "!";
+            unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
             MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in");
@@ -193,9 +199,9 @@ namespace CalcLang
             RegisterOperators(25, "<<", ">>");
             RegisterOperators(30, "+", "-");
             RegisterOperators(40, "*", "/", "%");
-            RegisterOperators(60, "!");
+            RegisterOperators(60, "!", "~");
             RegisterOperators(70, "++", "--");
-            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl);
+            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl, paramsOrEmpty);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
             AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do");
@@ -207,7 +213,7 @@ namespace CalcLang
             AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>");
             AddToNoReportGroup("(", "[", "{", ".", ",", "++", "--");
 
-            MarkReservedWords("if", "else", "return", "function", "while", "for", "null", "false", "true", "this", "break", "continue", "using", "do", "var", "foreach", "in");
+            MarkReservedWords("if", "else", "return", "function", "while", "for", "null", "false", "true", "this", "break", "continue", "using", "do", "var", "foreach", "in", "params");
 
             number.DefaultFloatType = TypeCode.Double;
             number.DefaultIntTypes = new TypeCode[] { TypeCode.Int64 };
