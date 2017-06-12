@@ -34,24 +34,8 @@
 				this.WriteChar(str[i]);
 		}
 		
-		function Write(format, args){
+		function Write(format, params args){
 			this.Write(String.Format(format, args));
-		}
-		
-		function Write(format, arg1, arg2) {
-			this.Write(String.Format(format, arg1, arg2));
-		}
-		
-		function Write(format, arg1, arg2, arg3) {
-			this.Write(String.Format(format, arg1, arg2, arg3));
-		}
-		
-		function Write(format, arg1, arg2, arg3, arg4) {
-			this.Write(String.Format(format, arg1, arg2, arg3, arg4));
-		}
-		
-		function Write(format, arg1, arg2, arg3, arg4, arg5) {
-			this.Write(String.Format(format, arg1, arg2, arg3, arg4, arg5));
 		}
 		
 		function WriteLine(str) {
@@ -60,24 +44,8 @@
 			this.Write(CoreNewLine);
 		}
 		
-		function WriteLine(format, args) {
+		function WriteLine(format, params args) {
 			this.WriteLine(String.Format(format, args));
-		}
-		
-		function WriteLine(format, arg1, arg2) {
-			this.WriteLine(String.Format(format, arg1, arg2));
-		}
-		
-		function WriteLine(format, arg1, arg2, arg3) {
-			this.WriteLine(String.Format(format, arg1, arg2, arg3));
-		}
-		
-		function WriteLine(format, arg1, arg2, arg3, arg4) {
-			this.WriteLine(String.Format(format, arg1, arg2, arg3, arg4));
-		}
-		
-		function WriteLine(format, arg1, arg2, arg3, arg4, arg5) {
-			this.WriteLine(String.Format(format, arg1, arg2, arg3, arg4, arg5));
 		}
 		
 		return {
