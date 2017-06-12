@@ -24,7 +24,7 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">function extension&#x000D;&#x000A;if else&#x000D;&#x000A;for while do foreach in&#x000D;&#x000A;return break continue&#x000D;&#x000A;using var</Keywords>
+            <Keywords name="Keywords1">function extension params&#x000D;&#x000A;if else&#x000D;&#x000A;for while do foreach in&#x000D;&#x000A;return break continue&#x000D;&#x000A;using var</Keywords>
             <Keywords name="Keywords2">true false null this</Keywords>
             <Keywords name="Keywords3"></Keywords>
             <Keywords name="Keywords4"></Keywords>
