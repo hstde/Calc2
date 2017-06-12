@@ -3,7 +3,9 @@
 var Int32 = (function() {
 	return {
 		MaxValue = 0x7fff_ffff,
-		MinValue = -0x7fff_ffff
+		MinValue = -0x7fff_ffff,
+		Parse = function(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo),
+		TryParse = function(s) return Number.TryParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
 	};
 })();
 
@@ -25,6 +27,7 @@ var Environment = (function() {
 })();
 
 using "Runtime\Win32Native\Win32Native";
+using "Runtime\Number";
 using "Runtime\Array";
 using "Runtime\Buffer";
 using "Runtime\String";

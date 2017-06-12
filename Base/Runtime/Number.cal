@@ -1,0 +1,484 @@
+﻿var Number = (function () {
+	var NumberStyles = {
+			None = 0,
+			AllowLeadingWhite = 1,
+			AllowTrailingWhite = 2,
+			AllowLeadingSign = 4,
+			Integer = 7,
+			AllowTrailingSign = 8,
+			AllowParentheses = 16,
+			AllowDecimalPoint = 32,
+			AllowThousands = 64,
+			Number = 111,
+			AllowExponent = 128,
+			Float = 167,
+			AllowCurrencySymbol = 256,
+			Currency = 383,
+			Any = 511,
+			AllowHexSpecifier = 512,
+			HexNumber = 515
+	};
+	var NumberFormatInfo = {
+		NumberGroupSizes = {3},
+		CurrencyGroupSizes = {3},
+		PercentGroupSizes = {3},
+		
+		PositiveSign = "+",
+		NegativeSign = "-",
+		NumberDecimalSeparator = ".",
+		NumberGroupSeparator = ",",
+		CurrencyGroupSeparator = ",",
+		CurrencyDecimalSeparator = ".",
+		CurrencySymbol = "\x00a4",
+		AnsiCurrencySymbol = null,
+		NaNSymbol = "NaN",
+		PositiveInfinitySymbol = "Infinity",
+		NegativeInfinitySymbol = "-Infinity",
+		PercentDecimalSeparator = ".",
+		PercentGroupSeparator = ",",
+		PercentSymbol = "%",
+		PerMilleSymbol = "\u2030",
+		NativeDigits = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"},
+		
+		NumberDecimalDigits = 2,
+		CurrencyDecimalDigits = 2,
+		CurrencyPositivePattern = 0,
+		CurrencyNegativePattern = 0,
+		NumberNegativePattern = 1,
+		PercentPositivePattern = 0,
+		PercentNegativePattern = 0,
+		PercentDecimalDigits = 2
+	};
+	
+	var NumberMaxDigits = 50;
+	var Int32Precision = 10;
+	var UInt32Precision = Int32Precision;
+	var Int64Precision = 19;
+	var UInt64Precision = 20;
+	
+	function NewNumberBuffer() {
+		return {digits = {}, precision = 0, scale = 0, sign = false};
+	}
+	
+	function TryStringToNumber(str, options, number, numfmt, parseDecimal) {
+		return TryStringToNumber(str, options, number, null, numfmt, parseDecimal);
+	}
+	
+	function TryStringToNumber(str, options, number, sb, numfmt, parseDecimal) {
+		if(str == null)
+			return false;
+		
+		if(!ParseNumber(str, options, number, sb, numfmt, parseDecimal))
+			return false;
+		
+		return true;
+	}
+	
+	function StringToNumber(str, options, number, info, parseDecimal) {
+		if(str == null)
+			Throw("ArgumentNullException", "String");
+		
+		if(!ParseNumber(str, options, number, null, info, parseDecimal))
+			Throw("ArgumentException", "invalid String");
+	}
+	
+	function ParseNumber(str, options, number, sb, numfmt, parseDecimal) {
+		var StateSign = 0x0001;
+		var StateParens = 0x0002;
+		var StateDigits = 0x0004;
+		var StateNonZero = 0x0008;
+		var StateDecimal = 0x0010;
+		var StateCurrency = 0x0020;
+		
+		number.scale = 0;
+		number.sign = false;
+		var decSep;
+		var groupSep;
+		var currSymbol = null;
+		
+		var ansiCurrSymbol = null;
+		var altDecSep = null;
+		var altGroupSep = null;
+		
+		var parsingCurrency = false;
+		
+		if((options & NumberStyles.AllowCurrencySymbol) != 0)
+		{
+			currSymbol = numfmt.CurrencySymbol;
+			if(numfmt.AnsiCurrencySymbol != null)
+				ansiCurrSymbol = numfmt.AnsiCurrencySymbol;
+			altDecSep = numfmt.NumberDecimalSeparator;
+			altGroupSep = numfmt.NumberGroupSeparator;
+			decSep = numfmt.CurrencyDecimalSeparator;
+			groupSep = numfmt.CurrencyGroupSeparator;
+			parsingCurrency = true;
+		}
+		else
+		{
+			decSep = numfmt.NumberDecimalSeparator;
+			groupSep = numfmt.NumberGroupSeparator;
+		}
+		
+		var state = 0;
+		var signFlag = false;
+		var bigNumber = (sb != null);
+		var bigNumberHex = (bigNumber && ((options & NumberStyles.AllowHexSpecifier) != 0));
+		var maxParseDigits = bigNumber ? Int32.MaxValue : NumberMaxDigits;
+		
+		var p = str;
+		var index = 0;
+		var ch = p[index];
+		var next;
+		
+		while(true)
+		{
+			if(IsWhite(ch) 
+				&& ((options & NumberStyles.AllowLeadingWhite) != 0) 
+				&& (((state & StateSign) == 0) 
+					|| (((state & StateSign) != 0) 
+						&& (((state && StateCurrency) != 0) 
+							|| numfmt.NumberNegativePattern == 2))))
+			{
+				//do nothing we will increase p (index) at the end of the loop;
+			}
+			else if((signFlag = (((options & NumberStyles.AllowLeadingSign) != 0) && ((state & StateSign) == 0))) && (next = MatchChars(p, index, numfmt.PositiveSign)) != null)
+			{
+				state |= StateSign;
+				index = next - 1;
+			}
+			else if(ch == '(' && ((options & NumberStyles.AllowParentheses) != 0) && ((state & StateSign) == 0))
+			{
+				state |= StateSign | StateParens;
+				number.sign = true;
+			}
+			else if((currSymbol != null && (next = MatchChars(p, index, currSymbol)) != null) || (ansiCurrSymbol != null && (next = MatchChars(p, index, ansiCurrSymbol)) != null))
+			{
+				state |= StateCurrency;
+				currSymbol = null;
+				ansiCurrSymbol = null;
+				
+				index = next - 1;
+			}
+			else
+				break;
+			
+			ch = p[++index];
+		}
+		
+		var digCount = 0;
+		var digEnd = 0;
+		
+		while(true)
+		{
+			if((ch >= '0' && ch <= '9') || (((options & NumberStyles.AllowHexSpecifier) != 0) && ((ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))))
+			{
+				state |= StateDigits;
+				
+				if(ch != '0' || (state & StateNonZero) != 0 || bigNumberHex)
+				{
+					if(digCount < maxParseDigits)
+					{
+						if(bigNumber)
+							sb.Append(ch);
+						else
+							number.digits[digCount++] = ch;
+						
+						if(ch != '0' || parseDecimal)
+							digEnd = digCount;
+					}
+					if((state & StateDecimal) == 0)
+						number.scale++;
+					state |= StateNonZero;
+				}
+				else if((state & StateDecimal) != 0)
+					number.scale--;
+			}
+			else if(((options & NumberStyles.AllowDecimalPoint) != 0) && ((state & StateDecimal) == 0) && ((next = MatchChars(p, index, decSep)) != null || ((parsingCurrency) && (state & StateCurrency) == 0) && (next = MatchChars(p, index, altDecSep)) != null))
+			{
+				state |= StateDecimal;
+				index = next - 1;
+			}
+			else if(((options & NumberStyles.AllowThousands) != 0) && ((state & StateDigits) != 0) && ((state & StateDecimal) == 0) && ((next = MatchChars(p, index, groupSep)) != null || ((parsingCurrency) && (state & StateCurrency) == 0) && (next = MatchChars(p, index, altGroupSep)) != null))
+			{
+				index = next - 1;
+			}
+			else
+				break;
+			
+			ch = p[++index];
+		}
+		
+		var negExp = false;
+		number.precision = digEnd;
+		if(bigNumber)
+			sb.Append('\0');
+		else
+			number.digits[digEnd] = '\0';
+		
+		if((state & StateDigits) != 0)
+		{
+			if((ch == 'E' || ch == 'e') && ((options & NumberStyles.AllowExponent) != 0))
+			{
+				var temp = index;
+				ch = p[++index];
+				if((next = MatchChars(p, index, numfmt.PositiveSign)) != null)
+				{
+					ch = p[index = next];
+				}
+				else if((next = MatchChars(p, index, numfmt.NegativeSign)) != null)
+				{
+					ch = p[index = next];
+					negExp = true;
+				}
+				
+				if(ch >= '0' && ch <= '9')
+				{
+					var exp = 0;
+					do
+					{
+						exp = exp * 10 + (ch - '0');
+						ch = p[++index];
+						if(exp > 1000)
+						{
+							exp = 9999;
+							while(ch >= '0' && ch <= '9')
+								ch = p[++index];
+						}
+					} while(ch >= '0' && ch <= '9');
+					
+					if(negExp)
+						exp = -exp;
+					
+					number.scale += exp;
+				}
+				else
+				{
+					index = temp;
+					ch = p[index];
+				}
+			}
+			
+			while(true)
+			{
+				if(IsWhite(ch) && ((options & NumberStyles.AllowTrailingWhite) != 0))
+				{
+				}
+				else if((signFlag = (((options & NumberStyles.AllowTrailingSign) != 0) && ((state & StateSign) == 0))) && (next = MatchChars(p, index, numfmt.PositiveSign)) != null)
+				{
+					state |= StateSign;
+					index = next - 1;
+				}
+				else if(signFlag && (next = MatchChars(p, index, numfmt.NegativeSign)) != null)
+				{
+					state |= StateSign;
+					number.sign = true;
+					index = next - 1;
+				}
+				else if(ch == ')' && ((state & StateParens) != 0))
+				{
+					state &= ~StateParens;
+				}
+				else if((currSymbol != null && (next = MatchChars(p, index, currSymbol)) != null) || (ansiCurrSymbol != null && (next = MatchChars(p, index, ansiCurrSymbol)) != null))
+				{
+					currSymbol = null;
+					ansiCurrSymbol = null;
+					index = next - 1;
+				}
+				else
+					break;
+				
+				ch = p[++index];
+			}
+			
+			if((state & StateParens) == 0)
+			{
+				if((state & StateNonZero) == 0)
+				{
+					if(!parseDecimal)
+						number.scale = 0;
+					if((state & StateDecimal) == 0)
+						number.sign = false;
+				}
+				str = p;
+				return true;
+			}
+		}
+		str = p;
+		return false;
+	}
+	
+	function MatchChars(s, index, str) {
+		return MatchChars(s, index, str, 0);
+	}
+	
+	function MatchChars(s, sIndex, str, strIndex) {
+		if(strIndex >= str.Length())
+			return null;
+		
+		for(; strIndex < str.Length(); sIndex++, strIndex++)
+		{
+			if(str[strIndex] != s[sIndex])
+			{
+				if((str[strIndex] == '\u00A0') && (s[sIndex] == '\u0020'))
+				{
+					continue;
+				}
+				return null;
+			}
+		}
+		return sIndex;
+	}
+	
+	function IsWhite(ch) {
+		return (((ch) == 0x20) || ((ch) >= 0x09 && (ch) <= 0x0D));
+	}
+	
+	function ParseInt32(s, options, info) {
+		var number = NewNumberBuffer();
+		
+		var i = 0;
+		
+		StringToNumber(s, options, number, info, false);
+		
+		if((options & NumberStyles.AllowHexSpecifier) != 0)
+		{
+			var param = {number = number, i = i};
+			if(!HexNumberToInt32(param))
+			{
+				Throw("OverflowException", "Int32");
+			}
+			i = param.i;
+		}
+		else
+		{
+			var param = {number = number, i = i};
+			if(!NumberToInt32(param))
+			{
+				Throw("OverflowException", "Int32");
+			}
+			i = param.i;
+		}
+		
+		return i;
+	}
+	
+	function TryParseInt32(s, options, info) {
+		var number = NewNumberBuffer();
+		var result = 0;
+		
+		if(!TryStringToNumber(s, options, number, info, false))
+			return null;
+		
+		if((options & NumberStyles.AllowHexSpecifier) != 0)
+		{
+			var param = {number = number, i = result};
+			if(!HexNumberToInt32(param))
+				return null;
+			result = param.i;
+		}
+		else
+		{
+			var param = {number = number, i = result};
+			if(!NumberToInt32(param))
+				return null;
+			result = param.i;
+		}
+		
+		return result;
+	}
+	
+	function HexNumberToInt32(param) {
+		var newParam = {number = param.number, i = 0};
+		var ret = HexNumberToUInt32(newParam);
+		param.i = newParam.i;
+		return ret;
+	}
+	
+	function HexNumberToUInt32(param) {
+		var number = param.number;
+		var i = number.scale;
+		if(i > UInt32Precision || i < number.precision)
+			return false;
+		
+		var p = number.digits;
+		var index = 0;
+		var n = 0;
+		while(--i >= 0)
+		{
+			if(n > 0xFFFF_FFFF / 16)
+				return false;
+			n *= 16;
+			if(p[index] != '\0')
+			{
+				var newN = n;
+				if(p[index] != '\0')
+				{
+					if(p[index] >= '0' && p[index] <= '9')
+						newN += p[index] - '0';
+					else
+						if(p[index] >= 'A' && p[index] <= 'F')
+							newN += ((p[index] - 'A') + 10);
+						else
+							newN += ((p[index] - 'a') + 10);
+					
+					index++;
+				}
+				
+				if(newN < n)
+					return false;
+				n = newN;
+			}
+		}
+		param.i = n;
+		return true;
+	}
+	
+	function NumberToInt32(param) {
+		var number = param.number;
+		var i = number.scale;
+		if(i > Int32Precision || i < number.precision)
+		{
+			return false;
+		}
+		
+		var p = number.digits;
+		var index = 0;
+		var n = 0;
+		while(--i >= 0)
+		{
+			if(n > 0x7FFF_FFFF / 10)
+			{
+				return false;
+			}
+			n *= 10;
+			if(p[index] != '\0')
+				n += (p[index++] - '0');
+		}
+		if(number.sign)
+		{
+			n = -n;
+			if(n > 0)
+			{
+				return false;
+			}
+		}
+		else
+			if(n < 0)
+			{
+				return false;
+			}
+		
+		param.i = n;
+		return true;
+	}
+	
+	return {
+		NumberStyles = NumberStyles,
+		NumberFormatInfo = NumberFormatInfo,
+	
+		ParseInt32 = ParseInt32,
+		TryParseInt32 = TryParseInt32,
+		ParseByte = null,
+		TryParseByte = null
+	};
+})();

@@ -77,6 +77,9 @@
     <None Include="Runtime\Math.cal">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Runtime\Number.cal">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Runtime\Random.cal">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
