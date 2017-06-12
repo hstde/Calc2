@@ -225,7 +225,6 @@ IO["StreamReader"] = (function() {
 			ReadLine = ReadLine,
 			ReadToEnd = ReadToEnd,
 			Read = Read,
-			Read = function(buffer, offset, count) { baseStream.Write(buffer, offset, count); },
 			Close = function() { stream.Close(); }
 		};
 	}
