@@ -25,6 +25,9 @@ namespace Calc2
         private static void DoFile(string file)
         {
             var eval = new Evaluator();
+            eval.App.RethrowExceptions = false;
+            eval.App.ParserMode = ParseMode.File;
+
             if (File.Exists(file + ".cal"))
                 file += ".cal";
             if (!File.Exists(file))
