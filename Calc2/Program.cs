@@ -90,6 +90,14 @@ namespace Calc2
                 else
                     input = Console.ReadLine();
 
+                if (input.StartsWith("#"))
+                    switch (input.ToLower())
+                    {
+                        case "#reset":
+                            eval.Reset();
+                            continue;
+                    }
+
                 GC.Collect(0);
 
                 eval.ClearOutput();
