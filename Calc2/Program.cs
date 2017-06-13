@@ -25,6 +25,9 @@ namespace Calc2
         private static void DoFile(string file)
         {
             var eval = new Evaluator();
+            eval.App.RethrowExceptions = false;
+            eval.App.ParserMode = ParseMode.File;
+
             if (File.Exists(file + ".cal"))
                 file += ".cal";
             if (!File.Exists(file))
@@ -32,10 +35,11 @@ namespace Calc2
                 Console.WriteLine("File {0} could not be found.", file);
                 return;
             }
+            file = Path.GetFullPath(file);
             string input = File.ReadAllText(file);
             GC.Collect(0);
             eval.ClearOutput();
-            var res = eval.Evaluate(input);
+            var res = eval.Evaluate(input, file);
 
             switch (eval.App.Status)
             {
@@ -85,6 +89,14 @@ namespace Calc2
                     input += "\n" + Console.ReadLine();
                 else
                     input = Console.ReadLine();
+
+                if (input.StartsWith("#"))
+                    switch (input.ToLower())
+                    {
+                        case "#reset":
+                            eval.Reset();
+                            continue;
+                    }
 
                 GC.Collect(0);
 

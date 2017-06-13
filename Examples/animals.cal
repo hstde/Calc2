@@ -1,0 +1,88 @@
+/*
+ * This is a Calc2 implementation of the "Animals" guessing game
+ * Furthermore this is a blatant copy of https://github.com/munificent/wren/blob/master/example/animals.wren
+ */
+
+using "runtime";
+
+function promptYesNo(prompt)
+{
+	while(true)
+	{
+		var line = promptString(prompt);
+		
+		if(String.StartsWith(line, "y") || String.StartsWith(line, "Y")) return true;
+		if(String.StartsWith(line, "n") || String.StartsWith(line, "N")) return false;
+	}
+}
+
+function promptString(prompt)
+{
+	Console.WriteLine(prompt);
+	return Console.ReadLine();
+}
+
+var Question = (function()
+{
+	function new(question, ifYes, ifNo)
+	{
+		var _question = question;
+		var _ifYes = ifYes;
+		var _ifNo = ifNo;
+		
+		function ask()
+		{
+			if(promptYesNo(_question))
+			{
+				var result = _ifYes.ask();
+				if(result != null) _ifYes = result;
+			}
+			else
+			{
+				var result = _ifNo.ask();
+				if(result != null) _ifNo = result;
+			}
+			
+			return null;
+		}
+		
+		return {ask = ask};
+	}
+	
+	return {new = new};
+})();
+var Animal = (function()
+{
+	function new(name)
+	{
+		var _name = name;
+		
+		function ask()
+		{
+			if(promptYesNo("Is it a " + _name + "?"))
+			{
+				Console.WriteLine("I won! Let's play again.");
+				return null;
+			}
+			
+			var name = promptString("I lost! What was your animal?");
+			var question = promptString("What question would distinguish a " + _name + " from a " + name + "?");
+			var isYes = promptYesNo("Is the answer to the question 'yes' for a " + name + "?");
+			Console.WriteLine("I'll remember that. Let's play again.");
+			
+			var animal = Animal.new(name);
+			return Question.new(question, isYes ? animal : this, isYes ? this : animal);
+		}
+		
+		return {ask = ask};
+	}
+	
+	return {new = new};
+})();
+
+
+var root = Question.new("Does it live in the water?",
+	Animal.new("frog"), Animal.new("goat"));
+
+while(true)
+	root.ask();

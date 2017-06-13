@@ -84,6 +84,8 @@ namespace CalcLang
             NonTerminal unaryOp = new NonTerminal("unaryOp", "operator");
             NonTerminal incDecOp = new NonTerminal("incDecOp", "operator");
 
+            NonTerminal emptyInstruction = new NonTerminal("emptyInstruction", typeof(EmptyNode));
+
             start.Rule = MakeStarRule(start, instruction);
             block.Rule = "{" + instructions + "}";
             instructions.Rule = MakeStarRule(instructions, instruction);
@@ -102,7 +104,8 @@ namespace CalcLang
                                 | doWhileClause
                                 | usingClause
                                 | varDeclaration + ";"
-                                | ";";
+                                | emptyInstruction;
+            emptyInstruction.Rule = ToTerm(";");
             instruction.ErrorRule = SyntaxError + ";";
             embeddedInstruction.Rule = functionCall | postfixExpr | prefixExpr | assignment | varDeclarationAndAssign;
             ifElseClause.Rule = ToTerm("if") + "(" + expr + ")" + instruction

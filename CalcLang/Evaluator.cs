@@ -13,8 +13,8 @@ namespace CalcLang
         public CalcGrammar Grammar { get; }
         public Parser Parser { get; }
         public LanguageData Language { get; }
-        public Runtime Runtime { get; }
-        public ScriptApp App { get; }
+        public Runtime Runtime { get; private set; }
+        public ScriptApp App { get; private set; }
 
         public IDictionary<string, object> Globals => App.Globals;
 
@@ -33,6 +33,8 @@ namespace CalcLang
 
         public object Evaluate(string script) => App.Evaluate(script);
 
+        public object Evaluate(string script, string fileName) => App.Evaluate(script, fileName);
+
         public object Evaluate(ParseTree parsedScript) => App.Evaluate(parsedScript);
 
         public object Evaluate() => App.Evaluate();
@@ -43,5 +45,15 @@ namespace CalcLang
         }
 
         public string GetOutput() => App.GetOutput();
+
+        public void Reset()
+        {
+            var rethrowBack = App.RethrowExceptions;
+            var modeBack = App.ParserMode;
+            Runtime = Grammar.CreateRuntime(Language);
+            App = new ScriptApp(Runtime);
+            App.RethrowExceptions = rethrowBack;
+            App.ParserMode = modeBack;
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calc2", "Calc2\Calc2.csproj", "{66F00DF1-E082-4D0E-9780-0D40AD798B5A}"
 EndProject
@@ -9,9 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalcLang", "CalcLang\CalcLa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "Base\Base.csproj", "{B177983C-2D24-4571-A300-358F948EB9DD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{592C7787-E4BE-4F61-B982-0279EAB432E2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{BE4FE8EC-4DC7-45AE-B0C7-C5887BF0FE1D}"
 	ProjectSection(SolutionItems) = preProject
-		cmd.cal = cmd.cal
+		Examples\animals.cal = Examples\animals.cal
+		Examples\cmd.cal = Examples\cmd.cal
 	EndProjectSection
 EndProject
 Global
