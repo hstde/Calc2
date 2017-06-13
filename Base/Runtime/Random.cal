@@ -80,7 +80,7 @@
 		}
 		
 		function Next() {
-			return InternalSample();
+			return Math.Int(InternalSample());
 		}
 		
 		function Next(minValue, maxValue) {
@@ -90,16 +90,16 @@
 			var range = 1.0 * maxValue - minValue;
 			
 			if(range <= Int32.MaxValue)
-				return Sample() * range + minValue;
+				return Math.Int(Sample() * range + minValue);
 			else
-				return GetSampleForLargeRange() * range + minValue;
+				return Math.Int(GetSampleForLargeRange() * range + minValue);
 		}
 		
 		function Next(maxValue) {
 			if(maxValue < 0)
 				Throw("ArgumentOutOfRangeException", "maxValue");
 			
-			return Sample() * maxValue;
+			return Math.Int(Sample() * maxValue);
 		}
 		
 		function NextDouble() {
@@ -116,7 +116,7 @@
 			
 			for(var i = 0; i < count; i++)
 			{
-				buffer[i] = InternalSample() % (Byte.MaxValue + 1);
+				buffer[i] = Math.Int(InternalSample() % (Byte.MaxValue + 1));
 			}
 		}
 		
