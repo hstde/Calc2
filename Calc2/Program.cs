@@ -17,9 +17,35 @@ namespace Calc2
         private static void Main(string[] args)
         {
             if (args.Length > 0)
+            {
+                switch (args[0])
+                {
+                    case "-h":
+                    case "/?":
+                        Help();
+                        break;
+                    case "-v":
+                        Version();
+                        break;
+                    default:
                         DoFile(args[0], args.Skip(1).ToArray());
+                        break;
+                }
+            }
             else
+            {
                 LiveInterpreter();
+            }
+        }
+
+        private static void Help()
+        {
+
+        }
+
+        private static void Version()
+        {
+            Console.WriteLine($"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name} V{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
         }
 
         private static void DoFile(string file, string[] args)
