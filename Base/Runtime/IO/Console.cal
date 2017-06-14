@@ -115,6 +115,11 @@ var Console = (function() {
 		this.Write(String.Format(format, args));
 	}
 	
+	function WriteLine() {
+		writer.WriteLine();
+		writer.Flush();
+	}
+	
 	function WriteLine(str) {
 		writer.WriteLine(str);
 		writer.Flush();
