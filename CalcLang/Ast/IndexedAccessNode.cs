@@ -94,7 +94,10 @@ namespace CalcLang.Ast
 
             var targetValue = target.Evaluate(thread);
             if (targetValue == null)
-                thread.ThrowScriptError("Target object is null.");
+                thread.ThrowScriptError("Target object is null");
+
+            if (targetValue == thread.Runtime.NullValue)
+                thread.ThrowScriptError("NullReferenceException. target was null (" + target.AsString + ")");
 
             var type = targetValue.GetType();
             var indexValue = index.Evaluate(thread);
