@@ -1,0 +1,42 @@
+using "runtime";
+
+Console.WriteLine("Input the key");
+var key = Console.ReadLine();
+var keyLength = key.Length();
+Console.WriteLine("Input your data");
+var data = Console.ReadLine();
+var dataLength = data.Length();
+
+var output = {};
+
+var S = Enumerable.Range(0, 256);
+
+//Key processing
+var j = 0;
+for(var i = 0; i < 256; i++)
+{
+	j = (j + S[i] + key[i % keyLength]) % 256;
+	var t = S[j];
+	S[j] = S[i];
+	S[i] = t;
+}
+
+//Encryption
+var i = j = 0;
+foreach(var b in data)
+{
+	i = (i + 1) % 256;
+	j = (j + S[i]) % 256;
+	var t = S[j];
+	S[j] = S[i];
+	S[i] = t;
+	var k = S[(S[i] + S[j]) % 256];
+	output[b.Key] = k ^ b.Value;
+}
+
+var sb = Text.StringBuilder();
+
+foreach(var e in output)
+	sb.Append(Convert.ToString(e.Value, 16, 2, '0', Convert.NumberFormatFlags.PrintAsI1));
+
+Console.WriteLine("Output: {0}", sb.ToString());
