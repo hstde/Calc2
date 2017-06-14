@@ -21,9 +21,8 @@ namespace CalcLang.Interpreter
 
     public class ScriptApp
     {
-
-        private IList<Assembly> ImportedAssemblies = new List<Assembly>();
-        private object lockObject = new object();
+        private readonly IList<Assembly> ImportedAssemblies = new List<Assembly>();
+        private readonly object lockObject = new object();
 
         public readonly LanguageData Language;
         public readonly Runtime Runtime;
@@ -42,16 +41,19 @@ namespace CalcLang.Interpreter
             get;
             private set;
         }
+
         public Parser Parser
         {
             get;
             private set;
         }
+
         public IDictionary<string, object> Globals
         {
             get;
             private set;
         }
+
         public ParseMode ParserMode
         {
             get { return Parser.Context.Mode; }
@@ -64,7 +66,6 @@ namespace CalcLang.Interpreter
             set;
         }
 
-
         public ScriptApp(LanguageData language)
         {
             Language = language;
@@ -73,6 +74,7 @@ namespace CalcLang.Interpreter
             DataMap = new AppDataMap();
             Init();
         }
+
         public ScriptApp(Runtime runtime)
         {
             Runtime = runtime;
@@ -80,6 +82,7 @@ namespace CalcLang.Interpreter
             DataMap = new AppDataMap();
             Init();
         }
+
         public ScriptApp(AppDataMap dataMap)
         {
             DataMap = dataMap;
@@ -97,7 +100,6 @@ namespace CalcLang.Interpreter
         }
 
         public Irony.LogMessageList GetParserMessages() => Parser.Context.CurrentParseTree.ParserMessages;
-
 
         public object Evaluate(string script) => Evaluate(script, "<submission>");
         public object Evaluate(string script, string fileName)

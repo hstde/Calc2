@@ -64,19 +64,15 @@ namespace Base
         [CalcCallableMethod(".ToChar")]
         public static object ToChar(ScriptThread thread, object instance, object[] parameters)
         {
-            char result;
-            switch(instance.GetType().Name)
+            switch (instance.GetType().Name)
             {
                 case "Int32":
                 case "Int64":
                 case "Int16":
-                    result = (char)(long)instance;
-                    break;
+                    return (char)(long)instance;
                 default:
-                    result = '\0';
-                    break;
+                    return '\0';
             }
-            return result;
         }
 
         [CalcCallableMethod("Throw", -1)]

@@ -69,7 +69,6 @@ namespace Calc2
                     }
                     break;
             }
-
         }
 
         private static void LiveInterpreter()
@@ -91,12 +90,14 @@ namespace Calc2
                     input = Console.ReadLine();
 
                 if (input.StartsWith("#"))
+                {
                     switch (input.ToLower())
                     {
                         case "#reset":
                             eval.Reset();
                             continue;
                     }
+                }
 
                 GC.Collect(0);
 

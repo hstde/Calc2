@@ -102,7 +102,10 @@ namespace CalcLang.Ast
                             thread.App.WriteLine(screx.InnerException.ToString());
                     }
                     else
+                    {
                         thread.App.WriteLine(ex.Message);
+                    }
+
                     error = true;
                     break;
                 default:
@@ -132,7 +135,7 @@ namespace CalcLang.Ast
                     CalcCallableMethodAttribute attr = method.GetCustomAttribute<CalcCallableMethodAttribute>();
                     thread.Runtime.BuiltIns.AddMethod((BuiltInMethod)method.CreateDelegate(typeof(BuiltInMethod)),
                         attr.Name, attr.ParameterCount,
-                        (attr.ParameterNames == null ? null : string.Join(",", attr.ParameterNames)));
+                        attr.ParameterNames == null ? null : string.Join(",", attr.ParameterNames));
                 }
             }
             catch (Exception)

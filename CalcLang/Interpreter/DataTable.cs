@@ -10,7 +10,7 @@ namespace CalcLang.Interpreter
     public class DataTable : IEnumerable<object>
     {
         private Dictionary<string, object> stringIndexed;
-        private Dictionary<int, object> intIndexed;
+        private readonly Dictionary<int, object> intIndexed;
 
         private decimal length;
         private decimal count;
@@ -49,6 +49,7 @@ namespace CalcLang.Interpreter
                 }
             }
         }
+
         public DataTable(int intSize, int stringSize)
         {
             stringIndexed = new Dictionary<string, object>(stringSize + 2);
@@ -59,7 +60,7 @@ namespace CalcLang.Interpreter
 
         public object GetString(string key)
         {
-            if ((key == "Count" || key == "Length" || key == "Keys"))
+            if (key == "Count" || key == "Length" || key == "Keys")
             {
                 Invalidated();
                 return GetSpecialString(key);
@@ -106,6 +107,7 @@ namespace CalcLang.Interpreter
                 return value;
             return NullClass.NullValue;
         }
+
         public void SetInt(int key, object value)
         {
             if (value == NullClass.NullValue)
