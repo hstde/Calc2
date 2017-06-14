@@ -147,7 +147,8 @@ namespace Calc2
                         }
                         break;
                     case CalcLang.Interpreter.AppStatus.Ready:
-                        Console.WriteLine(eval.GetOutput());
+                        if (eval.GetOutput().Length > 0)
+                            Console.WriteLine(eval.GetOutput());
                         break;
                     case CalcLang.Interpreter.AppStatus.Crash:
                     case CalcLang.Interpreter.AppStatus.RuntimeError:
