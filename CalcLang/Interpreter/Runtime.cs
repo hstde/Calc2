@@ -503,6 +503,13 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => (long)x >> (int)(long)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)((long)(decimal)x >> (int)(decimal)y));
             AddBinary(op, typeof(char), (x, y) => (char)x >> (char)y);
+
+            op = ExpressionType.ExclusiveOr;
+            AddBinary(op, typeof(bool), (x, y) => (bool)x ^ (bool)y);
+            AddBinary(op, typeof(int), (x, y) => (int)x ^ (int)y);
+            AddBinary(op, typeof(long), (x, y) => (long)x ^ (long)y);
+            AddBinary(op, typeof(decimal), (x, y) => (decimal)((long)((decimal)x) ^ (long)((decimal)y)));
+            AddBinary(op, typeof(char), (x, y) => (char)x ^ (char)y);
         }
 
         public void InitUnaryOperatorImplementations()
