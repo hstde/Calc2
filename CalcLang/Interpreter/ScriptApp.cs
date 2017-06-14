@@ -23,6 +23,7 @@ namespace CalcLang.Interpreter
     {
         private readonly IList<Assembly> ImportedAssemblies = new List<Assembly>();
         private readonly object lockObject = new object();
+        private readonly ScriptThread thread;
 
         public readonly LanguageData Language;
         public readonly Runtime Runtime;
@@ -102,7 +103,7 @@ namespace CalcLang.Interpreter
         public Irony.LogMessageList GetParserMessages() => Parser.Context.CurrentParseTree.ParserMessages;
 
         public object Evaluate(string script) => Evaluate(script, "<submission>");
-        public object Evaluate(string script, string fileName)
+        public object Evaluate(string script, string fileName, string[] args = null)
         {
             try
             {
@@ -123,8 +124,7 @@ namespace CalcLang.Interpreter
                 }
 
                 LastScript = parsedScript;
-                var result = EvaluateParsedScript();
-                return result;
+                return EvaluateParsedScript(args == null ? null : new DataTable(args));
             }
             catch (ScriptException)
             {
@@ -138,27 +138,28 @@ namespace CalcLang.Interpreter
             }
         }
 
-        public object Evaluate(ParseTree parsedScript)
+        public object Evaluate(ParseTree parsedScript, string[] args = null)
         {
             CurrentFile = "<submission>";
             Util.Check(parsedScript.Root.AstNode != null, "Root AST node is null, cannot evaluate script.");
             var root = parsedScript.Root.AstNode as Ast.AstNode;
             Util.Check(root != null, "Root AST node {0} is not a subclass of AstNode", root.GetType());
             LastScript = parsedScript;
-            return EvaluateParsedScript();
+            return EvaluateParsedScript(args == null ? null : new DataTable(args));
         }
 
-        public object Evaluate()
+        public object Evaluate(string[] args = null)
         {
             Util.Check(LastScript != null, "No previously parsed script.");
-            return EvaluateParsedScript();
+            return EvaluateParsedScript(args == null ? null : new DataTable(args));
         }
 
-        private object EvaluateParsedScript()
+        private object EvaluateParsedScript(DataTable args = null)
         {
             LastScript.Tag = DataMap;
             var root = LastScript.Root.AstNode as Ast.AstNode;
             root.DependentScopeInfo = MainScope.ScopeInfo;
+
             DataMap.ProgramRoot = root;
 
             Status = AppStatus.Evaluating;
@@ -166,8 +167,13 @@ namespace CalcLang.Interpreter
             try
             {
                 thread = new ScriptThread(this);
-
                 thread.CurrentFuncInfo = new FunctionInfo("<global>", -1, null, false);
+
+                if (args != null)
+                {
+                    var argsBinding = thread.Bind("args", BindingRequestFlags.ExistingOrNew | BindingRequestFlags.Write);
+                    argsBinding.SetValueRef(thread, args);
+                }
 
                 var result = root.Evaluate(thread);
 

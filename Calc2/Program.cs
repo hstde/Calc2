@@ -17,12 +17,12 @@ namespace Calc2
         private static void Main(string[] args)
         {
             if (args.Length > 0)
-                DoFile(args[0]);
+                        DoFile(args[0], args.Skip(1).ToArray());
             else
                 LiveInterpreter();
         }
 
-        private static void DoFile(string file)
+        private static void DoFile(string file, string[] args)
         {
             var eval = new Evaluator();
             eval.App.RethrowExceptions = false;
@@ -39,7 +39,7 @@ namespace Calc2
             string input = File.ReadAllText(file);
             GC.Collect(0);
             eval.ClearOutput();
-            var res = eval.Evaluate(input, file);
+            var res = eval.Evaluate(input, file, args);
 
             switch (eval.App.Status)
             {
