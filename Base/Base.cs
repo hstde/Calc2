@@ -61,6 +61,24 @@ namespace Base
         [CalcCallableMethod(".ToString")]
         public static object ToString(ScriptThread thread, object thisRef, object[] parameters) => thisRef.ToString();
 
+        [CalcCallableMethod(".ToChar")]
+        public static object ToChar(ScriptThread thread, object instance, object[] parameters)
+        {
+            char result;
+            switch(instance.GetType().Name)
+            {
+                case "Int32":
+                case "Int64":
+                case "Int16":
+                    result = (char)(long)instance;
+                    break;
+                default:
+                    result = '\0';
+                    break;
+            }
+            return result;
+        }
+
         [CalcCallableMethod("Throw", -1)]
         public static object Throw(ScriptThread thread, object thisRef, object[] p)
         {
