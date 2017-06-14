@@ -47,7 +47,7 @@ namespace Calc2
                     Console.WriteLine(eval.GetOutput());
                     foreach (var err in eval.App.GetParserMessages())
                     {
-                        Console.WriteLine(err.Message);
+                        Console.WriteLine($"[{err.Level}] {err.Location.ToUiString()} in {file}: {err.Message}");
                     }
                     break;
                 case CalcLang.Interpreter.AppStatus.Ready:
