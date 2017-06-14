@@ -34,5 +34,6 @@ using "Runtime\String";
 using "Runtime\Linq";
 using "Runtime\Math";
 using "Runtime\Random";
+using "Runtime\Convert";
 using "Runtime\Text\Text";
 using "Runtime\IO\IO";
