@@ -23,6 +23,7 @@ for(var i = 0; i < 256; i++)
 
 //Encryption
 var i = j = 0;
+var index = 0;
 foreach(var b in data)
 {
 	i = (i + 1) % 256;
@@ -31,12 +32,12 @@ foreach(var b in data)
 	S[j] = S[i];
 	S[i] = t;
 	var k = S[(S[i] + S[j]) % 256];
-	output[b.Key] = k ^ b.Value;
+	output[index++] = k ^ b;
 }
 
 var sb = Text.StringBuilder();
 
 foreach(var e in output)
-	sb.Append(Convert.ToString(e.Value, 16, 2, '0', Convert.NumberFormatFlags.PrintAsI1));
+	sb.Append(Convert.ToString(e, 16, 2, '0', Convert.NumberFormatFlags.PrintAsI1));
 
 Console.WriteLine("Output: {0}", sb.ToString());
