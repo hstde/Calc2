@@ -247,6 +247,17 @@
 		return sb.ToString();
 	};
 	
+	function ToTable(str) {
+		if(str.GetType() != "String") Throw("ArgumentException");
+		
+		var ret = {};
+		var index = 0;
+		foreach(var c in str)
+			ret[index++] = c;
+		
+		return ret;
+	}
+	
 	return {
 		Empty = Empty,
 		Split = Split,
@@ -261,6 +272,7 @@
 		StartsWith = StartsWith,
 		EndsWith = EndsWith,
 		Insert = Insert,
-		Format = Format
+		Format = Format,
+		ToTable = ToTable
 	};
 })();
