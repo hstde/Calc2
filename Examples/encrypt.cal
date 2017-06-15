@@ -1,43 +1,80 @@
 using "runtime";
 
+function encrypt(key, data)
+{
+	var keyLength = key.Length;
+	var dataLength = data.Length;
+
+	var output = {};
+
+	var S = Enumerable.Range(0, 256);
+
+	//Key processing
+	var j = 0;
+	for(var i = 0; i < 256; i++)
+	{
+		j = (j + S[i] + key[i % keyLength]) % 256;
+		var t = S[j];
+		S[j] = S[i];
+		S[i] = t;
+	}
+
+	//Encryption
+	var i = j = 0;
+	var index = 0;
+	foreach(var b in data)
+	{
+		i = (i + 1) % 256;
+		j = (j + S[i]) % 256;
+		var t = S[j];
+		S[j] = S[i];
+		S[i] = t;
+		var k = S[(S[i] + S[j]) % 256];
+		output[index++] = k ^ b;
+	}
+	
+	return output;
+}
+
+function inputHex(str)
+{
+	if(str.Length() % 2 != 0)
+		Throw("ArgumentException");
+	
+	var split = {};
+	var strLength = str.Length();
+	
+	for(var i = 0; i < strLength; i += 2)
+		split[i / 2] = str[i] + "" + str[i + 1];
+	
+	return split.Select(function(e, i) return Int32.Parse(e, Number.NumberStyles.HexNumber));
+}
+
+Console.Write("[1] String input; [2] Hex input: ");
+var inputMode = Console.ReadLine();
+
 Console.WriteLine("Input the key");
 var key = Console.ReadLine();
-var keyLength = key.Length();
 Console.WriteLine("Input your data");
 var data = Console.ReadLine();
-var dataLength = data.Length();
 
-var output = {};
+key = key.Select(function(e, i) return e);
 
-var S = Enumerable.Range(0, 256);
-
-//Key processing
-var j = 0;
-for(var i = 0; i < 256; i++)
+if(inputMode == "1")
 {
-	j = (j + S[i] + key[i % keyLength]) % 256;
-	var t = S[j];
-	S[j] = S[i];
-	S[i] = t;
+	data = data.Select(function(e, i) return e);
+}
+else
+{
+	data = inputHex(data);
 }
 
-//Encryption
-var i = j = 0;
-var index = 0;
-foreach(var b in data)
-{
-	i = (i + 1) % 256;
-	j = (j + S[i]) % 256;
-	var t = S[j];
-	S[j] = S[i];
-	S[i] = t;
-	var k = S[(S[i] + S[j]) % 256];
-	output[index++] = k ^ b;
-}
+var output = encrypt(key, data);
 
 var sb = Text.StringBuilder();
 
 foreach(var e in output)
 	sb.Append(Convert.ToString(e, 16, 2, '0', Convert.NumberFormatFlags.PrintAsI1));
 
-Console.WriteLine("Output: {0}", sb.ToString());
+Console.WriteLine("Output byte: {0}", sb.ToString());
+Console.WriteLine("Output text: {0}", String.Concat(output.Select(function(e, i) return e.ToChar())));
