@@ -1,0 +1,46 @@
+using "runtime";
+
+var yMin = -0.2;
+var yMax = 0.1;
+var xMin = -1.5;
+var xMax = -1.1;
+
+var pixelString = " .:;+=xX$&";
+var yPixelMax = 50;
+var xPixelMax = 180;
+var maxIter = 200;
+
+foreach(var yPixel in Enumerable.Range(0, yPixelMax + 1))
+{
+	var y = (yPixel * 1.0 / yPixelMax) * (yMax - yMin) + yMin;
+	foreach(var xPixel in Enumerable.Range(0, xPixelMax))
+	{
+		var x = (xPixel * 1.0 / xPixelMax) * (xMax - xMin) + xMin;
+		var pixel = " ";
+		var x0 = x;
+		var y0 = y;
+		
+		foreach(var iter in Enumerable.Range(0, maxIter))
+		{
+			var x1 = (x0 * x0) - (y0 * y0);
+			var y1 = 2 * x0 * y0;
+			
+			x1 += x;
+			y1 += y;
+			
+			x0 = x1;
+			y0 = y1;
+			
+			var d = (x0 * x0) + (y0 * y0);
+			if(d > 4)
+			{
+				pixel = pixelString[iter % pixelString.Length()];
+				break;
+			}
+		}
+		
+		Console.Write(pixel);
+	}
+	
+	Console.WriteLine();
+}
