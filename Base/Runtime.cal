@@ -1,11 +1,16 @@
 ﻿using "Base";
 
 var Int32 = (function() {
+	function Parse(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
+	function Parse(s, style) return Number.ParseInt32(s, style, Number.NumberFormatInfo)
+	
+	function TryParse(s) return Number.TryParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
+	function TryParse(s, style) return Number.TryParseInt32(s, style, Number.NumberFormatInfo)
 	return {
 		MaxValue = 0x7fff_ffff,
 		MinValue = -0x7fff_ffff,
-		Parse = function(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo),
-		TryParse = function(s) return Number.TryParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
+		Parse = Parse,
+		TryParse = TryParse
 	};
 })();
 
