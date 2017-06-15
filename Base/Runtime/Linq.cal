@@ -40,176 +40,202 @@
 	}
 	
 	function Where(filter) extension {
-		if(this.GetType() != "Table") Throw("ArgumentException");
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			Throw("ArgumentException");
 		
 		var ret = {};
-		retIndex = 0;
-		for(var i = 0; i < this.Length; i++)
-		{
-			if(filter(this[i], i))
-			{
-				ret[retIndex] = this[i];
-				retIndex++;
-			}
-		}
+		var retIndex = 0;
+		var index = 0;
+		
+		foreach(var e in this)
+			if(filter(e, index++))
+				ret[retIndex++] = e;
+		
 		return ret;
 	}
 	
 	function Select(selector) extension {
-		if(this.GetType() != "Table") Throw("ArgumentException");
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			Throw("ArgumentException");
 		
 		var ret = {};
-		for(var i = 0; i < this.Length; i++)
+		var index = 0;
+		
+		foreach(var e in this)
 		{
-			ret[i] = selector(this[i], i);
+			ret[index] = selector(e, index);
+			index++;
 		}
+		
 		return ret;
 	}
 	
 	function Reverse() extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		var ret = {};
-		for(var i = 0; i < this.Length; i++)
-			ret[i] = this[this.Length - i - 1];
+		var index = this.Length() - 1;
+		
+		foreach(var e in this)
+			ret[index--] = e;
 		
 		return ret;
 	}
 	
 	function SequenceEqual(other) extension {
-		if(this == null || other == null || this.GetType() != "Table" || other.GetType() != "Table")
+		if(this == null || other == null 
+			|| (this.GetType() != "Table" && this.GetType() != "String") 
+			|| (other.GetType() != "Table" && other.GetType() != "String"))
 			Throw("ArgumentException");
 		
-		if(this.Length != other.Length) return false;
+		if(this.Length() != other.Length()) return false;
 		
-		for(var i = 0; i < this.Length; i++)
-			if(this[i] != other[i])
+		var index = 0;
+		foreach(var e in this)
+			if(e != other[index++])
 				return false;
 		
 		return true;
 	}
 	
 	function ToDictionary(keySelector, valueSelector) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		var ret = {};
-		for(var i = 0; i < this.Length; i++)
+		var index = 0;
+		foreach(var e in this)
 		{
-			var e = this[i];
-			ret[keySelector(e, i)] = valueSelector(e, i);
+			ret[keySelector(e, index)] = valueSelector(e, index);
+			index++;
 		}
 		
 		return ret;
 	}
 	
 	function ToListDictionary(keySelector, valueSelector) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 			
 		var ret = {};
-		for(var i = 0; i < this.Length; i++)
+		var index = 0;
+		foreach(var e in this)
 		{
-			var e = this[i];
-			ret[i] = {Key = keySelector(e, i), Value = valueSelector(e, i)};
+			ret[index] = {Key = keySelector(e, index), Value = valueSelector(e, index)};
+			index++;
 		}
 		
 		return ret;
 	}
 	
 	function Take(number) extension {
-		if(this == null || this.GetType() != "Table")
+		var arg = this;
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
-		if(number > this.Length)
+		
+		if(this.GetType() == "String") arg = String.ToTable(this);
+		
+		if(number > arg.Length)
 			Throw("ArgumentOutOfRangeException", "number > this.Length");
 		
 		var ret = {};
-		Buffer.BlockCopy(this, 0, ret, 0, number);
+		Buffer.BlockCopy(arg, 0, ret, 0, number);
 		return ret;
 	}
 	
 	function TakeWhile(predicate) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		var ret = {};
-		for(var i = 0; i < this.Length; i++)
+		var index = 0;
+		foreach(var e in this)
 		{
-			if(!predicate(this[i], i)) break;
-			ret[i] = this[i];
+			if(!predicate(e, index)) break;
+			ret[index] = e;
+			index++;
 		}
 		
 		return ret;
 	}
 	
 	function Skip(number) extension {
-		if(this == null || this.GetType() != "Table")
+		var arg = this;
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
-		if(number > this.Length)
+		
+		if(this.GetType() == "String") arg = String.ToTable(this);
+		
+		if(number > arg.Length)
 			Throw("ArgumentOutOfRangeException", "number > this.Length");
 		
 		var ret = {};
-		Array.Copy(this, number, ret, 0);
+		Array.Copy(arg, number, ret, 0);
 		return ret;
 	}
 	
 	function SkipWhile(predicate) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		var ret = {};
 		var retIndex = 0;
 		var yielding = false;
-		for(var i = 0; i < this.Length; i++)
+		var index = 0;
+		foreach(var e in this)
 		{
-			if(!yielding && !predicate(this[i], i)) yielding = true;
-			if(yielding) ret[retIndex++] = this[i];
+			if(!yielding && !predicate(e, index++)) yielding = true;
+			if(yielding) ret[retIndex++] = e;
 		}
 		
 		return ret;
 	}
 	
 	function ForEach(action) extension {
-		if(this.GetType() != "Table") Throw("ArgumentException");
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			Throw("ArgumentException");
+		
+		var index = 0;
 		foreach(var e in this)
 		{
-			action(e);
+			action(e, index++);
 		}
 	}
 	
 	function First() extension {
-		if(this.GetType() != "Table") Throw("ArgumentException");
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			Throw("ArgumentException");
 		
-		if(this == null || this.Length < 1)
+		if(this == null || this.Length() < 1)
 			Throw("ArgumentException");
 		
 		return this[0];
 	}
 	
 	function FirstOrDefault() extension {
-		if(this.GetType() != "Table") Throw("ArgumentException");
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			Throw("ArgumentException");
 		
-		if(this == null) Throw("ArgumentException");
-		
-		if(this.Length < 1) return null;
+		if(this.Length() < 1) return null;
 		
 		return this[0];
 	}
 	
 	function Last() extension {
-		if(this == null || this.GetType() != "Table" || this.Length < 1)
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String") || this.Length() < 1)
 			Throw("ArgumentException");
-		return this[this.Length - 1];
+			
+		return this[this.Length() - 1];
 	}
 	
 	function LastOrDefault() extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 			
-		if(this.Length < 1) return null;
+		if(this.Length() < 1) return null;
 		
-		return this[this.Length - 1];
+		return this[this.Length() - 1];
 	}
 	
 	function Single() extension {
@@ -221,52 +247,60 @@
 	}
 	
 	function Any() extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
-		return this.Length > 0;
+			
+		return this.Length() > 0;
 	}
 	
 	function Any(what) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
-		for(var i = 0; i < this.Length; i++)
+		var index = 0;
+		foreach(var e in this)
 		{
-			if(what(this[i], i))
+			if(what(e, index++))
 				return true;
 		}
 		return false;
 	}
 	
 	function All(what) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
-		for(var i = 0; i < this.Length; i++)
-			if(!what(this[i], i))
+		var index = 0;
+		foreach(var e in this)
+			if(!what(e, index++))
 				return false;
 		return true;
 	}
 	
 	function Concat(other) extension {
-		if(this == null || other == null || this.GetType() != "Table" || other.GetType() != "Table")
+		if(this == null || other == null 
+			|| (this.GetType() != "Table" && this.GetType() != "String") 
+			|| (other.GetType() != "Table" && other.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		var ret = {};
-		for(var i = 0; i < this.Length; i++)
-			ret[i] = this[i];
-		for(var i = 0; i < other.Length; i++)
-			ret[i + this.Length] = other[i];
+		var index = 0;
+		foreach(var e in this)
+			ret[index++] = e;
+		foreach(var e in other)
+			ret[index++] = e;
 		
 		return ret;
 	}
 	
 	function Zip(other, selector) extension {
-		if(this == null || other == null || this.GetType() != "Table" || other.GetType() != "Table")
+		if(this == null || other == null 
+			|| (this.GetType() != "Table" && this.GetType() != "String") 
+			|| (other.GetType() != "Table" && other.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		var ret = {};
-		var length = Math.Min(this.Length, other.Length);
+		var length = Math.Min(this.Length(), other.Length());
 		
 		for(i = 0; i < length; i++)
 			ret[i] = selector(this[i], other[i]);
@@ -275,21 +309,19 @@
 	}
 	
 	function Aggregate(func) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
-		if(this.Length < 1) return null;
+		if(this.Length() < 1) return null;
 		
 		var result = this[0];
-		for(var i = 1; i < this.Length; i++)
-		{
-			result = func(result, this[i]);
-		}
+		foreach(var e in this)
+			result = func(result, e);
 		
 		return result;
 	}
 	
 	function Contains(what) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		return this.Any(function(e, i) return e == what);
@@ -310,7 +342,7 @@
 	}
 	
 	function Min(selector) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		return this.Select(selector).Min();
@@ -331,7 +363,7 @@
 	}
 	
 	function Max(selector) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		return this.Select(selector).Max();
@@ -354,7 +386,7 @@
 	}
 	
 	function Average(selector) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		return this.Select(selector).Average();
@@ -373,23 +405,25 @@
 	}
 	
 	function Sum(selector) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		return this.Select(selector).Sum();
 	}
 	
 	function OrderBy(selector) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		var keys = {};
 		var ret = {};
+		var index = 0;
 		
-		for(var i = 0; i < this.Length; i++)
+		foreach(var e in this)
 		{
-			keys[i] = selector(this[i]);
-			ret[i] = this[i];
+			keys[index] = selector(e);
+			ret[index] = e;
+			index++;
 		}
 		
 		Array.Sort(keys, ret);
@@ -398,7 +432,7 @@
 	}
 	
 	function OrderByDescending(selector) extension {
-		if(this == null || this.GetType() != "Table")
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			Throw("ArgumentException");
 		
 		return this.OrderBy(selector).Reverse();
