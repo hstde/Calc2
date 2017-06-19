@@ -54,6 +54,7 @@
     <Compile Include="Ast\BlockNode.cs" />
     <Compile Include="Ast\BoolValNode.cs" />
     <Compile Include="Ast\BreakNode.cs" />
+    <Compile Include="Ast\CatchNode.cs" />
     <Compile Include="Ast\ContinueNode.cs" />
     <Compile Include="Ast\DoWhileNode.cs" />
     <Compile Include="Ast\EmptyNode.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Ast\ReturnNode.cs" />
     <Compile Include="Ast\StatementListNode.cs" />
     <Compile Include="Ast\ThisNode.cs" />
+    <Compile Include="Ast\TryNode.cs" />
     <Compile Include="Ast\UnaryExpressionNode.cs" />
     <Compile Include="Ast\UsingNode.cs" />
     <Compile Include="Ast\VarDeclarationNode.cs" />

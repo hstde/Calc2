@@ -39,6 +39,11 @@ namespace CalcLang
             NonTerminal breakClause = new NonTerminal("breakClause", typeof(BreakNode));
             NonTerminal continueClause = new NonTerminal("continueClause", typeof(ContinueNode));
             NonTerminal usingClause = new NonTerminal("usingClause", typeof(UsingNode));
+            NonTerminal tryClause = new NonTerminal("tryClause");
+            NonTerminal catchClause = new NonTerminal("catchClaus");
+            NonTerminal catchOptClause = new NonTerminal("catchOpt");
+            NonTerminal finallyClause = new NonTerminal("finallyClause");
+            NonTerminal finallyOptClause = new NonTerminal("finallyOpt");
             NonTerminal assignment = new NonTerminal("assignment", typeof(AssignmentNode));
             NonTerminal assignmentOp = new NonTerminal("assignmentOp", "assignment operator");
             NonTerminal varDeclaration = new NonTerminal("varDeclaration", typeof(VarDeclarationNode));
@@ -104,7 +109,8 @@ namespace CalcLang
                                 | doWhileClause
                                 | usingClause
                                 | varDeclaration + ";"
-                                | emptyInstruction;
+                                | emptyInstruction
+                                | tryClause;
             emptyInstruction.Rule = ToTerm(";");
             instruction.ErrorRule = SyntaxError + ";";
             embeddedInstruction.Rule = functionCall | postfixExpr | prefixExpr | assignment | varDeclarationAndAssign;
@@ -123,6 +129,14 @@ namespace CalcLang
             emptyReturnClause.Rule = ToTerm("return") + ";";
             breakClause.Rule = ToTerm("break") + ";";
             continueClause.Rule = ToTerm("continue") + ";";
+
+            tryClause.Rule = "try" + block + catchOptClause;
+
+            catchOptClause.Rule = catchClause | finallyClause;
+            catchClause.Rule = "catch" + ("(" + name + ")").Q() + block + finallyOptClause;
+            finallyClause.Rule = "finally" + block;
+
+            finallyOptClause.Rule = finallyClause | Empty;
 
             usingClause.Rule = ToTerm("using") + nonEscapedString + ";";
 
@@ -191,7 +205,7 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in");
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in", "try", "catch", "finally");
             RegisterBracePair("(", ")");
             RegisterBracePair("[", "]");
             RegisterBracePair("{", "}");
@@ -204,7 +218,7 @@ namespace CalcLang
             RegisterOperators(40, "*", "/", "%");
             RegisterOperators(60, "!", "~");
             RegisterOperators(70, "++", "--");
-            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl, paramsOrEmpty);
+            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl, paramsOrEmpty, catchOptClause, finallyOptClause);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
             AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do");
