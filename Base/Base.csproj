@@ -59,6 +59,9 @@
     <None Include="Runtime\Convert.cal">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Runtime\Exception.cal">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Runtime\IO\Console.cal">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

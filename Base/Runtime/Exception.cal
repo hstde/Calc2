@@ -1,0 +1,42 @@
+﻿var Exception = (function() {
+
+	function ctor() {
+		return ctor("");
+	}
+
+	function ctor(message) {
+		function subctor(message) {
+		}
+
+		function ToString() {
+			var rev = this.Stacktrace.Reverse();
+			return String.Join(Environment.NewLine, rev.Select(function(e, i) return "\t@ " + FunctionInfoToString(e)));
+		}
+
+		function FunctionInfoToString(finfo) {
+			var ret = finfo.Name;
+			var argString = "";
+			if(finfo.ParamNames == null && finfo.paramCount > 0)
+				argString = finfo.paramCount.ToString();
+			else if(finfo.ParamNames != null)
+			{
+				if(finfo.HasParamsArg)
+					finfo.ParamNames[finfo.ParamNames.Length - 1] = "params " +
+						finfo.ParamNames[finfo.ParamNames.Length - 1];
+				argString = String.Join(", ", finfo.ParamNames);
+			}
+
+			ret += "(" + argString + ")";
+
+			return ret + " in " + finfo.CallLocation.Filename + ":Line " + (finfo.CallLocation.Line + 1);
+		}
+
+		subctor(message);
+		return {
+			Message = message,
+			ToString = ToString
+		};
+	}
+
+	return ctor;
+})();

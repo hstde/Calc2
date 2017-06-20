@@ -75,16 +75,6 @@ namespace Base
             }
         }
 
-        [CalcCallableMethod("Throw", -1)]
-        public static object Throw(ScriptThread thread, object thisRef, object[] p)
-        {
-            string msg = "ScriptException";
-            if (p.Length > 0)
-                msg += "(" + string.Join(", ", p.Select(x => x?.ToString() ?? "null")) + ")";
-            thread.ThrowScriptError(msg, false, null);
-            return null;
-        }
-
         [CalcCallableMethod("Break", -1)]
         public static object Break(ScriptThread thread, object thisRef, object[] parameters) => null;
     }
