@@ -29,5 +29,8 @@ namespace CalcLang.Interpreter
 
         public override string ToString() => Message
             + Environment.NewLine + ScriptStackTrace.ToString();
+
+        public object ToScriptObject()
+            => Message;
     }
 }

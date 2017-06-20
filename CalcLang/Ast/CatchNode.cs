@@ -11,15 +11,17 @@ namespace CalcLang.Ast
 {
     public class CatchNode : AstNode
     {
-        private string exceptionVarName;
-        private AstNode finallyBlock;
-        private AstNode Block;
+        private IdentifierNode exceptionVar;
+        private AstNode block;
 
         public override void Init(Irony.Ast.AstContext context, ParseTreeNode parseNode)
         {
             base.Init(context, parseNode);
             var nodes = parseNode.GetMappedChildNodes();
-
+            var hasVar = nodes[0].ChildNodes[0].ChildNodes.Count > 0;
+            if (hasVar)
+                exceptionVar = (IdentifierNode)AddChild("exceptionVar", nodes[0].ChildNodes[0].ChildNodes[0]);
+            block = AddChild("Block", nodes[1]);
 
         }
 
@@ -31,7 +33,16 @@ namespace CalcLang.Ast
         {
             thread.CurrentNode = this;
 
+            if (DependentScopeInfo == null)
+                DependentScopeInfo = new ScopeInfo(this, AsString);
 
+            thread.PushScope(DependentScopeInfo, null);
+
+            var bind = thread.Bind(exceptionVar.Symbol, BindingRequestFlags.NewOnly | BindingRequestFlags.Write);
+            if (bind != null && !(bind is NullBinding) && bind.SetValueRef != null)
+                bind.SetValueRef(thread, se.ToScriptObject());
+
+            block.Evaluate(thread);
 
             thread.CurrentNode = this.Parent;
             return thread.Runtime.NullValue;

@@ -20,7 +20,20 @@ namespace CalcLang.Ast
             base.Init(context, parseNode);
             var nodes = parseNode.GetMappedChildNodes();
 
-
+            tryBlock = AddChild("tryBlock", nodes[0]);
+            nodes = nodes[1].GetMappedChildNodes();
+            if (nodes.Count > 0)
+            {
+                var isCatch = nodes[0].AstNode is CatchNode;
+                if (isCatch)
+                    catchBlock = (CatchNode)AddChild("catchBlock", nodes[0]);
+                else
+                    finallyBlock = AddChild("finallyBlock", nodes[0].GetMappedChildNodes()[0]);
+            }
+            if(nodes.Count > 1)
+            {
+                finallyBlock = AddChild("finallyBlock", nodes[1].GetMappedChildNodes()[0]);
+            }
         }
 
         protected override object DoEvaluate(ScriptThread thread)
@@ -31,18 +44,18 @@ namespace CalcLang.Ast
             {
                 tryBlock.Evaluate(thread);
             }
-            catch(ScriptException e)
+            catch (ScriptException e)
             {
-                catchBlock.Evaluate(thread);
+                catchBlock?.DoEvalutate(thread, e);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 var se = new ScriptException("UnexpectedExceptionException", e);
-                catchBlock.Evaluate(thread);
+                catchBlock?.DoEvalutate(thread, se);
             }
             finally
             {
-                finallyBlock.Evaluate(thread);
+                finallyBlock?.Evaluate(thread);
             }
 
             thread.CurrentNode = this.Parent;
