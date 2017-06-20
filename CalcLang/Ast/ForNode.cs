@@ -22,7 +22,7 @@ namespace CalcLang.Ast
             var nodes = parseNode.GetMappedChildNodes();
             InitBlock = AddChild("Init", nodes[0]);
             var t = nodes[1].GetMappedChildNodes();
-            Condition = t.Count > 1 ? AddChild("Condition", t[0]) : null;
+            Condition = t.Count > 0 ? AddChild("Condition", t[0]) : null;
             IterBlock = AddChild("Iter", nodes[2]);
             Block = AddChild("ForBlock", nodes[3]);
 
