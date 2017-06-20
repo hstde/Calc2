@@ -42,6 +42,7 @@ namespace CalcLang
             NonTerminal tryClause = new NonTerminal("tryClause", typeof(TryNode));
             NonTerminal catchClause = new NonTerminal("catchClause", typeof(CatchNode));
             NonTerminal finallyClause = new NonTerminal("finallyClause");
+            NonTerminal throwClause = new NonTerminal("throwClause", typeof(ThrowNode));
             NonTerminal assignment = new NonTerminal("assignment", typeof(AssignmentNode));
             NonTerminal assignmentOp = new NonTerminal("assignmentOp", "assignment operator");
             NonTerminal varDeclaration = new NonTerminal("varDeclaration", typeof(VarDeclarationNode));
@@ -108,7 +109,8 @@ namespace CalcLang
                                 | usingClause
                                 | varDeclaration + ";"
                                 | emptyInstruction
-                                | tryClause;
+                                | tryClause
+                                | throwClause + ";";
             emptyInstruction.Rule = ToTerm(";");
             instruction.ErrorRule = SyntaxError + ";";
             embeddedInstruction.Rule = functionCall | postfixExpr | prefixExpr | assignment | varDeclarationAndAssign;
@@ -133,6 +135,7 @@ namespace CalcLang
             catchClause.Rule = "catch" + ("(" + name + ")").Q() + block;
             finallyClause.Rule = "finally" + block;
 
+            throwClause.Rule = "throw" + expr;
 
             usingClause.Rule = ToTerm("using") + nonEscapedString + ";";
 
@@ -201,7 +204,7 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in", "try", "catch", "finally");
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in", "try", "catch", "finally", "throw");
             RegisterBracePair("(", ")");
             RegisterBracePair("[", "]");
             RegisterBracePair("{", "}");

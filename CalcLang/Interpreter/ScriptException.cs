@@ -12,6 +12,7 @@ namespace CalcLang.Interpreter
     {
         public SourceInfo Location;
         public ScriptStackTrace ScriptStackTrace;
+        public object Payload;
 
         public ScriptException(string message) : this(message, null)
         {
@@ -27,10 +28,13 @@ namespace CalcLang.Interpreter
             ScriptStackTrace = stack;
         }
 
+        public static ScriptException CreateScriptException(object payload, SourceInfo location, ScriptStackTrace stack)
+            => new ScriptException("ScriptException", null, location, stack) { Payload = payload };
+
         public override string ToString() => Message
             + Environment.NewLine + ScriptStackTrace.ToString();
 
         public object ToScriptObject()
-            => Message;
+            => Payload;
     }
 }
