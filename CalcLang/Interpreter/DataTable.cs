@@ -146,7 +146,7 @@ namespace CalcLang.Interpreter
 
         public IEnumerator<object> GetEnumerator()
         {
-            foreach (var e in intIndexed)
+            foreach (var e in intIndexed.OrderBy(e=>e.Key))
                 yield return e.Value;
         }
 
