@@ -129,6 +129,16 @@ var FormatException = (function() {
 	return ctor;
 })();
 
+var FormatIndexOutOfRange = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("FormatIndexOutOfRange", message);
+	}
+	return ctor;
+})();
+
 var IOException = (function() {
 	function ctor() {
 		return ctor("");

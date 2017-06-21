@@ -117,7 +117,7 @@
 	
 	function NumberToString(value, base, width, paddingChar, flags) {
 		if(base != 2 && base != 8 && base != 10 && base != 16)
-			Throw("ArgumentException", "Invalid base");
+			throw ArgumentException("Invalid base");
 		return NumberToStringInternal(Math.Int(value), base, width, paddingChar, flags);
 	}
 	

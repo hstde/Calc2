@@ -50,7 +50,7 @@ var Math = (function() {
 	
 	function Round(value, digits) {
 		if(digits < 0 || digits > maxRoundingDigits)
-			Throw("ArgumentOutOfRangeException", "digits");
+			throw ArgumentOutOfRangeException("digits");
 		
 		return InternalRound(value, digits, MidpointRounding.ToEven);
 	}
@@ -60,7 +60,7 @@ var Math = (function() {
 	}
 	
 	function Int(value) {
-		if(value.GetType() != "Number") Throw("ArgumentException");
+		if(value.GetType() != "Number") throw ArgumentException();
 		return __Int(value);
 	}
 	

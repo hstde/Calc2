@@ -85,7 +85,7 @@
 		
 		function Next(minValue, maxValue) {
 			if(minValue > maxValue)
-				Throw("ArgumentOutOfRangeException", "minValue");
+				throw ArgumentOutOfRangeException("minValue");
 			
 			var range = 1.0 * maxValue - minValue;
 			
@@ -97,7 +97,7 @@
 		
 		function Next(maxValue) {
 			if(maxValue < 0)
-				Throw("ArgumentOutOfRangeException", "maxValue");
+				throw ArgumentOutOfRangeException("maxValue");
 			
 			return Math.Int(Sample() * maxValue);
 		}
@@ -112,7 +112,7 @@
 		
 		function NextBytes(buffer, count) {
 			if(buffer == null)
-				Throw("ArgumentNullException", "buffer");
+				throw ArgumentNullException("buffer");
 			
 			for(var i = 0; i < count; i++)
 			{

@@ -41,7 +41,7 @@
 			var _path = IO.Path.NormalizePath(path, true, maxPathLength, true);
 			
 			if(String.StartsWith(_path, "\\\\.\\"))
-				Throw("ArgumentException", "Device not supportet");
+				throw ArgumentException("Device not supportet");
 			
 			var seekToEnd = (mode == IO.FileMode.Append);
 			if(mode == IO.FileMode.Append)
@@ -74,7 +74,7 @@
 			if(fileType != Win32Native.FILE_TYPE_DISK)
 			{
 				__Win32Native_DisposeNativeHandle(_handleNative);
-				Throw("NotSupportedException", "FileStreamOnNoneFiles");
+				throw NotSupportedException("FileStreamOnNoneFiles");
 			}
 			
 			_canRead = (access & IO.FileAccess.Read) != 0;
@@ -107,7 +107,7 @@
 			{
 				if(hr == Win32Native.ERROR_INVALID_HANDLE)
 					__Win32Native_DisposeNativeHandle(_handleNative);
-				Throw("IOException", "hr = " + hr);
+				throw IOException("hr = " + hr);
 			}
 			
 			_pos = ret;
@@ -120,15 +120,15 @@
 		}
 		
 		function Write(array, offset, count) {
-			if(array == null) Throw("ArgumentNullException", "array");
-			if(offset < 0) Throw("ArgumentOutOfRangeException", "offset");
-			if(count < 0) Throw("ArgumentOutOfRangeException", "count");
+			if(array == null) throw ArgumentNullException("array");
+			if(offset < 0) throw ArgumentOutOfRangeException("offset");
+			if(count < 0) throw ArgumentOutOfRangeException("count");
 			if(array.Length - offset < count)
-				Throw("ArgumentException", "InvalidOffsetLength");
+				throw ArgumentException("InvalidOffsetLength");
 			
 			if(_writePos == 0)
 			{
-				if(!_canWrite) Throw("IOException", "WriteNotSupportet");
+				if(!_canWrite) throw IOException("WriteNotSupportet");
 				if(_readPos < _readLen) FlushRead();
 				_readPos = 0;
 				_readLen = 0;
@@ -168,7 +168,7 @@
 		
 		function WriteFileNative(handle, bytes, offset, count, overlapped) {
 			if(bytes.Length - offset < count)
-				Throw("IndexOutOfRangeException", "IORaceCondition");
+				throw IndexOutOfRangeException("IORaceCondition");
 			
 			if(bytes.Length == 0)
 				return { r = 0, hr = 0 };
@@ -203,7 +203,7 @@
 				if(hr == ERROR_NO_DATA)
 					r = 0;
 				else
-					Throw("IOException");
+					throw IOException();
 			}
 			
 			_pos = _pos + r;
@@ -220,7 +220,7 @@
 		}
 		
 		function Seek(offset, origin) {
-			if(!_canSeek) Throw("IOException", "SeekNotSupported");
+			if(!_canSeek) throw IOException("SeekNotSupported");
 			
 			if(_writePos > 0)
 			{
@@ -237,7 +237,7 @@
 			{
 				SeekCore(oldPos, SeekOrigin.Begin);
 				Close();
-				Throw("IOException", "SeekAppendOverwrite");
+				throw IOException("SeekAppendOverwrite");
 			}
 			
 			if(_readLen > 0)
@@ -287,7 +287,7 @@ IO["File"] = (function(){
 	
 	function OpenText(path) {
 		if(path == null)
-			Throw("ArgumentNullException", "path");
+			throw ArgumentNullException("path");
 		
 		var stream = IO.FileStream(path, IO.FileMode.Open, IO.FileAccess.Read);
 		var encoding = IO.Encoding.UTF8;
@@ -296,7 +296,7 @@ IO["File"] = (function(){
 	
 	function CreateText(path) {
 		if(path == null)
-			Throw("ArgumentNullException", "path");
+			throw ArgumentNullException("path");
 		
 		var stream = IO.FileStream(path, IO.FileMode.Create, IO.FileAccess.Write);
 		var encoding = IO.Encoding.UTF8;
@@ -305,7 +305,7 @@ IO["File"] = (function(){
 	
 	function AppendText(path) {
 		if(path == null)
-			Throw("ArgumentNullException", "path");
+			throw ArgumentNullException("path");
 		
 		var stream = IO.FileStream(path, IO.FileMode.Append, IO.FileAccess.Write);
 		var encoding = IO.Encoding.UTF8;

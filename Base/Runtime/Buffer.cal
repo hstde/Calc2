@@ -1,7 +1,7 @@
 ﻿var Buffer = (function() {
 	function BlockCopy(src, srcOffset, dst, dstOffset, count) {
 		if(count + srcOffset > src.Length)
-			Throw("Count + srcOffset > src.Length", "count " + count, "srcOffset " + srcOffset, "src.Length " + src.Length);
+			throw ArgumentOutOfRangeException("Count + srcOffset > src.Length");
 		
 		Buffer.Memcpy(src, srcOffset, dst, dstOffset, count);
 	}
