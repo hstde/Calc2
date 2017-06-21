@@ -40,26 +40,38 @@ namespace CalcLang.Ast
         {
             thread.CurrentNode = this;
 
+            var e = TryTryBlock(thread);
+            if (e != null)
+                catchBlock?.DoEvalutate(thread, e);
+            finallyBlock?.Evaluate(thread);
+
+            thread.CurrentNode = this.Parent;
+            return thread.Runtime.NullValue;
+        }
+
+        private ScriptException TryTryBlock(ScriptThread thread)
+        {
+            ScriptException ret = null;
+            var currentScope = thread.CurrentScope;
             try
             {
                 tryBlock.Evaluate(thread);
             }
-            catch (ScriptException e)
+            catch(ScriptException e)
             {
-                catchBlock?.DoEvalutate(thread, e);
+                ret = e;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                var se = new ScriptException("UnexpectedExceptionException", e);
-                catchBlock?.DoEvalutate(thread, se);
+                ret = new ScriptException("UnexpectedExceptionException", e);
             }
             finally
             {
-                finallyBlock?.Evaluate(thread);
+                //reset scopes
+                thread.CurrentScope = currentScope;
             }
 
-            thread.CurrentNode = this.Parent;
-            return thread.Runtime.NullValue;
+            return ret;
         }
     }
 }
