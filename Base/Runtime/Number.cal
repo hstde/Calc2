@@ -67,6 +67,8 @@
 	function TryStringToNumber(str, options, number, sb, numfmt, parseDecimal) {
 		if(str == null)
 			return false;
+		if(str.GetType() != "String")
+			return false;
 		
 		if(!ParseNumber(str, options, number, sb, numfmt, parseDecimal))
 			return false;
@@ -76,10 +78,12 @@
 	
 	function StringToNumber(str, options, number, info, parseDecimal) {
 		if(str == null)
-			Throw("ArgumentNullException", "String");
+			throw ArgumentNullException("String");
+		if(str.GetType() != "String")
+			throw ArgumentException("String");
 		
 		if(!ParseNumber(str, options, number, null, info, parseDecimal))
-			Throw("ArgumentException", "invalid String");
+			throw ArgumentException("invalid String");
 	}
 	
 	function ParseNumber(str, options, number, sb, numfmt, parseDecimal) {

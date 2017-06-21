@@ -85,6 +85,10 @@ namespace CalcLang.Ast
             thread.CurrentNode = this;
             var arg1 = Left.Evaluate(thread);
             var arg2 = Right.Evaluate(thread);
+
+            if ((Op == ExpressionType.Divide || Op == ExpressionType.Modulo) && Convert.ToDecimal(arg2) == 0)
+                thread.ThrowScriptError("DivideByZeroException", null);
+
             var result = thread.Runtime.ExecuteBinaryOperator(Op, arg1, arg2, ref lastUsed);
             thread.CurrentNode = Parent;
             return result;

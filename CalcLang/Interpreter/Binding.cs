@@ -47,12 +47,13 @@ namespace CalcLang.Interpreter
         {
             TargetInfo = targetInfo;
         }
+
         public Binding(string symbol, BindingTargetType targetType)
         {
             TargetInfo = new BindingTargetInfo(symbol, targetType);
         }
 
-        public override string ToString() => $"{{Binding to {TargetInfo.ToString()}}}";
+        public override string ToString() => $"{{Binding to {TargetInfo}}}";
     }
 
     public class ConstantBinding : Binding
@@ -68,7 +69,6 @@ namespace CalcLang.Interpreter
 
         public object GetValue(ScriptThread thread) => Target;
     }
-
 
     public class BuiltInCallableTargetInfo : BindingTargetInfo, IBindingSource
     {

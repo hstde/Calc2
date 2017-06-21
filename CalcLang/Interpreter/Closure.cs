@@ -70,15 +70,21 @@ namespace CalcLang.Interpreter
 
         public static string MakeString(string name, int paramCount, string[] paramNames, SourceInfo loc, bool hasParamsArg)
         {
+            string[] paramNamesLoc = null;
+            if (paramNames != null)
+            {
+                paramNamesLoc = new string[paramNames.Length];
+                Array.Copy(paramNames, paramNamesLoc, paramNames.Length);
+            }
             var ret = name;
             var argString = "";
-            if (paramNames == null && paramCount > 0)
+            if (paramNamesLoc == null && paramCount > 0)
                 argString = paramCount.ToString();
-            else if (paramNames != null)
+            else if (paramNamesLoc != null)
             {
                 if (hasParamsArg)
-                    paramNames[paramNames.Length - 1] = "params " + paramNames[paramNames.Length - 1];
-                argString = string.Join(", ", paramNames);
+                    paramNamesLoc[paramNamesLoc.Length - 1] = "params " + paramNamesLoc[paramNamesLoc.Length - 1];
+                argString = string.Join(", ", paramNamesLoc);
             }
             ret += "(" + argString + ")";
 

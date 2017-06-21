@@ -61,14 +61,18 @@ namespace Base
         [CalcCallableMethod(".ToString")]
         public static object ToString(ScriptThread thread, object thisRef, object[] parameters) => thisRef.ToString();
 
-        [CalcCallableMethod("Throw", -1)]
-        public static object Throw(ScriptThread thread, object thisRef, object[] p)
+        [CalcCallableMethod(".ToChar")]
+        public static object ToChar(ScriptThread thread, object instance, object[] parameters)
         {
-            string msg = "ScriptException";
-            if (p.Length > 0)
-                msg += "(" + string.Join(", ", p.Select(x => x?.ToString() ?? "null")) + ")";
-            thread.ThrowScriptError(msg, false, null);
-            return null;
+            switch (instance.GetType().Name)
+            {
+                case "Int32":
+                case "Int64":
+                case "Int16":
+                    return (char)(long)instance;
+                default:
+                    return '\0';
+            }
         }
 
         [CalcCallableMethod("Break", -1)]

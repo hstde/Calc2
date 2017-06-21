@@ -1,7 +1,7 @@
 ﻿
-// This file is used by Code Analysis to maintain SuppressMessage 
+// This file is used by Code Analysis to maintain SuppressMessage
 // attributes that are applied to this project.
-// Project-level suppressions either have no target or are given 
+// Project-level suppressions either have no target or are given
 // a specific target and scoped to a namespace, type, member, etc.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Pending>", Scope = "member", Target = "~M:Base.BuiltInMethods.Break(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
@@ -53,4 +53,6 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Pending>", Scope = "member", Target = "~M:Base.MathLib.Round(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Ausstehend>", Scope = "member", Target = "~M:Base.Debug.CollectAll(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Ausstehend>", Scope = "member", Target = "~M:Base.Debug.Print(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Ausstehend>", Scope = "member", Target = "~M:Base.Debug.ScriptPrint(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1163:Unused parameter.", Justification = "<Ausstehend>", Scope = "member", Target = "~M:Base.BuiltInMethods.ToChar(CalcLang.Interpreter.ScriptThread,System.Object,System.Object[])~System.Object")]
 

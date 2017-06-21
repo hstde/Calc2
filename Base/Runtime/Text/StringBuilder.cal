@@ -44,8 +44,8 @@
 		}
 		
 		function AppendFormat(value, args) {
-			if(value == null) Throw("ArgumentNullException", "value");
-			if(args == null) Throw("ArgumentNullException", "args");
+			if(value == null) throw ArgumentNullException("value");
+			if(args == null) throw ArgumentNullException("args");
 			
 			var format = value;
 			
@@ -66,7 +66,7 @@
 						if(pos < len && value[pos] == '}')
 							pos++;
 						else
-							Throw("FormatException", "} without {");
+							throw FormatException("} without {");
 					
 					if(ch == '{')
 						if(pos < len && value[pos] == '{')
@@ -82,20 +82,20 @@
 				
 				if(pos == len) break;
 				pos++;
-				if(pos == len) Throw("FormatException");
+				if(pos == len) throw FormatException();
 				ch = value[pos];
-				if(ch < '0' || ch > '9') Throw("FormatException");
+				if(ch < '0' || ch > '9') throw FormatException();
 				
 				var index = 0;
 				do
 				{
 					index = index * 10 + ch - '0';
 					pos++;
-					if(pos == len) Throw("FormatException");
+					if(pos == len) throw FormatException();
 					ch = value[pos];
 				} while(ch >= '0' && ch <= '9' && index < 1000000);
 				
-				if(index >= args.Length) Throw("FormatIndexOutOfRange", index, args.Length);
+				if(index >= args.Length) throw FormatIndexOutOfRange("index >= args.Length");
 				while(pos < len && value[pos] == ' ') pos++;
 				ch = value[pos];
 				
@@ -106,21 +106,21 @@
 					pos++;
 					while(pos < len && value[pos] == ' ') pos++;
 					
-					if(pos == len) Throw("FormatException");
+					if(pos == len) throw FormatException();
 					ch = value[pos];
 					if(ch == '-')
 					{
 						leftJustify = true;
 						pos++;
-						if(pos == len) Throw("FormatException");
+						if(pos == len) throw FormatException();
 						ch = value[pos];
 					}
-					if(ch < '0' || ch > '9') Throw("FormatException");
+					if(ch < '0' || ch > '9') throw FormatException();
 					do
 					{
 						width = width * 10 + ch - '0';
 						pos++;
-						if(pos == len) Throw("FormatException");
+						if(pos == len) throw FormatException();
 						ch = value[pos];
 					} while(ch >= '0' && ch <= '9' && width < 1000000);
 				}
@@ -129,7 +129,7 @@
 				ch = value[pos];
 				var arg = args[index];
 				
-				if(ch != '}') Throw("FormatException");
+				if(ch != '}') throw FormatException();
 				pos++;
 				
 				var s = null;

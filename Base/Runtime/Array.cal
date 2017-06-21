@@ -40,11 +40,11 @@
 	
 	function Sort(keys, items, index, length, comparer) {
 		if(keys == null)
-			Throw("ArgumentNullException", "keys");
+			throw ArgumentNullException("keys");
 		if(index < 0 || length < 0)
-			Throw("ArgumentOutOfRangeException", length < 0 ? "length" : "index");
+			throw ArgumentOutOfRangeException(length < 0 ? "length" : "index");
 		if(keys.Length - index < length || (items != null && index > items.Length - length))
-			Throw("ArgumentException", "Invalid offset length");
+			throw ArgumentException("Invalid offset length");
 		
 		if(length > 1)
 		{
@@ -72,30 +72,30 @@
 	
 	function Sort(array) {
 		if(array == null)
-			Throw("ArgumentNullException");
+			throw ArgumentNullException("array");
 		if(array.GetType() != "Table")
-			Throw("ArgumentException");
+			throw ArgumentException("array");
 		
 		Sort(array, null, 0, array.Length, null);
 	}
 	
 	function Sort(keys, items) {
 		if(keys == null)
-			Throw("ArgumentNullException");
+			throw ArgumentNullException("keys");
 		
 		Sort(keys, items, 0, keys.Length, null);
 	}
 	
 	function Sort(array, index, length) {
 		if(array == null)
-			Throw("ArgumentNullException");
+			throw ArgumentNullException("array");
 		
 		Sort(array, null, index, length, null);
 	}
 	
 	function Sort(keys, items, index, length) {
 		if(keys == null)
-			Throw("ArgumentNullException");
+			throw ArgumentNullException("keys");
 		
 		Sort(keys, items, index, length, null);
 	}

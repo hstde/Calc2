@@ -77,6 +77,13 @@ namespace CalcLang.Interpreter
             throw new ScriptException(message, null, loc, stack);
         }
 
+        public void ThrowScriptException(object payload)
+        {
+            var loc = GetCurrentLocation();
+            var stack = GetStackTrace(true);
+            throw ScriptException.CreateScriptException(payload, loc, stack);
+        }
+
         private SourceInfo GetCurrentLocation() => CurrentNode == null ? new SourceLocation() : CurrentNode.Location;
         public ScriptStackTrace GetStackTrace(bool withHere)
         {

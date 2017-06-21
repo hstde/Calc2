@@ -1,0 +1,170 @@
+﻿var Exception = (function() {
+	function ctor() {
+		return ctor("");
+	}
+
+	function ctor(message) {
+		return ctor("Exception", message);
+	}
+	
+	function ctor(exceptionType, message) {
+		function subctor(exceptionType, message) {
+		}
+
+		function ToString() {
+			var stackTrace;
+			if(this.Stacktrace != null)
+			{
+				var rev = this.Stacktrace.Reverse();
+				stackTrace = String.Join(Environment.NewLine, rev.Select(function(e, i) return "\t@ " + FunctionInfoToString(e)));
+			}
+			
+			var s;
+			if(this.Message == null || this.Message.Length() <= 0)
+				s = this.ExceptionType;
+			else
+				s = this.ExceptionType + ": " + this.Message;
+			if(stackTrace != null)
+				s += Environment.NewLine + stackTrace;
+			return s;
+		}
+
+		function FunctionInfoToString(finfo) {
+			var ret = finfo.Name;
+			var argString = "";
+			if(finfo.ParamNames == null && finfo.paramCount > 0)
+				argString = finfo.paramCount.ToString();
+			else if(finfo.ParamNames != null)
+			{
+				if(finfo.HasParamsArg)
+					finfo.ParamNames[finfo.ParamNames.Length - 1] = "params " +
+						finfo.ParamNames[finfo.ParamNames.Length - 1];
+				argString = String.Join(", ", finfo.ParamNames);
+			}
+
+			ret += "(" + argString + ")";
+
+			return ret + " in " + finfo.CallLocation.Filename + ":Line " + (finfo.CallLocation.Line + 1);
+		}
+
+		subctor(exceptionType, message);
+		return {
+			Message = message,
+			ExceptionType = exceptionType,
+			Stacktrace = {},
+			ToString = ToString
+		};
+	}
+
+	return ctor;
+})();
+
+var ArgumentException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("ArgumentException", message);
+	}
+	return ctor;
+})();
+
+var ArgumentNullException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("ArgumentNullException", message);
+	}
+	return ctor;
+})();
+
+var OverflowException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("OverflowException", message);
+	}
+	return ctor;
+})();
+
+var ArgumentOutOfRangeException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("ArgumentOutOfRangeException", message);
+	}
+	return ctor;
+})();
+
+var NotImplementedException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("NotImplementedException", message);
+	}
+	return ctor;
+})();
+
+var NotSupportedException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("NotSupportedException", message);
+	}
+	return ctor;
+})();
+
+var FormatException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("FormatException", message);
+	}
+	return ctor;
+})();
+
+var FormatIndexOutOfRange = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("FormatIndexOutOfRange", message);
+	}
+	return ctor;
+})();
+
+var IOException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("IOException", message);
+	}
+	return ctor;
+})();
+
+var IndexOutOfRangeException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("IndexOutOfRangeException", message);
+	}
+	return ctor;
+})();
+
+var PathTooLongException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("PathTooLongException", message);
+	}
+	return ctor;
+})();

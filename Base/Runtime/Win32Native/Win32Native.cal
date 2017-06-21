@@ -45,12 +45,12 @@ var Microsoft = (function() {
 					if(fileType != Win32Native.FILE_TYPE_DISK)
 					{
 						__Win32Native_DisposeNativeHandle(handle);
-						Throw("NoSupportedException", "FileStreamOnNoneFiles");
+						throw NotSupportedException("FileStreamOnNonFiles");
 					}
 				}
 				
 				if(handle.IsInvalid)
-					Throw("IOException");
+					throw IOException();
 				
 				return handle; //Not really a handle, but well like the one returned by GetStdHandle()
 			}

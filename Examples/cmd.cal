@@ -48,7 +48,14 @@ function Run()
 		{
 			var args = {};
 			Array.Copy(input, 1, args, 0);
-			command(args);
+			try
+			{
+				command(args);
+			}
+			catch (e)
+			{
+				Console.WriteLine("Error: Command threw Exception " + e.ExceptionType + ": " + e.Message);
+			}
 		}
 	}
 }
@@ -107,16 +114,16 @@ function AppendFile(args)
 
 function ReadFile(args)
 {
-	Console.WriteLine("Not implemtented yet.");
+	throw NotImplementedException();
 }
 
 function Fault(args)
 {
 	var msg = "This is deliberate";
 	if(args.Length > 0)
-		Throw(msg, "\"" + String.Join(" ", args) + "\"");
-	else
-		Throw(msg);
+		msg += " \"" + String.Join(" ", args) + "\"";
+	
+	throw Exception(msg);
 }
 
 Main();

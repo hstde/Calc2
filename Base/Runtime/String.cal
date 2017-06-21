@@ -48,13 +48,13 @@
 	};
 
 	function Join(separator, value) {
-		if(value == null) Throw("ArgumentNullException", "value");
+		if(value == null) throw ArgumentNullException("value");
 		
 		return Join(separator, value, 0, value.Length);
 	};
 	
 	function Join(separator, value, startIndex, count) {
-		if(value == null) Throw("ArgumentNullException", "value");
+		if(value == null) throw ArgumentNullException("value");
 		if(separator.GetType() != "String") separator = separator.ToString();
 		
 		if(separator == null) separator = String.Empty;
@@ -66,7 +66,7 @@
 	}
 	
 	function Concat(arr) {
-		if(arr == null) Throw("ArgumentNullException", "arr");
+		if(arr == null) throw ArgumentNullException("arr");
 		if(arr.Length < 1) return "";
 		
 		return Join("", arr);
@@ -126,9 +126,9 @@
 
 	function IndexOfSubstring(str, value) {
 		if(value == null)
-			Throw("ArgumentException", "value");
+			throw ArgumentException("value");
 		if(str == null)
-			Throw("ArgumentException", "str");
+			throw ArgumentException("str");
 		
 		if(str == value) return 0;
 		if(value.Length() == 0) return 0;
@@ -158,9 +158,9 @@
 
 	function LastIndexOfSubstring(str, value) {
 		if(value == null)
-			Throw("ArgumentException", "value");
+			throw ArgumentException("value");
 		if(str == null)
-			Throw("ArgumentException", "str");
+			throw ArgumentException("str");
 		
 		if(str == value) return 0;
 		if(value.Length() == 0) return str.Length() - 1;
@@ -192,9 +192,9 @@
 
 	function StartsWith(str, value) {
 		if(value == null)
-			Throw("ArgumentException", "value");
+			throw ArgumentException("value");
 		if(str == null)
-			Throw("ArgumentException", "str");
+			throw ArgumentException("str");
 		
 		if(str == value) return true;
 		if(value.Length() == 0) return true;
@@ -205,9 +205,9 @@
 
 	function EndsWith(str, value) {
 		if(value == null)
-			Throw("ArgumentException", "value");
+			throw ArgumentException("value");
 		if(str == null)
-			Throw("ArgumentException", "str");
+			throw ArgumentException("str");
 		
 		if(str == value) return true;
 		if(value.Length() == 0) return true;
@@ -220,10 +220,10 @@
 	};
 
 	function Insert(str, startIndex, value) {
-		if(value == null) Throw("ArgumentNullException", "value");
-		if(str == null) Throw("ArgumentNullException", "str");
+		if(value == null) throw ArgumentNullException("value");
+		if(str == null) throw ArgumentNullException("str");
 		if(startIndex < 0 || startIndex > str.Length())
-			Throw("ArgumentOutOfRangeException", "startIndex");
+			throw ArgumentOutOfRangeException("startIndex");
 		
 		var oldLength = str.Length();
 		var insertLength = value.Length();
@@ -247,6 +247,17 @@
 		return sb.ToString();
 	};
 	
+	function ToTable(str) {
+		if(str.GetType() != "String") throw ArgumentException("str");
+		
+		var ret = {};
+		var index = 0;
+		foreach(var c in str)
+			ret[index++] = c;
+		
+		return ret;
+	}
+	
 	return {
 		Empty = Empty,
 		Split = Split,
@@ -261,6 +272,7 @@
 		StartsWith = StartsWith,
 		EndsWith = EndsWith,
 		Insert = Insert,
-		Format = Format
+		Format = Format,
+		ToTable = ToTable
 	};
 })();

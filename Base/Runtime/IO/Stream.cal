@@ -34,6 +34,10 @@
 			this.Write(String.Format(format, args));
 		}
 		
+		function WriteLine() {
+			this.Write(CoreNewLine);
+		}
+		
 		function WriteLine(str) {
 			if(str != null)
 				this.Write(str);

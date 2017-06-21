@@ -144,7 +144,7 @@
 		}
 		
 		if(String.IsNullOrWhiteSpace(normalizedPath))
-			Throw("ArgumentException", "normalizedPath", normalizedPath);
+			throw ArgumentException("normalizedPath");
 		
 		return normalizedPath;
 	}
@@ -153,17 +153,17 @@
 
 		var normalized = NormalizeDirectorySeparators(path);
 		if(IsPathTooLang(normalized) || AreSegmentsTooLong(normalized))
-			Throw("PathTooLongException");
+			throw PathTooLongException();
 		
 		return normalized;
 	}
 
 	function NewNormalizePath(path, maxPathLength, expandShortPaths) {
 		if(String.IndexOf(path, "\0") != -1)
-			Throw("ArgumentException", "invalid Path chars", path);
+			throw ArgumentException("invalid Path chars");
 		
 		if(String.IsNullOrWhiteSpace(path))
-			Throw("ArgumentException", "illegal Path");
+			throw ArgumentException("illegal Path");
 		
 		var normalized = path;
 		

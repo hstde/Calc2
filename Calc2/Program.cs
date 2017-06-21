@@ -17,12 +17,38 @@ namespace Calc2
         private static void Main(string[] args)
         {
             if (args.Length > 0)
-                DoFile(args[0]);
+            {
+                switch (args[0])
+                {
+                    case "-h":
+                    case "/?":
+                        Help();
+                        break;
+                    case "-v":
+                        Version();
+                        break;
+                    default:
+                        DoFile(args[0], args.Skip(1).ToArray());
+                        break;
+                }
+            }
             else
+            {
                 LiveInterpreter();
+            }
         }
 
-        private static void DoFile(string file)
+        private static void Help()
+        {
+
+        }
+
+        private static void Version()
+        {
+            Console.WriteLine($"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name} V{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
+        }
+
+        private static void DoFile(string file, string[] args)
         {
             var eval = new Evaluator();
             eval.App.RethrowExceptions = false;
@@ -39,7 +65,7 @@ namespace Calc2
             string input = File.ReadAllText(file);
             GC.Collect(0);
             eval.ClearOutput();
-            var res = eval.Evaluate(input, file);
+            var res = eval.Evaluate(input, file, args);
 
             switch (eval.App.Status)
             {
@@ -47,7 +73,7 @@ namespace Calc2
                     Console.WriteLine(eval.GetOutput());
                     foreach (var err in eval.App.GetParserMessages())
                     {
-                        Console.WriteLine(err.Message);
+                        Console.WriteLine($"[{err.Level}] {err.Location.ToUiString()} in {file}: {err.Message}");
                     }
                     break;
                 case CalcLang.Interpreter.AppStatus.Ready:
@@ -69,7 +95,6 @@ namespace Calc2
                     }
                     break;
             }
-
         }
 
         private static void LiveInterpreter()
@@ -91,12 +116,14 @@ namespace Calc2
                     input = Console.ReadLine();
 
                 if (input.StartsWith("#"))
+                {
                     switch (input.ToLower())
                     {
                         case "#reset":
                             eval.Reset();
                             continue;
                     }
+                }
 
                 GC.Collect(0);
 
@@ -120,7 +147,8 @@ namespace Calc2
                         }
                         break;
                     case CalcLang.Interpreter.AppStatus.Ready:
-                        Console.WriteLine(eval.GetOutput());
+                        if (eval.GetOutput().Length > 0)
+                            Console.WriteLine(eval.GetOutput());
                         break;
                     case CalcLang.Interpreter.AppStatus.Crash:
                     case CalcLang.Interpreter.AppStatus.RuntimeError:

@@ -1,11 +1,16 @@
 ﻿using "Base";
 
 var Int32 = (function() {
+	function Parse(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
+	function Parse(s, style) return Number.ParseInt32(s, style, Number.NumberFormatInfo)
+	
+	function TryParse(s) return Number.TryParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
+	function TryParse(s, style) return Number.TryParseInt32(s, style, Number.NumberFormatInfo)
 	return {
 		MaxValue = 0x7fff_ffff,
 		MinValue = -0x7fff_ffff,
-		Parse = function(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo),
-		TryParse = function(s) return Number.TryParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
+		Parse = Parse,
+		TryParse = TryParse
 	};
 })();
 
@@ -22,11 +27,21 @@ var Environment = (function() {
 	}
 	
 	return {
-		GetTickCount = GetTickCount
+		GetTickCount = GetTickCount,
+		NewLine = "\r\n"
 	};
 })();
 
+function Throw(params p)
+{
+	var msg = "ScriptException";
+	if(p.Length > 0)
+		msg += "(" + String.Join(", ", p.Select(function(e, i) return e != null ? e.ToString() : "null")) + ")";
+	throw msg;
+}
+
 using "Runtime\Win32Native\Win32Native";
+using "Runtime\Exception";
 using "Runtime\Number";
 using "Runtime\Array";
 using "Runtime\Buffer";
@@ -34,5 +49,6 @@ using "Runtime\String";
 using "Runtime\Linq";
 using "Runtime\Math";
 using "Runtime\Random";
+using "Runtime\Convert";
 using "Runtime\Text\Text";
 using "Runtime\IO\IO";
