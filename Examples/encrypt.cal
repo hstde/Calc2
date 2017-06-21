@@ -39,7 +39,7 @@ function encrypt(key, data)
 function inputHex(str)
 {
 	if(str.Length() % 2 != 0)
-		Throw("ArgumentException");
+		throw ArgumentException("Input must have a length divisible by two.");
 	
 	var split = {};
 	var strLength = str.Length();
