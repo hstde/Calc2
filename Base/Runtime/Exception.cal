@@ -1,16 +1,32 @@
 ﻿var Exception = (function() {
-
 	function ctor() {
 		return ctor("");
 	}
 
 	function ctor(message) {
-		function subctor(message) {
+		return ctor("Exception", message);
+	}
+	
+	function ctor(exceptionType, message) {
+		function subctor(exceptionType, message) {
 		}
 
 		function ToString() {
-			var rev = this.Stacktrace.Reverse();
-			return String.Join(Environment.NewLine, rev.Select(function(e, i) return "\t@ " + FunctionInfoToString(e)));
+			var stackTrace;
+			if(this.Stacktrace != null)
+			{
+				var rev = this.Stacktrace.Reverse();
+				stackTrace = String.Join(Environment.NewLine, rev.Select(function(e, i) return "\t@ " + FunctionInfoToString(e)));
+			}
+			
+			var s;
+			if(this.Message == null || this.Message.Length() <= 0)
+				s = this.ExceptionType;
+			else
+				s = this.ExceptionType + ": " + this.Message;
+			if(stackTrace != null)
+				s += Environment.NewLine + stackTrace;
+			return s;
 		}
 
 		function FunctionInfoToString(finfo) {
@@ -31,9 +47,11 @@
 			return ret + " in " + finfo.CallLocation.Filename + ":Line " + (finfo.CallLocation.Line + 1);
 		}
 
-		subctor(message);
+		subctor(exceptionType, message);
 		return {
 			Message = message,
+			ExceptionType = exceptionType,
+			Stacktrace = {},
 			ToString = ToString
 		};
 	}
