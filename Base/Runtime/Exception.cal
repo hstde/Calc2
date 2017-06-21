@@ -58,3 +58,103 @@
 
 	return ctor;
 })();
+
+var ArgumentException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("ArgumentException", message);
+	}
+	return ctor;
+})();
+
+var ArgumentNullException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("ArgumentNullException", message);
+	}
+	return ctor;
+})();
+
+var OverflowException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("OverflowException", message);
+	}
+	return ctor;
+})();
+
+var ArgumentOutOfRangeException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("ArgumentOutOfRangeException", message);
+	}
+	return ctor;
+})();
+
+var NotImplementedException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("NotImplementedException", message);
+	}
+	return ctor;
+})();
+
+var NotSupportedException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("NotSupportedException", message);
+	}
+	return ctor;
+})();
+
+var FormatException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("FormatException", message);
+	}
+	return ctor;
+})();
+
+var IOException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("IOException", message);
+	}
+	return ctor;
+})();
+
+var IndexOutOfRangeException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("IndexOutOfRangeException", message);
+	}
+	return ctor;
+})();
+
+var PathTooLongException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("PathTooLongException", message);
+	}
+	return ctor;
+})();
