@@ -38,9 +38,12 @@ namespace CalcLang.Ast
 
             thread.PushScope(DependentScopeInfo, null);
 
-            var bind = thread.Bind(exceptionVar.Symbol, BindingRequestFlags.NewOnly | BindingRequestFlags.Write);
-            if (bind != null && !(bind is NullBinding) && bind.SetValueRef != null)
-                bind.SetValueRef(thread, se.ToScriptObject());
+            if (exceptionVar != null)
+            {
+                var bind = thread.Bind(exceptionVar.Symbol, BindingRequestFlags.ExistingOrNew | BindingRequestFlags.Write);
+                if (bind != null && !(bind is NullBinding) && bind.SetValueRef != null)
+                    bind.SetValueRef(thread, se.ToScriptObject());
+            }
 
             block.Evaluate(thread);
 
