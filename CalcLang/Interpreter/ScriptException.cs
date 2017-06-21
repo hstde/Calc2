@@ -31,8 +31,21 @@ namespace CalcLang.Interpreter
         public static ScriptException CreateScriptException(object payload, SourceInfo location, ScriptStackTrace stack)
             => new ScriptException(payload as string ?? "ScriptException", null, location, stack) { Payload = payload };
 
-        public override string ToString() => Message
-            + Environment.NewLine + ScriptStackTrace.ToString();
+        public override string ToString()
+        {
+            var msg = Message;
+            if (Payload is DataTable)
+            {
+                var dt = (DataTable)Payload;
+                var exType = (string)dt.GetString("ExceptionType");
+                msg = (string)dt.GetString("Message");
+                if (msg != null && msg.Length > 0)
+                    msg = exType + ": " + msg;
+                else
+                    msg = exType;
+            }
+            return msg + Environment.NewLine + ScriptStackTrace.ToString();
+        }
 
         public object ToScriptObject()
         {
@@ -51,7 +64,7 @@ namespace CalcLang.Interpreter
 
             var dataStackTrace = new DataTable();
             int index = 0;
-            foreach(var e in ScriptStackTrace.CallStack)
+            foreach (var e in ScriptStackTrace.CallStack)
             {
                 var stackEntry = new DataTable();
                 stackEntry.SetString("Name", e.Name);
