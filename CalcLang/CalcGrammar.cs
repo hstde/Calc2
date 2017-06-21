@@ -9,7 +9,7 @@ using CalcLang.Ast;
 
 namespace CalcLang
 {
-    [Language("CalcLang", "0.7", "A simple language inspired by C# and Lua")]
+    [Language("CalcLang", "0.9", "A simple language inspired by C# and Lua")]
     public class CalcGrammar : Grammar, ICanRunSample
     {
         public CalcGrammar() : base(true)
