@@ -1,0 +1,32 @@
+/*
+ * A Calc2 Implementation of the luacode of the bisect function
+ * To use it, start the Live interpreter, include runtime, include this file
+ * and then call solve(yourFunction, lowerBound, upperBound)
+ */
+
+delta = 1e-6;
+n = 0;
+
+function bisect(f, a, b, fa, fb)
+{
+	var c = (a+b) / 2;
+	Console.WriteLine("{0} c = {1} a = {2}, b = {3}", n, c, a, b);
+	if(c == a || c == b || Math.Abs(a-b) < delta)
+		return {c, b - a};
+	n += 1;
+	var fc = f(c);
+	if(fa * fc < 0)
+		return bisect(f, a, c, fa, fc);
+	else
+		return bisect(f, c, b, fc, fb);
+}
+
+function solve(f, a, b)
+{
+	n = 0;
+	var r = bisect(f, a, b, f(a), f(b));
+	var z = r[0];
+	var e = r[1];
+	
+	Console.WriteLine("after {0} steps, root is {1} with error {2}, f = {3}", n, z, e, f(z));
+}
