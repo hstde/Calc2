@@ -50,6 +50,7 @@ namespace CalcLang
             NonTerminal functionDef = new NonTerminal("functionDef", typeof(FunctionDefNode));
             NonTerminal functionBody = new NonTerminal("functionBody", typeof(StatementListNode));
             NonTerminal inlineFunctionDef = new NonTerminal("inlineFunctionDef", typeof(LambdaNode));
+            NonTerminal externFunctionDef = new NonTerminal("externFunctionDef", typeof(ExternFunctionNode));
             NonTerminal paramList = new NonTerminal("paramList", typeof(ParamListNode));
             NonTerminal param = new NonTerminal("param", typeof(ParamNode));
             NonTerminal paramsOrEmpty = new NonTerminal("paramsOrEmpty");
@@ -98,6 +99,7 @@ namespace CalcLang
                                 | ifClause
                                 | ifElseClause
                                 | functionDef
+                                | externFunctionDef + ";"
                                 | returnClause + ";"
                                 | emptyReturnClause
                                 | breakClause
@@ -149,6 +151,7 @@ namespace CalcLang
             functionDef.Rule = "function" + name + "(" + paramList + ")" + ToTerm("extension").Q() + functionBody;
             functionDef.NodeCaptionTemplate = "function #{0}(...)";
             inlineFunctionDef.Rule = ToTerm("function") + "(" + paramList + ")" + functionBody;
+            externFunctionDef.Rule = ToTerm("extern") + "function" + name + "(" + paramList + ")";
             inlineFunctionDef.NodeCaptionTemplate = "function(...)";
             functionBody.Rule = block | returnClause;
 
@@ -204,7 +207,7 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in", "try", "catch", "finally", "throw");
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in", "try", "catch", "finally", "throw", "extern");
             RegisterBracePair("(", ")");
             RegisterBracePair("[", "]");
             RegisterBracePair("{", "}");

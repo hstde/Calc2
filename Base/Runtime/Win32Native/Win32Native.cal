@@ -12,31 +12,53 @@ var Microsoft = (function() {
 			var FILE_TYPE_PIPE = 0x0003;
 			var ERROR_INVALID_HANDLE = 0x6;
 			
-			function GetTickCount() { 
-				return __Win32Native_Environment_GetTickCount();
+			extern function Win32Native_Environment_GetTickCount();
+			extern function Win32Native_DateTime_GetCurrentTimeTicks();
+			extern function Win32Native_String_Join(separator, value, startIndex, count);
+			extern function Win32Native_GetLastWin32Error();
+			extern function Win32Native_SetErrorMode(newMode);
+			extern function Win32Native_CreateFile(fileName, dwDesiredAccess,
+								dwShareMode, securityAttrs, dwCreationDisposition,
+								dwFlagsAndAttributes, hTemplateFile);
+			extern function Win32Native_DisposeNativeHandle(handle);
+			extern function Win32Native_GetFileType(handle);
+			extern function Win32Native_SetFilePointer(handle, lo, hi, origin);
+			extern function Win32Native_GetStdHandle(nStdHandle);
+			extern function Win32Native_WriteFile(handle, bytes, offset, count);
+			extern function Win32Native_ReadFile(handle, bytes, offset, count);
+			extern function Win32Native_WaitForAvailableConsoleInput(handle);
+			extern function Win32Native_GetConsoleOutputCP();
+			extern function Win32Native_GetConsoleCP();
+			extern function Win32Native_GetEncodingBytes(cp, bytes, start, count);
+			extern function Win32Native_GetEncodingMaxCharCount(cp, bufferSize);
+			extern function Win32Native_GetEncodingPreamble(cp);
+			extern function Win32Native_GetEncodingChars(cp, bytes, byteIndex, byteCount, chars, charIndex);
+
+			function GetTickCount() {
+				return Win32Native_Environment_GetTickCount();
 			}
 			
 			function GetCurrentTimeTicks() {
-				return __Win32Native_DateTime_GetCurrentTimeTicks();
+				return Win32Native_DateTime_GetCurrentTimeTicks();
 			}
 			
 			function FastStringJoin(separator, value, startIndex, count) {
-				return __Win32Native_String_Join(separator, value, startIndex, count);
+				return Win32Native_String_Join(separator, value, startIndex, count);
 			}
 			
 			function GetLastWin32Error() {
-				return __Win32Native_GetLastWin32Error();
+				return Win32Native_GetLastWin32Error();
 			}
 			
 			function SetErrorMode(newMode) {
-				return __Win32Native_SetErrorMode(newMode);
+				return Win32Native_SetErrorMode(newMode);
 			}
 			
 			function SafeCreateFile(fileName, dwDesiredAccess, dwShareMode, securityAttrs,
 				dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile) {
 				
 				var Win32Native = Microsoft.Win32.Win32Native;
-				var handle = __Win32Native_CreateFile(fileName, dwDesiredAccess, dwShareMode, 
+				var handle = Win32Native_CreateFile(fileName, dwDesiredAccess, dwShareMode, 
 													securityAttrs, dwCreationDisposition, 
 													dwFlagsAndAttributes, hTemplateFile);
 				if(!handle.IsInvalid)
@@ -44,7 +66,7 @@ var Microsoft = (function() {
 					var fileType = Win32Native.GetFileType(handle.Handle);
 					if(fileType != Win32Native.FILE_TYPE_DISK)
 					{
-						__Win32Native_DisposeNativeHandle(handle);
+						Win32Native_DisposeNativeHandle(handle);
 						throw NotSupportedException("FileStreamOnNonFiles");
 					}
 				}
@@ -56,7 +78,7 @@ var Microsoft = (function() {
 			}
 			
 			function GetFileType(handle) {
-				return __Win32Native_GetFileType(handle);
+				return Win32Native_GetFileType(handle);
 			}
 			
 			function SetFilePointer(handle, offset, origin) {
@@ -65,7 +87,7 @@ var Microsoft = (function() {
 				var hr = 0;
 				var lo = offset & 0xFFFF_FFFF;
 				var hi = offset >> 32;
-				var res = __Win32Native_SetFilePointer(handle, lo, hi, origin);
+				var res = Win32Native_SetFilePointer(handle, lo, hi, origin);
 				hr = Win32Native.GetLastWin32Error();
 				
 				if(res == -1 && hr != 0)
@@ -75,43 +97,43 @@ var Microsoft = (function() {
 			}
 			
 			function GetStdHandle(nStdHandle) {
-				return __Win32Native_GetStdHandle(nStdHandle);
+				return Win32Native_GetStdHandle(nStdHandle);
 			}
 			
 			function WriteFile(handle, bytes, offset, numBytesToWrite) {
-				return __Win32Native_WriteFile(handle, bytes, offset, numBytesToWrite);
+				return Win32Native_WriteFile(handle, bytes, offset, numBytesToWrite);
 			}
 			
 			function ReadFile(handle, bytes, offset, count) {
-				return __Win32Native_ReadFile(handle, bytes, offset, count);
+				return Win32Native_ReadFile(handle, bytes, offset, count);
 			}
 			
 			function WaitForAvailableConsoleInput(handle) {
-				__Win32Native_WaitForAvailableConsoleInput(handle);
+				Win32Native_WaitForAvailableConsoleInput(handle);
 			}
 			
 			function GetConsoleOutputCP() {
-				return __Win32Native_GetConsoleOutputCP();
+				return Win32Native_GetConsoleOutputCP();
 			}
 			
 			function GetConsoleCP() {
-				return __Win32Native_GetConsoleCP();
+				return Win32Native_GetConsoleCP();
 			}
 			
 			function GetEncodingBytes(cp, bytes, start, count) {
-				return __Win32Native_GetEncodingBytes(cp, bytes, start, count);
+				return Win32Native_GetEncodingBytes(cp, bytes, start, count);
 			}
 			
 			function GetEncodingMaxCharCount(cp, bufferSize) {
-				return __Win32Native_GetEncodingMaxCharCount(cp, bufferSize);
+				return Win32Native_GetEncodingMaxCharCount(cp, bufferSize);
 			}
 			
 			function GetEncodingPreamble(cp) {
-				return __Win32Native_GetEncodingPreamble(cp);
+				return Win32Native_GetEncodingPreamble(cp);
 			}
 			
 			function GetEncodingChars(cp, bytes, byteIndex, byteCount, chars, charIndex) {
-				return __Win32Native_GetEncodingChars(cp, bytes, byteIndex, byteCount, chars, charIndex);
+				return Win32Native_GetEncodingChars(cp, bytes, byteIndex, byteCount, chars, charIndex);
 			}
 			
 			

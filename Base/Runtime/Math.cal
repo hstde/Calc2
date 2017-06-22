@@ -23,13 +23,9 @@ var Math = (function() {
 		return val1;
 	}
 	
-	function Floor(value) {
-		return __Floor(value);
-	}
+	extern function Floor(value);
 	
-	function Ceiling(value) {
-		return __Ceiling(value);
-	}
+	extern function Ceiling(value);
 	
 	function InternalRound(value, digits, mode) {
 		var power10 = roundPower10[digits];
@@ -55,13 +51,12 @@ var Math = (function() {
 		return InternalRound(value, digits, MidpointRounding.ToEven);
 	}
 	
-	function Round(value) {
-		return __Round(value);
-	}
+	extern function Round(value);
 	
 	function Int(value) {
 		if(value.GetType() != "Number") throw ArgumentException();
-		return __Int(value);
+		extern function Int(value);
+		return Int(value);
 	}
 	
 	function Sign(value) {
@@ -73,65 +68,35 @@ var Math = (function() {
 			return 0;
 	}
 	
-	function Acos(value) {
-		return __Acos(value);
-	}
+	extern function Acos(value);
 	
-	function Asin(value) {
-		return __Asin(value);
-	}
+	extern function Asin(value);
 	
-	function Atan(value) {
-		return __Atan(value);
-	}
+	extern function Atan(value);
 	
-	function Atan2(y, x) {
-		return __Atan2(y, x);
-	}
+	extern function Atan2(y, x);
 	
-	function Cos(value) {
-		return __Cos(value);
-	}
+	extern function Cos(value);
 	
-	function Cosh(value) {
-		return __Cosh(value);
-	}
+	extern function Cosh(value);
 	
-	function Sin(value) {
-		return __Sin(value);
-	}
+	extern function Sin(value);
 	
-	function Tan(value) {
-		return __Tan(value);
-	}
+	extern function Tan(value);
 	
-	function Sinh(value) {
-		return __Sinh(value);
-	}
+	extern function Sinh(value);
 	
-	function Tanh(value) {
-		return __Tanh(value);
-	}
+	extern function Tanh(value);
 	
-	function Sqrt(value) {
-		return __Sqrt(value);
-	}
+	extern function Sqrt(value);
 	
-	function Log(value) {
-		return __Log(value);
-	}
+	extern function Log(value);
 	
-	function Log10(value) {
-		return __Log10(value);
-	}
+	extern function Log10(value);
 	
-	function Exp(value) {
-		return __Exp(value);
-	}
+	extern function Exp(value);
 	
-	function Pow(x, y) {
-		return __Pow(x, y);
-	}
+	extern function Pow(x, y);
 	
 	function IEEERemainder(x, y) {
 		var regularMod = x % y;

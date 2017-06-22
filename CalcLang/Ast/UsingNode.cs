@@ -132,7 +132,7 @@ namespace CalcLang.Ast
 
                 foreach (var method in methods)
                 {
-                    CalcCallableMethodAttribute attr = method.GetCustomAttribute<CalcCallableMethodAttribute>();
+                    var attr = method.GetCustomAttribute<CalcCallableMethodAttribute>();
                     thread.Runtime.BuiltIns.AddMethod((BuiltInMethod)method.CreateDelegate(typeof(BuiltInMethod)),
                         attr.Name, attr.ParameterCount,
                         attr.ParameterNames == null ? null : string.Join(",", attr.ParameterNames));

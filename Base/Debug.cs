@@ -14,7 +14,7 @@ namespace Base
         public static object Print(ScriptThread thread, object thisRef, object[] parameters)
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en");
-            Console.WriteLine(string.Join("\t", parameters.Select(x => x?.ToString() ?? "NULL")));
+            Console.WriteLine(string.Join("\t", (parameters[0] as DataTable).Select(x => x?.ToString() ?? "NULL")));
             return null;
         }
 
@@ -22,7 +22,7 @@ namespace Base
         public static object ScriptPrint(ScriptThread thread, object instance, object[] parameters)
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en");
-            thread.App.WriteLine(string.Join("\t", parameters.Select(x => x?.ToString() ?? "NULL")));
+            thread.App.WriteLine(string.Join("\t", (parameters[0] as DataTable).Select(x => x?.ToString() ?? "NULL")));
             return null;
         }
 

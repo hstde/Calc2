@@ -17,7 +17,7 @@ namespace CalcLang.Interpreter
         NullOk = 1 << 5,
         PreferExisting = 1 << 6,
         NewOnly = 1 << 7,
-
+        Extern = 1 << 8,
 
         ExistingOrNew = Existing | NewOnly
     }

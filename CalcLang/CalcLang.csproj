@@ -59,6 +59,7 @@
     <Compile Include="Ast\DoWhileNode.cs" />
     <Compile Include="Ast\EmptyNode.cs" />
     <Compile Include="Ast\ExpressionListNode.cs" />
+    <Compile Include="Ast\ExternFunctionNode.cs" />
     <Compile Include="Ast\ForeachNode.cs" />
     <Compile Include="Ast\ForNode.cs" />
     <Compile Include="Ast\FunctionCallNode.cs" />

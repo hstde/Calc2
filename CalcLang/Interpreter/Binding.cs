@@ -93,7 +93,7 @@ namespace CalcLang.Interpreter
 
         public string Name;
         public readonly BuiltInMethod Method;
-        public readonly int ParamCount;
+        public int ParamCount;
         public string[] ParamNames;
         public bool HasParamsArg;
 
