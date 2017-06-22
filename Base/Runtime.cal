@@ -21,13 +21,25 @@ var Byte = (function() {
 	};
 })();
 
+var Int64 = (function() {
+	return {
+		MaxValue = 0x7fff_ffff_ffff_ffff,
+		MinValue = -0x7fff_ffff_ffff_ffff
+	};
+})();
+
 var Environment = (function() {
 	function GetTickCount() {
 		return Microsoft.Win32.Win32Native.GetTickCount();
 	}
 	
+	function GetCurrentTimeTicks() {
+		return Microsoft.Win32.Win32Native.GetCurrentTimeTicks();
+	}
+	
 	return {
 		GetTickCount = GetTickCount,
+		GetCurrentTimeTicks = GetCurrentTimeTicks,
 		NewLine = "\r\n"
 	};
 })();
@@ -52,3 +64,5 @@ using "Runtime\Random";
 using "Runtime\Convert";
 using "Runtime\Text\Text";
 using "Runtime\IO\IO";
+using "Runtime\Diagnostics\Diagnostics";
+using "Runtime\TimeSpan";
