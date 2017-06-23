@@ -226,11 +226,11 @@ namespace CalcLang
             MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl, paramsOrEmpty);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
-            AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do", "try", "throw");
+            AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do", "try", "throw", "foreach");
             AddTermsReportGroup("variable declaration", "var");
             AddTermsReportGroup("function declaration", "function", "extern");
-            AddTermsReportGroup("constant", number, escapedString, nonEscapedString);
-            AddTermsReportGroup("constant", "null", "false", "true", "this");
+            AddTermsReportGroup("constant", number, escapedString, nonEscapedString, _char);
+            AddTermsReportGroup("constant", "null", "false", "true", "this", "@");
             AddTermsReportGroup("unary operator", "+", "-", "!");
             AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>");
             AddToNoReportGroup("(", "[", "{", ".", ",", "++", "--");
