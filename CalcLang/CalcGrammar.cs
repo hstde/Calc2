@@ -207,7 +207,10 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in", "try", "catch", "finally", "throw", "extern");
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@",
+                "return", "if", "else", "for", "while", "function", "break", "continue",
+                "using", "do", "var", "foreach", "in",
+                "try", "catch", "finally", "throw", "extern");
             RegisterBracePair("(", ")");
             RegisterBracePair("[", "]");
             RegisterBracePair("{", "}");
@@ -223,16 +226,19 @@ namespace CalcLang
             MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl, paramsOrEmpty);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
-            AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do");
+            AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do", "try", "throw");
             AddTermsReportGroup("variable declaration", "var");
-            AddTermsReportGroup("function declaration", "function");
+            AddTermsReportGroup("function declaration", "function", "extern");
             AddTermsReportGroup("constant", number, escapedString, nonEscapedString);
             AddTermsReportGroup("constant", "null", "false", "true", "this");
             AddTermsReportGroup("unary operator", "+", "-", "!");
             AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>");
             AddToNoReportGroup("(", "[", "{", ".", ",", "++", "--");
 
-            MarkReservedWords("if", "else", "return", "function", "while", "for", "null", "false", "true", "this", "break", "continue", "using", "do", "var", "foreach", "in", "params");
+            MarkReservedWords("if", "else", "return", "function", "while",
+                "for", "null", "false", "true", "this", "break", "continue",
+                "using", "do", "var", "foreach", "in", "params",
+                "try", "catch", "finally", "throw", "extern");
 
             number.DefaultFloatType = TypeCode.Double;
             number.DefaultIntTypes = new TypeCode[] { TypeCode.Int64 };
