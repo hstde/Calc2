@@ -12,9 +12,6 @@ var Microsoft = (function() {
 			var FILE_TYPE_PIPE = 0x0003;
 			var ERROR_INVALID_HANDLE = 0x6;
 			
-			extern function Win32Native_Environment_GetTickCount();
-			extern function Win32Native_DateTime_GetCurrentTimeTicks();
-			extern function Win32Native_String_Join(separator, value, startIndex, count);
 			extern function Win32Native_GetLastWin32Error();
 			extern function Win32Native_SetErrorMode(newMode);
 			extern function Win32Native_CreateFile(fileName, dwDesiredAccess,
@@ -40,10 +37,6 @@ var Microsoft = (function() {
 			
 			function GetCurrentTimeTicks() {
 				return Win32Native_DateTime_GetCurrentTimeTicks();
-			}
-			
-			function FastStringJoin(separator, value, startIndex, count) {
-				return Win32Native_String_Join(separator, value, startIndex, count);
 			}
 			
 			function GetLastWin32Error() {
@@ -149,9 +142,6 @@ var Microsoft = (function() {
 				FILE_TYPE_CHAR = FILE_TYPE_CHAR,
 				FILE_TYPE_PIPE = FILE_TYPE_PIPE,
 			
-				GetTickCount = GetTickCount,
-				GetCurrentTimeTicks = GetCurrentTimeTicks,
-				FastStringJoin = FastStringJoin,
 				GetLastWin32Error = GetLastWin32Error,
 				SetErrorMode = SetErrorMode,
 				SafeCreateFile = SafeCreateFile,

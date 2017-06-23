@@ -29,13 +29,8 @@ var Int64 = (function() {
 })();
 
 var Environment = (function() {
-	function GetTickCount() {
-		return Microsoft.Win32.Win32Native.GetTickCount();
-	}
-	
-	function GetCurrentTimeTicks() {
-		return Microsoft.Win32.Win32Native.GetCurrentTimeTicks();
-	}
+	extern function GetTickCount();
+	extern function GetCurrentTimeTicks();
 	
 	return {
 		GetTickCount = GetTickCount,

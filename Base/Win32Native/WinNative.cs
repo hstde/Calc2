@@ -51,32 +51,6 @@ namespace Base
             #endregion
         }
 
-        [CalcCallableMethod("Win32Native_Environment_GetTickCount", 0)]
-        public static object GetTickCount(ScriptThread thread, object instance, object[] parameters) => (decimal)Environment.TickCount;
-
-        [CalcCallableMethod("Win32Native_DateTime_GetCurrentTimeTicks", 0)]
-        public static object GetCurrentTimeTicks(ScriptThread thread, object instance, object[] parameters) => (decimal)DateTime.Now.Ticks;
-
-        [CalcCallableMethod("Win32Native_String_Join", 4)]
-        public static object StringJoin(ScriptThread thread, object instance, object[] parameters)
-        {
-            string ret = null;
-
-            string separator = parameters[0] as string;
-            var valueTable = (parameters[1] as DataTable)?.GetIntIndexedDict();
-            int startIndex = Convert.ToInt32(parameters[2]);
-            int count = Convert.ToInt32(parameters[3]);
-
-            string[] value = new string[valueTable.Count];
-
-            for (int i = 0; i < value.Length; i++)
-                value[i] = valueTable[i].ToString();
-
-            ret = String.Join(separator, value, startIndex, count);
-
-            return ret;
-        }
-
         [CalcCallableMethod("Win32Native_SetErrorMode", 1)]
         public static object SetErrorMode(ScriptThread thread, object instance, object[] parameters)
         {
