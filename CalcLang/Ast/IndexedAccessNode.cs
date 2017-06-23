@@ -123,9 +123,13 @@ namespace CalcLang.Ast
                         dtTarget.SetInt(iIndex, value);
                     }
                 }
-                catch
+                catch(OutOfMemoryException e)
                 {
-                    thread.ThrowScriptError("Index must be string or number.");
+                    thread.ThrowScriptError("Out of Memory exception!");
+                }
+                catch(Exception e)
+                {
+                    thread.ThrowScriptError("Index must be string or number. Exception was " + e.GetType() + " " + e.Message);
                 }
             }
             else if (type.IsArray)
