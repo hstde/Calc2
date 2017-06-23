@@ -14,7 +14,7 @@ function Main()
 		help = Help,
 		quit = Quit,
 		echo = Echo,
-		throw = function(args) { Fault(args); },
+		"throw" = function(args) { Fault(args); }, //because throw is now a keyword
 		writeFile = WriteFile,
 		appendFile = AppendFile,
 		readFile = ReadFile
