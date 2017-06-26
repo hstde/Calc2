@@ -22,7 +22,7 @@ namespace CalcLang.Ast
 
             var nodes = parseNode.GetMappedChildNodes();
             NameNode = AddChild("Name", nodes[0]) as IdentifierNode;
-            IsExtension = nodes[2].FindTokenAndGetText() == "extension";
+            IsExtension = string.Equals(nodes[2].FindTokenAndGetText(), "extension", StringComparison.CurrentCultureIgnoreCase);
             Lambda = new LambdaNode(context, NameNode, parseNode, nodes[1], nodes[3]) {Parent = this};
             ChildNodes.Add(Lambda);
             AsString = "<" + (IsExtension ? " Extension " : "") + "Function " + NameNode.AsString + "[" + Lambda.Parameters.ChildNodes.Count + "]" + ">";

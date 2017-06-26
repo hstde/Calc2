@@ -1,5 +1,10 @@
 ﻿using "Base";
 
+extern function ToString() extension;
+extern function GetType() extension;
+extern function Length() extension;
+extern function ToChar() extension;
+
 var Int32 = (function() {
 	function Parse(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
 	function Parse(s, style) return Number.ParseInt32(s, style, Number.NumberFormatInfo)

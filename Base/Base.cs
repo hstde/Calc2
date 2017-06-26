@@ -6,7 +6,7 @@ namespace Base
 {
     internal static class BuiltInMethods
     {
-        [CalcCallableMethod(".GetType")]
+        [CalcCallableMethod("GetType")]
         public static object GetType(ScriptThread thread, object thisRef, object[] parameters)
         {
             if (thisRef == null || Equals(thisRef, thread.Runtime.NullValue))
@@ -36,14 +36,14 @@ namespace Base
             return result;
         }
 
-        [CalcCallableMethod(".Length")]
+        [CalcCallableMethod("Length")]
         public static object Length(ScriptThread thread, object instance, object[] parameters)
         {
             object result;
             switch (instance.GetType().Name)
             {
                 case "DataTable":
-                    result = ((DataTable)instance).GetIntIndexedDict().Count;
+                    result = ((DataTable)instance).Length;
                     break;
                 case "String":
                     result = ((string)instance).Length;
@@ -58,10 +58,10 @@ namespace Base
             return result;
         }
 
-        [CalcCallableMethod(".ToString")]
+        [CalcCallableMethod("ToString")]
         public static object ToString(ScriptThread thread, object thisRef, object[] parameters) => thisRef.ToString();
 
-        [CalcCallableMethod(".ToChar")]
+        [CalcCallableMethod("ToChar")]
         public static object ToChar(ScriptThread thread, object instance, object[] parameters)
         {
             switch (instance.GetType().Name)

@@ -12,6 +12,8 @@ namespace CalcLang.Interpreter
         private Dictionary<string, object> stringIndexed;
         private readonly Dictionary<int, object> intIndexed;
 
+        public decimal Length => length;
+
         private decimal length;
         private decimal count;
         private DataTable keys;

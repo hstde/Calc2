@@ -151,7 +151,7 @@ namespace CalcLang
             functionDef.Rule = "function" + name + "(" + paramList + ")" + ToTerm("extension").Q() + functionBody;
             functionDef.NodeCaptionTemplate = "function #{0}(...)";
             inlineFunctionDef.Rule = ToTerm("function") + "(" + paramList + ")" + functionBody;
-            externFunctionDef.Rule = ToTerm("extern") + "function" + name + "(" + paramList + ")";
+            externFunctionDef.Rule = ToTerm("extern") + "function" + name + "(" + paramList + ")" + ToTerm("extension").Q();
             inlineFunctionDef.NodeCaptionTemplate = "function(...)";
             functionBody.Rule = block | returnClause;
 
