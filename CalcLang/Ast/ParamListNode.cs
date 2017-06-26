@@ -28,11 +28,16 @@ namespace CalcLang.Ast
                 if (idNode != null)
                 {
                     paras.Add(idNode.Ident.Symbol);
+                    if (i < ChildNodes.Count - 1 && idNode.IsParams)
+                        context.AddMessage(Irony.ErrorLevel.Error, Location.SourceLocation, "only the last parameter may be flagged with params");
+                    else if (i < ChildNodes.Count && idNode.IsParams)
+                        HasParamsArg = true;
                 }
-                if (i < ChildNodes.Count - 1 && idNode.IsParams)
-                    context.AddMessage(Irony.ErrorLevel.Error, Location.SourceLocation, "only the last parameter may be flagged with params");
-                else if (i < ChildNodes.Count && idNode.IsParams)
-                    HasParamsArg = true;
+                else if(ChildNodes[i] is IdentifierNode)
+                {
+                    var node = ChildNodes[i] as IdentifierNode;
+                    paras.Add(node.Symbol);
+                }
             }
             ParamNames = paras.ToArray();
         }

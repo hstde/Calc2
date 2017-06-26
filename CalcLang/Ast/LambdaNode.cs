@@ -109,6 +109,9 @@ namespace CalcLang.Ast
             thread.PopScope();
             thread.CurrentNode = save;
 
+            if (!(Body is BlockNode) && !(Body is ReturnNode))
+                FlowControl = FlowControl.Return;
+
             if (FlowControl == FlowControl.Return)
                 return result;
             else

@@ -49,10 +49,13 @@ namespace CalcLang
             NonTerminal varDeclarationAndAssign = new NonTerminal("varDeclaration", typeof(VarDeclarationNode));
             NonTerminal functionDef = new NonTerminal("functionDef", typeof(FunctionDefNode));
             NonTerminal functionBody = new NonTerminal("functionBody", typeof(StatementListNode));
+            NonTerminal lambdaBody = new NonTerminal("lambdaBody", typeof(StatementListNode));
             NonTerminal inlineFunctionDef = new NonTerminal("inlineFunctionDef", typeof(LambdaNode));
             NonTerminal externFunctionDef = new NonTerminal("externFunctionDef", typeof(ExternFunctionNode));
             NonTerminal paramList = new NonTerminal("paramList", typeof(ParamListNode));
             NonTerminal param = new NonTerminal("param", typeof(ParamNode));
+            NonTerminal lambdaParamList = new NonTerminal("lambdaParamList", typeof(ParamListNode));
+            NonTerminal lambdaParam = new NonTerminal("lambdaParam", typeof(ParamNode));
             NonTerminal paramsOrEmpty = new NonTerminal("paramsOrEmpty");
             NonTerminal arrayDef = new NonTerminal("arrayDef");
             NonTerminal arrayDefList = new NonTerminal("arrayDefList", typeof(ArrayDefNode));
@@ -141,8 +144,8 @@ namespace CalcLang
 
             usingClause.Rule = ToTerm("using") + nonEscapedString + ";";
 
-            varDeclaration.Rule = "var" + newName;
-            varDeclarationAndAssign.Rule = "var" + newName + "=" + expr;
+            varDeclaration.Rule = "var" + name;
+            varDeclarationAndAssign.Rule = "var" + name + "=" + expr;
             assignment.Rule = objRef + assignmentOp + expr;
             assignmentOp.Rule = ToTerm("=") | "+=" | "-=" | "*=" | "/=" | "%=" | "|=" | "^=" | "&=" | "<<=" | ">>=";
             objRef.Rule = name | array | memberAccess;
@@ -150,24 +153,27 @@ namespace CalcLang
 
             functionDef.Rule = "function" + name + "(" + paramList + ")" + ToTerm("extension").Q() + functionBody;
             functionDef.NodeCaptionTemplate = "function #{0}(...)";
-            inlineFunctionDef.Rule = ToTerm("function") + "(" + paramList + ")" + functionBody;
+            inlineFunctionDef.Rule = (ToTerm("function") + "(" + paramList + ")" + functionBody)
+                                        | ("(" + lambdaParamList + ")" + ToTerm("=>") + expr);
             externFunctionDef.Rule = ToTerm("extern") + "function" + name + "(" + paramList + ")" + ToTerm("extension").Q();
             inlineFunctionDef.NodeCaptionTemplate = "function(...)";
             functionBody.Rule = block | returnClause;
 
             paramList.Rule = MakeStarRule(paramList, ToTerm(","), param);
+            lambdaParamList.Rule = MakeStarRule(lambdaParamList, ToTerm(","), lambdaParam);
 
+            lambdaParam.Rule = name + ReduceIf("=>", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "==", "<=", ">=", "<", ">", "!=", "<<", ">>", ";");
             param.Rule = paramsOrEmpty + name;
             paramsOrEmpty.Rule = ToTerm("params") | Empty;
 
-            arrayDef.Rule = ToTerm("{") + arrayDefList + "}";
+            arrayDef.Rule = "{" + arrayDefList + "}";
             arrayDefList.Rule = MakeStarRule(arrayDefList, ToTerm(","), arrayDefListItem);
             arrayDefListItem.Rule = namedArrayItem | expr;
             namedArrayItem.Rule = (name + ReduceHere() | _string) + "=" + expr;
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
-                        | var | unExpr | binExpr
                         | inlineFunctionDef
+                        | var | unExpr | binExpr
                         | arrayDef
                         | assignment;
             binExpr.Rule = expr + binOp + expr;
@@ -187,7 +193,7 @@ namespace CalcLang
                         | thisVal
                         | _string
                         | _char
-                        | functionCall
+                        | functionCall + ReduceHere()
                         | ("(" + expr + ")");
 
             _string.Rule = escapedString | "@" + nonEscapedString;
@@ -207,7 +213,7 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@",
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>",
                 "return", "if", "else", "for", "while", "function", "break", "continue",
                 "using", "do", "var", "foreach", "in",
                 "try", "catch", "finally", "throw", "extern");
@@ -223,7 +229,7 @@ namespace CalcLang
             RegisterOperators(40, "*", "/", "%");
             RegisterOperators(60, "!", "~");
             RegisterOperators(70, "++", "--");
-            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl, paramsOrEmpty);
+            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, lambdaBody, foreachVarDecl, paramsOrEmpty);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
             AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do", "try", "throw", "foreach");
