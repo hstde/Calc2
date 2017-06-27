@@ -15,7 +15,6 @@ namespace CalcLang.Interpreter
         public decimal Length => length;
 
         private decimal length;
-        private decimal count;
         private DataTable keys;
 
         private bool invalidated;
@@ -62,7 +61,7 @@ namespace CalcLang.Interpreter
 
         public object GetString(string key)
         {
-            if (key == "Count" || key == "Length" || key == "Keys")
+            if (key == "Length" || key == "Keys")
             {
                 Invalidated();
                 return GetSpecialString(key);
@@ -78,8 +77,6 @@ namespace CalcLang.Interpreter
         {
             switch (key)
             {
-                case "Count":
-                    return count;
                 case "Length":
                     return length;
                 case "Keys":
@@ -129,8 +126,6 @@ namespace CalcLang.Interpreter
         {
             if (!invalidated) return;
 
-            count = stringIndexed.Count + intIndexed.Count;
-
             var keys = stringIndexed.Keys.ToArray();
             var dt = new DataTable(keys.Length);
             for (int i = 0; i < keys.Length; i++)
@@ -140,7 +135,7 @@ namespace CalcLang.Interpreter
             invalidated = false;
         }
 
-        public override string ToString() => "table[" + (stringIndexed.Count + intIndexed.Count) + "]";
+        public override string ToString() => "table[" + (intIndexed.Count) + "]";
 
         public Dictionary<string, object> GetStringIndexDict() => new Dictionary<string, object>(stringIndexed);
 
