@@ -466,6 +466,21 @@
 		return this.OrderBy(selector).Reverse();
 	}
 	
+	function Count() extension {
+		return this.Count(x => true);
+	}
+	
+	function Count(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var count = 0;
+		foreach(var e in this)
+			if(filter(e))
+				count++;
+		return count;
+	}
+	
 	return {
 		Range = Range,
 		Sequence = Sequence,
