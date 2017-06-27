@@ -1,7 +1,7 @@
 /*
  * This is a simple commanline interpreter written in calclang
  */
-using "Runtime";
+using Runtime;
 
 var commandPromt = "$> ";
 

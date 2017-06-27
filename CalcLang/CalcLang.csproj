@@ -81,6 +81,7 @@
     <Compile Include="Ast\ThrowNode.cs" />
     <Compile Include="Ast\TryNode.cs" />
     <Compile Include="Ast\UnaryExpressionNode.cs" />
+    <Compile Include="Ast\UsingNamespaceNode.cs" />
     <Compile Include="Ast\UsingNode.cs" />
     <Compile Include="Ast\VarDeclarationNode.cs" />
     <Compile Include="Ast\WhileNode.cs" />

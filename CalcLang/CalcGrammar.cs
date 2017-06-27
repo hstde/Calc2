@@ -39,6 +39,7 @@ namespace CalcLang
             NonTerminal breakClause = new NonTerminal("breakClause", typeof(BreakNode));
             NonTerminal continueClause = new NonTerminal("continueClause", typeof(ContinueNode));
             NonTerminal usingClause = new NonTerminal("usingClause", typeof(UsingNode));
+            NonTerminal usingNamespace = new NonTerminal("namespace", typeof(UsingNamespaceNode));
             NonTerminal tryClause = new NonTerminal("tryClause", typeof(TryNode));
             NonTerminal catchClause = new NonTerminal("catchClause", typeof(CatchNode));
             NonTerminal finallyClause = new NonTerminal("finallyClause");
@@ -55,6 +56,7 @@ namespace CalcLang
             NonTerminal paramList = new NonTerminal("paramList", typeof(ParamListNode));
             NonTerminal param = new NonTerminal("param", typeof(ParamNode));
             NonTerminal lambdaParamList = new NonTerminal("lambdaParamList", typeof(ParamListNode));
+            NonTerminal singleLambdaParamList = new NonTerminal("lambdaParamList", typeof(ParamListNode));
             NonTerminal lambdaParam = new NonTerminal("lambdaParam", typeof(ParamNode));
             NonTerminal paramsOrEmpty = new NonTerminal("paramsOrEmpty");
             NonTerminal arrayDef = new NonTerminal("arrayDef");
@@ -79,9 +81,7 @@ namespace CalcLang
             IdentifierTerminal newName = new IdentifierTerminal("newName", IdOptions.IsNotKeyword);
             NumberLiteral number = new NumberLiteral("number", NumberOptions.AllowUnderscore);
 
-            StringLiteral escapedString = new StringLiteral("string", "\"", StringOptions.AllowsAllEscapes);
-            StringLiteral nonEscapedString = new StringLiteral("nonEscapedString", "\"", StringOptions.NoEscapes);
-            NonTerminal _string = new NonTerminal("String");
+            StringLiteral _string = new StringLiteral("string", "\"", StringOptions.AllowsAllEscapes);
 
             StringLiteral _char = new StringLiteral("Char", "'", StringOptions.IsChar | StringOptions.AllowsAllEscapes);
 
@@ -142,7 +142,9 @@ namespace CalcLang
 
             throwClause.Rule = "throw" + expr;
 
-            usingClause.Rule = ToTerm("using") + nonEscapedString + ";";
+            usingClause.Rule = ToTerm("using") + usingNamespace + ";";
+
+            usingNamespace.Rule = (name + "." + usingNamespace) | name;
 
             varDeclaration.Rule = "var" + name;
             varDeclarationAndAssign.Rule = "var" + name + "=" + expr;
@@ -154,13 +156,15 @@ namespace CalcLang
             functionDef.Rule = "function" + name + "(" + paramList + ")" + ToTerm("extension").Q() + functionBody;
             functionDef.NodeCaptionTemplate = "function #{0}(...)";
             inlineFunctionDef.Rule = (ToTerm("function") + "(" + paramList + ")" + functionBody)
-                                        | ("(" + lambdaParamList + ")" + ToTerm("=>") + expr);
+                                        | ("(" + lambdaParamList + ")" + ToTerm("=>") + expr)
+                                        | (singleLambdaParamList + "=>" + expr);
             externFunctionDef.Rule = ToTerm("extern") + "function" + name + "(" + paramList + ")" + ToTerm("extension").Q();
             inlineFunctionDef.NodeCaptionTemplate = "function(...)";
             functionBody.Rule = block | returnClause;
 
             paramList.Rule = MakeStarRule(paramList, ToTerm(","), param);
             lambdaParamList.Rule = MakeStarRule(lambdaParamList, ToTerm(","), lambdaParam);
+            singleLambdaParamList.Rule = lambdaParam;
 
             lambdaParam.Rule = name + ReduceIf("=>", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "==", "<=", ">=", "<", ">", "!=", "<<", ">>", ";");
             param.Rule = paramsOrEmpty + name;
@@ -196,8 +200,6 @@ namespace CalcLang
                         | functionCall + ReduceHere()
                         | ("(" + expr + ")");
 
-            _string.Rule = escapedString | "@" + nonEscapedString;
-
             ternaryIf.Rule = expr + "?" + expr + ":" + expr;
             functionCall.Rule = var + PreferShiftHere() + "(" + varList + ")";
             functionCall.NodeCaptionTemplate = "call #{0}(...)";
@@ -229,13 +231,13 @@ namespace CalcLang
             RegisterOperators(40, "*", "/", "%");
             RegisterOperators(60, "!", "~");
             RegisterOperators(70, "++", "--");
-            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, lambdaBody, foreachVarDecl, paramsOrEmpty);
+            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, lambdaBody, foreachVarDecl, paramsOrEmpty);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
             AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do", "try", "throw", "foreach");
             AddTermsReportGroup("variable declaration", "var");
             AddTermsReportGroup("function declaration", "function", "extern");
-            AddTermsReportGroup("constant", number, escapedString, nonEscapedString, _char);
+            AddTermsReportGroup("constant", number, _string, _char);
             AddTermsReportGroup("constant", "null", "false", "true", "this", "@");
             AddTermsReportGroup("unary operator", "+", "-", "!");
             AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>");
@@ -250,6 +252,7 @@ namespace CalcLang
             number.DefaultIntTypes = new TypeCode[] { TypeCode.Int64 };
             number.AddPrefix("0x", NumberOptions.Hex);
             number.AddPrefix("0b", NumberOptions.Binary);
+            _string.AddPrefix("@", StringOptions.NoEscapes);
 
             this.Root = start;
 

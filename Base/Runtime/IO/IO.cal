@@ -27,7 +27,7 @@ IO.Encoding.UTF8 = (function() {
 	return IO.Encoding.GetEncoding(65001);
 })();
 
-using "Runtime\IO\Path";
-using "Runtime\IO\Stream";
-using "Runtime\IO\Console";
-using "Runtime\IO\File";
+using Runtime.IO.Path;
+using Runtime.IO.Stream;
+using Runtime.IO.Console;
+using Runtime.IO.File;

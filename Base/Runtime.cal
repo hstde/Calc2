@@ -1,4 +1,4 @@
-﻿using "Base";
+﻿using Base;
 
 extern function ToString() extension;
 extern function GetType() extension;
@@ -52,17 +52,17 @@ function Throw(params p)
 	throw msg;
 }
 
-using "Runtime\Win32Native\Win32Native";
-using "Runtime\Exception";
-using "Runtime\Number";
-using "Runtime\Array";
-using "Runtime\Buffer";
-using "Runtime\String";
-using "Runtime\Linq";
-using "Runtime\Math";
-using "Runtime\Random";
-using "Runtime\Convert";
-using "Runtime\Text\Text";
-using "Runtime\IO\IO";
-using "Runtime\Diagnostics\Diagnostics";
-using "Runtime\TimeSpan";
+using Runtime.Win32Native.Win32Native;
+using Runtime.Exception;
+using Runtime.Number;
+using Runtime.Array;
+using Runtime.Buffer;
+using Runtime.String;
+using Runtime.Linq;
+using Runtime.Math;
+using Runtime.Random;
+using Runtime.Convert;
+using Runtime.Text.Text;
+using Runtime.IO.IO;
+using Runtime.Diagnostics.Diagnostics;
+using Runtime.TimeSpan;
