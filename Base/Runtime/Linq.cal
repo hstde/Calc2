@@ -328,13 +328,17 @@
 	}
 	
 	function Aggregate(func) extension {
+		return this.Aggregate(null, func);
+	}
+	
+	function Aggregate(init, func) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
 		var length = this.GetType() == "Table" ? this.Length : this.Length();
 		if(length < 1) return null;
 		
-		var result = null;
+		var result = init;
 		foreach(var e in this)
 			if(result == null)
 				result = e;
