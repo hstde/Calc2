@@ -20,6 +20,7 @@ namespace CalcLang.Interpreter
 
         public override bool Equals(object obj)
         {
+            if (this.isNull && obj == null) return true;
             var other = obj as NullClass;
             return isNull == other?.isNull;
         }

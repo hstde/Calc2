@@ -257,6 +257,15 @@ namespace CalcLang
             number.AddSuffix("m", TypeCode.Decimal);
 
             _string.AddPrefix("@", StringOptions.NoEscapes);
+            _string.AddPrefix("$", StringOptions.IsTemplate | StringOptions.AllowsAllEscapes);
+
+            var stringTemplateSettings = new StringTemplateSettings();
+            stringTemplateSettings.StartTag = "{";
+            stringTemplateSettings.EndTag = "}";
+            stringTemplateSettings.ExpressionRoot = expr;
+            this.SnippetRoots.Add(expr);
+            _string.AstConfig.NodeType = typeof(StringTemplateNode);
+            _string.AstConfig.Data = stringTemplateSettings;
 
             this.Root = start;
 
