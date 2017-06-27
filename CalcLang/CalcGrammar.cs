@@ -252,6 +252,10 @@ namespace CalcLang
             number.DefaultIntTypes = new TypeCode[] { TypeCode.Int64 };
             number.AddPrefix("0x", NumberOptions.Hex);
             number.AddPrefix("0b", NumberOptions.Binary);
+            number.AddSuffix("d", TypeCode.Double);
+            number.AddSuffix("l", TypeCode.Int64);
+            number.AddSuffix("m", TypeCode.Decimal);
+
             _string.AddPrefix("@", StringOptions.NoEscapes);
 
             this.Root = start;
