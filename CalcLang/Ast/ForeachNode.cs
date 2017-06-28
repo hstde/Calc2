@@ -67,7 +67,7 @@ namespace CalcLang.Ast
             foreach (var e in foreachObject)
             {
                 IterVarBlock.SetValue(thread, e);
-                Block.Evaluate(thread);
+                result = Block.Evaluate(thread);
 
                 if (FlowControl == FlowControl.Break)
                     break;
