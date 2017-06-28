@@ -1,11 +1,10 @@
 ﻿var Enumerable = (function() {
 	function Sequence(start, end, step) {
 		var ret = {};
-		var val = start;
 		
-		for(var i = 0; val < end; val = val + step, i++)
+		for(var i = 0; i * step + start < end; i++)
 		{
-			ret[i] = val;
+			ret[i] = i * step + start;
 		}
 		
 		return ret;
