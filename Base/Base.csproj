@@ -59,6 +59,12 @@
     <None Include="Runtime\Convert.cal">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Runtime\Diagnostics\Diagnostics.cal">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Runtime\Diagnostics\Stopwatch.cal">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Runtime\Exception.cal">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -99,6 +105,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Runtime\Text\Text.cal">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Runtime\TimeSpan.cal">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Runtime\Win32Native\Win32Native.cal">

@@ -51,33 +51,7 @@ namespace Base
             #endregion
         }
 
-        [CalcCallableMethod("__Win32Native_Environment_GetTickCount", 0)]
-        public static object GetTickCount(ScriptThread thread, object instance, object[] parameters) => (decimal)Environment.TickCount;
-
-        [CalcCallableMethod("__Win32Native_DateTime_GetCurrentTimeTicks", 0)]
-        public static object GetCurrentTimeTicks(ScriptThread thread, object instance, object[] parameters) => (decimal)DateTime.Now.Ticks;
-
-        [CalcCallableMethod("__Win32Native_String_Join", 4)]
-        public static object StringJoin(ScriptThread thread, object instance, object[] parameters)
-        {
-            string ret = null;
-
-            string separator = parameters[0] as string;
-            var valueTable = (parameters[1] as DataTable)?.GetIntIndexedDict();
-            int startIndex = Convert.ToInt32(parameters[2]);
-            int count = Convert.ToInt32(parameters[3]);
-
-            string[] value = new string[valueTable.Count];
-
-            for (int i = 0; i < value.Length; i++)
-                value[i] = valueTable[i].ToString();
-
-            ret = String.Join(separator, value, startIndex, count);
-
-            return ret;
-        }
-
-        [CalcCallableMethod("__Win32Native_SetErrorMode", 1)]
+        [CalcCallableMethod("Win32Native_SetErrorMode", 1)]
         public static object SetErrorMode(ScriptThread thread, object instance, object[] parameters)
         {
             object ret = null;
@@ -92,10 +66,10 @@ namespace Base
             return ret;
         }
 
-        [CalcCallableMethod("__Win32Native_GetLastWin32Error", 0)]
+        [CalcCallableMethod("Win32Native_GetLastWin32Error", 0)]
         public static object GetLastWin32Error(ScriptThread thread, object instance, object[] parameters) => Marshal.GetLastWin32Error();
 
-        [CalcCallableMethod("__Win32Native_CreateFile", 7, "fileName,dwDesiredAccess,dwShareMode,securityAttrs,dwCreationDisposition,dwFlagsAndAttributes,hTemplateFile")]
+        [CalcCallableMethod("Win32Native_CreateFile", 7, "fileName,dwDesiredAccess,dwShareMode,securityAttrs,dwCreationDisposition,dwFlagsAndAttributes,hTemplateFile")]
         public static object CreateFile(ScriptThread thread, object instance, object[] parameters)
         {
             //Create a native fileHandle and return an array with the pointer under Handle
@@ -121,7 +95,7 @@ namespace Base
             return ret;
         }
 
-        [CalcCallableMethod("__Win32Native_GetFileType", 1)]
+        [CalcCallableMethod("Win32Native_GetFileType", 1)]
         public static object GetFileType(ScriptThread thread, object instance, object[] parameters)
         {
             object ret = null;
@@ -131,7 +105,7 @@ namespace Base
             return ret;
         }
 
-        [CalcCallableMethod("__Win32Native_DisposeNativeHandle", 1, "nativeHandle")]
+        [CalcCallableMethod("Win32Native_DisposeNativeHandle", 1, "nativeHandle")]
         public static object DisposeNativeHandle(ScriptThread thread, object instance, object[] parameters)
         {
             DataTable handleHolder = (DataTable)parameters[0];
@@ -141,7 +115,7 @@ namespace Base
             return null;
         }
 
-        [CalcCallableMethod("__Win32Native_SetFilePointer", 4)]
+        [CalcCallableMethod("Win32Native_SetFilePointer", 4)]
         public static unsafe object SetFilePointer(ScriptThread thread, object instance, object[] parameters)
         {
             IntPtr preHandle = (IntPtr)parameters[0];
@@ -162,14 +136,14 @@ namespace Base
             return ret;
         }
 
-        [CalcCallableMethod("__Win32Native_GetStdHandle", 1)]
+        [CalcCallableMethod("Win32Native_GetStdHandle", 1)]
         public static object GetStdHandle(ScriptThread thread, object instance, object[] parameters)
         {
             int nStdHandle = Convert.ToInt32(parameters[0]);
             return NativeMethods.GetStdHandle(nStdHandle);
         }
 
-        [CalcCallableMethod("__Win32Native_WriteFile", 4)]
+        [CalcCallableMethod("Win32Native_WriteFile", 4)]
         public unsafe static object WriteFile(ScriptThread thread, object instance, object[] parameters)
         {
             IntPtr preHandle = (IntPtr)parameters[0];
@@ -194,7 +168,7 @@ namespace Base
             return numBytesWritten;
         }
 
-        [CalcCallableMethod("__Win32Native_ReadFile", 4)]
+        [CalcCallableMethod("Win32Native_ReadFile", 4)]
         public unsafe static object ReadFile(ScriptThread thread, object instance, object[] parameters)
         {
             IntPtr preHandle = (IntPtr)parameters[0];
@@ -217,7 +191,7 @@ namespace Base
             return numBytesRead;
         }
 
-        [CalcCallableMethod("__Win32Native_WaitForAvailableConsoleInput", 1)]
+        [CalcCallableMethod("Win32Native_WaitForAvailableConsoleInput", 1)]
         public static object WaitForAvailableConsoleInput(ScriptThread thread, object instance, object[] parameters)
         {
             IntPtr preHandle = (IntPtr)parameters[0];
@@ -228,13 +202,13 @@ namespace Base
             return null;
         }
 
-        [CalcCallableMethod("__Win32Native_GetConsoleOutputCP", 0)]
+        [CalcCallableMethod("Win32Native_GetConsoleOutputCP", 0)]
         public static object GetConsoleOutputCP(ScriptThread thread, object instance, object[] parameters) => (decimal)NativeMethods.GetConsoleOutputCP();
 
-        [CalcCallableMethod("__Win32Native_GetConsoleCP", 0)]
+        [CalcCallableMethod("Win32Native_GetConsoleCP", 0)]
         public static object GetConsoleCP(ScriptThread thread, object instance, object[] parameters) => (decimal)NativeMethods.GetConsoleCP();
 
-        [CalcCallableMethod("__Win32Native_GetEncodingBytes", 4)]
+        [CalcCallableMethod("Win32Native_GetEncodingBytes", 4)]
         public static object GetEncodingBytes(ScriptThread thread, object instance, object[] parameters)
         {
             int cp = Convert.ToInt32(parameters[0]);
@@ -261,7 +235,7 @@ namespace Base
             return bytesDT;
         }
 
-        [CalcCallableMethod("__Win32Native_GetEncodingMaxCharCount", 2)]
+        [CalcCallableMethod("Win32Native_GetEncodingMaxCharCount", 2)]
         public static object GetEncodingMaxCharCount(ScriptThread thread, object instance, object[] parameters)
         {
             int cp = Convert.ToInt32(parameters[0]);
@@ -273,7 +247,7 @@ namespace Base
             return (decimal)ret;
         }
 
-        [CalcCallableMethod("__Win32Native_GetEncodingPreamble", 1)]
+        [CalcCallableMethod("Win32Native_GetEncodingPreamble", 1)]
         public static object GetEncodingPreamble(ScriptThread thread, object instance, object[] parameters)
         {
             int cp = Convert.ToInt32(parameters[0]);
@@ -289,7 +263,7 @@ namespace Base
             return ret;
         }
 
-        [CalcCallableMethod("__Win32Native_GetEncodingChars", 6)]
+        [CalcCallableMethod("Win32Native_GetEncodingChars", 6)]
         public static object GetEncodingChars(ScriptThread thread, object instance, object[] parameters)
         {
             int cp = Convert.ToInt32(parameters[0]);

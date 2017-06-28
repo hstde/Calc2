@@ -1,2 +1,2 @@
-using "runtime";
+using Runtime;
 Console.WriteLine(String.Join(" ", args));

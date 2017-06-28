@@ -59,6 +59,7 @@
     <Compile Include="Ast\DoWhileNode.cs" />
     <Compile Include="Ast\EmptyNode.cs" />
     <Compile Include="Ast\ExpressionListNode.cs" />
+    <Compile Include="Ast\ExternFunctionNode.cs" />
     <Compile Include="Ast\ForeachNode.cs" />
     <Compile Include="Ast\ForNode.cs" />
     <Compile Include="Ast\FunctionCallNode.cs" />
@@ -76,10 +77,12 @@
     <Compile Include="Ast\ParamNode.cs" />
     <Compile Include="Ast\ReturnNode.cs" />
     <Compile Include="Ast\StatementListNode.cs" />
+    <Compile Include="Ast\StringTemplateNode.cs" />
     <Compile Include="Ast\ThisNode.cs" />
     <Compile Include="Ast\ThrowNode.cs" />
     <Compile Include="Ast\TryNode.cs" />
     <Compile Include="Ast\UnaryExpressionNode.cs" />
+    <Compile Include="Ast\UsingNamespaceNode.cs" />
     <Compile Include="Ast\UsingNode.cs" />
     <Compile Include="Ast\VarDeclarationNode.cs" />
     <Compile Include="Ast\WhileNode.cs" />

@@ -1,0 +1,174 @@
+﻿var TimeSpan = (function() {
+	var TicksPerMillisecond = 10000;
+	var TicksPerSecond = TicksPerMillisecond * 1000;
+	var TicksPerMinute = TicksPerSecond * 60;
+	var TicksPerHour = TicksPerMinute * 60;
+	var TicksPerDay = TicksPerHour * 24;
+	
+	var DaysPerTick = 1.0 / TicksPerDay;
+	var HoursPerTick = 1.0 / TicksPerHour;
+	var MinutesPerTick = 1.0/ TicksPerMinute;
+	var SecondsPerTick = 1.0 / TicksPerSecond;
+	var MillisecondsPerTick = 1.0 / TicksPerMillisecond;
+	
+	var MaxMilliseconds = Int64.MaxValue / TicksPerMillisecond;
+	var MinMilliseconds = Int64.MinValue / TicksPerMillisecond;
+	var MaxSeconds = Int64.MaxValue / TicksPerSecond;
+	var MinSeconds = Int64.MinValue / TicksPerSecond;
+	
+	function ctor(ticks) {
+		function GetTicks() return ticks;
+		function GetDays() return Math.Int(ticks / TicksPerDay);
+		function GetHours() return Math.Int((ticks / TicksPerHour) % 24);
+		function GetMinutes() return Math.Int((ticks / TicksPerMinute) % 60);
+		function GetSeconds() return Math.Int((ticks / TicksPerSecond) % 60);
+		function GetMilliseconds() return Math.Int((ticks / TicksPerMillisecond) % 1000);
+		
+		function GetTotalDays() return ticks * DaysPerTick;
+		function GetTotalHours() return ticks * HoursPerTick;
+		function GetTotalMinutes() return ticks * MinutesPerTick;
+		function GetTotalSeconds() return ticks * SecondsPerTick;
+		function GetTotalMilliseconds() return ticks * MillisecondsPerTick;
+		
+		function Add(ts) return TimeSpan(ticks + other.GetTicks());
+		function CompareTo(ts) {
+			if(ticks < ts.GetTicks()) return 1;
+			if(ticks > ts.GetTicks()) return -1;
+			return 0;
+		}
+		function Equals(ts) return ticks == ts.GetTicks();
+		
+		function ToString() return TimeSpanFormat.Format(this, null, null);
+		function ToString(format) return TimeSpanFormat.Format(this, format, null);
+		
+		return {
+			GetTicks = GetTicks,
+			GetDays = GetDays,
+			GetHours = GetHours,
+			GetMinutes = GetMinutes,
+			GetSeconds = GetSeconds,
+			GetMilliseconds = GetMilliseconds,
+			
+			GetTotalDays = GetTotalDays,
+			GetTotalHours = GetTotalHours,
+			GetTotalMinutes = GetTotalMinutes,
+			GetTotalSeconds = GetTotalSeconds,
+			GetTotalMilliseconds = GetTotalMilliseconds,
+			
+			Add = Add,
+			CompareTo = CompareTo,
+			Equals = Equals,
+			
+			ToString = ToString
+		};
+	}
+	
+	function ctor(hours, minutes, seconds) {
+		return ctor(TimeToTicks(hours, minutes, seconds));
+	}
+	
+	function ctor(days, hours, minutes, seconds) {
+		return ctor(days, hours, minutes, seconds, 0);
+	}
+	
+	function ctor(days, hours, minutes, seconds, milliseconds) {
+		var totalMilliseconds = (days * 3600 * 24 + hours * 3600 + minutes * 60 + seconds) * 1000 + milliseconds;
+		if(totalMilliseconds > MaxMilliseconds || totalMilliseconds < MinMilliseconds)
+			throw ArgumentOutOfRangeException("TimeSpan too long");
+		var ticks = totalMilliseconds * TicksPerMillisecond;
+		return ctor(ticks);
+	}
+	
+	function TimeToTicks(hour, minute, second) {
+		var totalSeconds = hour * 3600 + minute * 60 + second;
+		if(totalSeconds > MaxSeconds || totalSeconds < MinSeconds)
+			throw ArgumentOutOfRangeException("TimeSpan too long");
+		return totalSeconds * TicksPerSecond;
+	}
+
+	return ctor;
+})();
+
+var TimeSpanFormat = (function() {
+	var Pattern = {
+		None = 0,
+		Minimum = 1,
+		Full = 2
+	};
+	var TicksPerMillisecond = 10000;
+	var TicksPerSecond = TicksPerMillisecond * 1000;
+	var TicksPerMinute = TicksPerSecond * 60;
+	var TicksPerHour = TicksPerMinute * 60;
+	var TicksPerDay = TicksPerHour * 24;
+
+	function Format(ts, format, provider) {
+		if(format == null || format.Length() == 0)
+			format = "c";
+		
+		if(format.Length() == 1)
+		{
+			var f = format[0];
+			
+			if(f == 'c' || f == 't' || f == 'T')
+				return FormatStandard(ts, true, format, Pattern.Minimum);
+			if(f == 'g' || f == 'G')
+			{
+				var pattern;
+				var dtfi = null;
+				
+				if(ts.GetTicks() < 0)
+					format = dtfi.FullTimeSpanNegativePattern;
+				else
+					format = dtfi.FullTimeSpanPositivePattern;
+				
+				if(f == 'g')
+					pattern = Pattern.Minimum;
+				else
+					pattern = Pattern.Full;
+				
+				return FormatStandard(ts, false, format, pattern);
+			}
+			throw FormatException("Invalid string");
+		}
+		throw NotImplementedException();
+		return FormatCustomized(ts, format, null);
+	}
+	
+	function FormatStandard(value, isInvariant, format, pattern) {
+		var sb = Text.StringBuilder();
+		var day = value.GetDays();
+		var time = value.GetTicks() % TicksPerDay;
+		
+		if(value.GetTicks() < 0) {
+			day = -day;
+			time = -time;
+		}
+		var hours = Math.Int(time / TicksPerHour % 24);
+		var minutes = Math.Int(time / TicksPerMinute % 60);
+		var seconds = Math.Int(time / TicksPerSecond % 60);
+		var fraction = Math.Int(time % TicksPerSecond);
+		
+		if(value.GetTicks() < 0)
+			sb.Append("-");
+		if(pattern == Pattern.Full || day != 0)
+		{
+			sb.Append(day);
+			sb.Append(".");
+		}
+		sb.Append(Convert.ToString(hours, 10, 2, '0', Convert.NumberFormatFlags.PrintAsI4));
+		sb.Append(":");
+		sb.Append(Convert.ToString(minutes, 10, 2, '0', Convert.NumberFormatFlags.PrintAsI4));
+		sb.Append(":");
+		sb.Append(Convert.ToString(seconds, 10, 2, '0', Convert.NumberFormatFlags.PrintAsI4));
+		if(pattern == Pattern.Full || fraction != 0)
+		{
+			sb.Append(".");
+			sb.Append(Convert.ToString(fraction, 10, 7, '0', Convert.NumberFormatFlags.PrintAsI4));
+		}
+		return sb.ToString();
+	}
+	
+	return {
+		Format = Format
+	};
+})();

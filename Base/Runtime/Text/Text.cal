@@ -1,4 +1,4 @@
 ﻿var Text = {};
 
 
-using "Runtime\Text\StringBuilder";
+using Runtime.Text.StringBuilder;

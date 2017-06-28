@@ -42,8 +42,6 @@ namespace CalcLang.Ast
             if (result == thread.Runtime.NullValue)
                 result = GetExtension(thread, memberName);
             if (result == thread.Runtime.NullValue)
-                result = GetBuiltIn(thread, "." + memberName);
-            if (result == thread.Runtime.NullValue)
                 if (type == typeof(NullClass))
                     thread.ThrowScriptError("NullReferenceException: \"" + Target.AsString + "\" was null.");
                 else

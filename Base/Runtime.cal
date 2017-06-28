@@ -1,4 +1,9 @@
-﻿using "Base";
+﻿using Base;
+
+extern function ToString() extension;
+extern function GetType() extension;
+extern function Length() extension;
+extern function ToChar() extension;
 
 var Int32 = (function() {
 	function Parse(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
@@ -21,13 +26,20 @@ var Byte = (function() {
 	};
 })();
 
+var Int64 = (function() {
+	return {
+		MaxValue = 0x7fff_ffff_ffff_ffff,
+		MinValue = -0x7fff_ffff_ffff_ffff
+	};
+})();
+
 var Environment = (function() {
-	function GetTickCount() {
-		return Microsoft.Win32.Win32Native.GetTickCount();
-	}
+	extern function GetTickCount();
+	extern function GetCurrentTimeTicks();
 	
 	return {
 		GetTickCount = GetTickCount,
+		GetCurrentTimeTicks = GetCurrentTimeTicks,
 		NewLine = "\r\n"
 	};
 })();
@@ -40,15 +52,17 @@ function Throw(params p)
 	throw msg;
 }
 
-using "Runtime\Win32Native\Win32Native";
-using "Runtime\Exception";
-using "Runtime\Number";
-using "Runtime\Array";
-using "Runtime\Buffer";
-using "Runtime\String";
-using "Runtime\Linq";
-using "Runtime\Math";
-using "Runtime\Random";
-using "Runtime\Convert";
-using "Runtime\Text\Text";
-using "Runtime\IO\IO";
+using Runtime.Win32Native.Win32Native;
+using Runtime.Exception;
+using Runtime.Number;
+using Runtime.Array;
+using Runtime.Buffer;
+using Runtime.String;
+using Runtime.Linq;
+using Runtime.Math;
+using Runtime.Random;
+using Runtime.Convert;
+using Runtime.Text.Text;
+using Runtime.IO.IO;
+using Runtime.Diagnostics.Diagnostics;
+using Runtime.TimeSpan;

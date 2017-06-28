@@ -39,6 +39,7 @@ namespace CalcLang
             NonTerminal breakClause = new NonTerminal("breakClause", typeof(BreakNode));
             NonTerminal continueClause = new NonTerminal("continueClause", typeof(ContinueNode));
             NonTerminal usingClause = new NonTerminal("usingClause", typeof(UsingNode));
+            NonTerminal usingNamespace = new NonTerminal("namespace", typeof(UsingNamespaceNode));
             NonTerminal tryClause = new NonTerminal("tryClause", typeof(TryNode));
             NonTerminal catchClause = new NonTerminal("catchClause", typeof(CatchNode));
             NonTerminal finallyClause = new NonTerminal("finallyClause");
@@ -49,9 +50,14 @@ namespace CalcLang
             NonTerminal varDeclarationAndAssign = new NonTerminal("varDeclaration", typeof(VarDeclarationNode));
             NonTerminal functionDef = new NonTerminal("functionDef", typeof(FunctionDefNode));
             NonTerminal functionBody = new NonTerminal("functionBody", typeof(StatementListNode));
+            NonTerminal lambdaBody = new NonTerminal("lambdaBody", typeof(StatementListNode));
             NonTerminal inlineFunctionDef = new NonTerminal("inlineFunctionDef", typeof(LambdaNode));
+            NonTerminal externFunctionDef = new NonTerminal("externFunctionDef", typeof(ExternFunctionNode));
             NonTerminal paramList = new NonTerminal("paramList", typeof(ParamListNode));
             NonTerminal param = new NonTerminal("param", typeof(ParamNode));
+            NonTerminal lambdaParamList = new NonTerminal("lambdaParamList", typeof(ParamListNode));
+            NonTerminal singleLambdaParamList = new NonTerminal("lambdaParamList", typeof(ParamListNode));
+            NonTerminal lambdaParam = new NonTerminal("lambdaParam", typeof(ParamNode));
             NonTerminal paramsOrEmpty = new NonTerminal("paramsOrEmpty");
             NonTerminal arrayDef = new NonTerminal("arrayDef");
             NonTerminal arrayDefList = new NonTerminal("arrayDefList", typeof(ArrayDefNode));
@@ -75,9 +81,7 @@ namespace CalcLang
             IdentifierTerminal newName = new IdentifierTerminal("newName", IdOptions.IsNotKeyword);
             NumberLiteral number = new NumberLiteral("number", NumberOptions.AllowUnderscore);
 
-            StringLiteral escapedString = new StringLiteral("string", "\"", StringOptions.AllowsAllEscapes);
-            StringLiteral nonEscapedString = new StringLiteral("nonEscapedString", "\"", StringOptions.NoEscapes);
-            NonTerminal _string = new NonTerminal("String");
+            StringLiteral _string = new StringLiteral("string", "\"", StringOptions.AllowsAllEscapes);
 
             StringLiteral _char = new StringLiteral("Char", "'", StringOptions.IsChar | StringOptions.AllowsAllEscapes);
 
@@ -98,6 +102,7 @@ namespace CalcLang
                                 | ifClause
                                 | ifElseClause
                                 | functionDef
+                                | externFunctionDef + ";"
                                 | returnClause + ";"
                                 | emptyReturnClause
                                 | breakClause
@@ -137,10 +142,12 @@ namespace CalcLang
 
             throwClause.Rule = "throw" + expr;
 
-            usingClause.Rule = ToTerm("using") + nonEscapedString + ";";
+            usingClause.Rule = ToTerm("using") + usingNamespace + ";";
 
-            varDeclaration.Rule = "var" + newName;
-            varDeclarationAndAssign.Rule = "var" + newName + "=" + expr;
+            usingNamespace.Rule = (name + "." + usingNamespace) | name;
+
+            varDeclaration.Rule = "var" + name;
+            varDeclarationAndAssign.Rule = "var" + name + "=" + expr;
             assignment.Rule = objRef + assignmentOp + expr;
             assignmentOp.Rule = ToTerm("=") | "+=" | "-=" | "*=" | "/=" | "%=" | "|=" | "^=" | "&=" | "<<=" | ">>=";
             objRef.Rule = name | array | memberAccess;
@@ -148,23 +155,29 @@ namespace CalcLang
 
             functionDef.Rule = "function" + name + "(" + paramList + ")" + ToTerm("extension").Q() + functionBody;
             functionDef.NodeCaptionTemplate = "function #{0}(...)";
-            inlineFunctionDef.Rule = ToTerm("function") + "(" + paramList + ")" + functionBody;
+            inlineFunctionDef.Rule = (ToTerm("function") + "(" + paramList + ")" + functionBody)
+                                        | ("(" + lambdaParamList + ")" + ToTerm("=>") + expr)
+                                        | (singleLambdaParamList + "=>" + expr);
+            externFunctionDef.Rule = ToTerm("extern") + "function" + name + "(" + paramList + ")" + ToTerm("extension").Q();
             inlineFunctionDef.NodeCaptionTemplate = "function(...)";
             functionBody.Rule = block | returnClause;
 
             paramList.Rule = MakeStarRule(paramList, ToTerm(","), param);
+            lambdaParamList.Rule = MakeStarRule(lambdaParamList, ToTerm(","), lambdaParam);
+            singleLambdaParamList.Rule = lambdaParam;
 
+            lambdaParam.Rule = name + ReduceIf("=>", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "==", "<=", ">=", "<", ">", "!=", "<<", ">>", ";", "(");
             param.Rule = paramsOrEmpty + name;
             paramsOrEmpty.Rule = ToTerm("params") | Empty;
 
-            arrayDef.Rule = ToTerm("{") + arrayDefList + "}";
+            arrayDef.Rule = "{" + arrayDefList + "}";
             arrayDefList.Rule = MakeStarRule(arrayDefList, ToTerm(","), arrayDefListItem);
             arrayDefListItem.Rule = namedArrayItem | expr;
             namedArrayItem.Rule = (name + ReduceHere() | _string) + "=" + expr;
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
-                        | var | unExpr | binExpr
                         | inlineFunctionDef
+                        | var | unExpr | binExpr
                         | arrayDef
                         | assignment;
             binExpr.Rule = expr + binOp + expr;
@@ -184,10 +197,8 @@ namespace CalcLang
                         | thisVal
                         | _string
                         | _char
-                        | functionCall
+                        | functionCall + ReduceHere()
                         | ("(" + expr + ")");
-
-            _string.Rule = escapedString | "@" + nonEscapedString;
 
             ternaryIf.Rule = expr + "?" + expr + ":" + expr;
             functionCall.Rule = var + PreferShiftHere() + "(" + varList + ")";
@@ -204,7 +215,10 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "return", "if", "else", "for", "while", "function", "break", "continue", "using", "do", "var", "foreach", "in", "try", "catch", "finally", "throw");
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>",
+                "return", "if", "else", "for", "while", "function", "break", "continue",
+                "using", "do", "var", "foreach", "in",
+                "try", "catch", "finally", "throw", "extern");
             RegisterBracePair("(", ")");
             RegisterBracePair("[", "]");
             RegisterBracePair("{", "}");
@@ -217,24 +231,41 @@ namespace CalcLang
             RegisterOperators(40, "*", "/", "%");
             RegisterOperators(60, "!", "~");
             RegisterOperators(70, "++", "--");
-            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, _string, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, foreachVarDecl, paramsOrEmpty);
+            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, lambdaBody, foreachVarDecl, paramsOrEmpty);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
-            AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do");
+            AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do", "try", "throw", "foreach");
             AddTermsReportGroup("variable declaration", "var");
-            AddTermsReportGroup("function declaration", "function");
-            AddTermsReportGroup("constant", number, escapedString, nonEscapedString);
-            AddTermsReportGroup("constant", "null", "false", "true", "this");
+            AddTermsReportGroup("function declaration", "function", "extern");
+            AddTermsReportGroup("constant", number, _string, _char);
+            AddTermsReportGroup("constant", "null", "false", "true", "this", "@");
             AddTermsReportGroup("unary operator", "+", "-", "!");
             AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>");
             AddToNoReportGroup("(", "[", "{", ".", ",", "++", "--");
 
-            MarkReservedWords("if", "else", "return", "function", "while", "for", "null", "false", "true", "this", "break", "continue", "using", "do", "var", "foreach", "in", "params");
+            MarkReservedWords("if", "else", "return", "function", "while",
+                "for", "null", "false", "true", "this", "break", "continue",
+                "using", "do", "var", "foreach", "in", "params",
+                "try", "catch", "finally", "throw", "extern");
 
             number.DefaultFloatType = TypeCode.Double;
             number.DefaultIntTypes = new TypeCode[] { TypeCode.Int64 };
             number.AddPrefix("0x", NumberOptions.Hex);
             number.AddPrefix("0b", NumberOptions.Binary);
+            number.AddSuffix("d", TypeCode.Double);
+            number.AddSuffix("l", TypeCode.Int64);
+            number.AddSuffix("m", TypeCode.Decimal);
+
+            _string.AddPrefix("@", StringOptions.NoEscapes);
+            _string.AddPrefix("$", StringOptions.IsTemplate | StringOptions.AllowsAllEscapes);
+
+            var stringTemplateSettings = new StringTemplateSettings();
+            stringTemplateSettings.StartTag = "{";
+            stringTemplateSettings.EndTag = "}";
+            stringTemplateSettings.ExpressionRoot = expr;
+            this.SnippetRoots.Add(expr);
+            _string.AstConfig.NodeType = typeof(StringTemplateNode);
+            _string.AstConfig.Data = stringTemplateSettings;
 
             this.Root = start;
 

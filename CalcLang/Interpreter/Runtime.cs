@@ -20,6 +20,7 @@ namespace CalcLang.Interpreter
 
         public override bool Equals(object obj)
         {
+            if (this.isNull && obj == null) return true;
             var other = obj as NullClass;
             return isNull == other?.isNull;
         }
@@ -159,8 +160,11 @@ namespace CalcLang.Interpreter
                     } while (currScope != null);
                     currScope = scope;
 
-                    var builtIn = BuiltIns.Bind(request);
-                    if (builtIn != null) return builtIn;
+                    if ((request.Flags & BindingRequestFlags.Extern) != 0)
+                    {
+                        var builtIn = BuiltIns.Bind(request);
+                        if (builtIn != null) return builtIn;
+                    }
                 }
 
                 if ((request.Flags & BindingRequestFlags.NewOnly) != 0)
@@ -188,8 +192,11 @@ namespace CalcLang.Interpreter
                 currScope = currScope.Parent;
             } while (currScope != null);
 
-            var builtIn = BuiltIns.Bind(request);
-            if (builtIn != null) return builtIn;
+            if ((request.Flags & BindingRequestFlags.Extern) != 0)
+            {
+                var builtIn = BuiltIns.Bind(request);
+                if (builtIn != null) return builtIn;
+            }
 
             if ((request.Flags & BindingRequestFlags.NullOk) != 0)
                 return new NullBinding();

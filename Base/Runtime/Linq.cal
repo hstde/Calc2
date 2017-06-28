@@ -48,7 +48,7 @@
 		var index = 0;
 		
 		foreach(var e in this)
-			if(filter(e, index++))
+			if(filter(e))
 				ret[retIndex++] = e;
 		
 		return ret;
@@ -63,7 +63,7 @@
 		
 		foreach(var e in this)
 		{
-			ret[index] = selector(e, index);
+			ret[index] = selector(e);
 			index++;
 		}
 		
@@ -80,8 +80,8 @@
 		var ret = {};
 		var index = length - 1;
 		
-		foreach(var e in this)
-			ret[index--] = e;
+		for(var i = 0; i < length; i++)
+			ret[index--] = this[i];
 		
 		return ret;
 	}
@@ -97,9 +97,8 @@
 		
 		if(length != olength) return false;
 		
-		var index = 0;
-		foreach(var e in this)
-			if(e != other[index++])
+		for(var index = 0; index < length; index++)
+			if(this[index] != other[index])
 				return false;
 		
 		return true;
@@ -113,7 +112,7 @@
 		var index = 0;
 		foreach(var e in this)
 		{
-			ret[keySelector(e, index)] = valueSelector(e, index);
+			ret[keySelector(e)] = valueSelector(e);
 			index++;
 		}
 		
@@ -128,7 +127,7 @@
 		var index = 0;
 		foreach(var e in this)
 		{
-			ret[index] = {Key = keySelector(e, index), Value = valueSelector(e, index)};
+			ret[index] = {Key = keySelector(e), Value = valueSelector(e)};
 			index++;
 		}
 		
@@ -158,7 +157,7 @@
 		var index = 0;
 		foreach(var e in this)
 		{
-			if(!predicate(e, index)) break;
+			if(!predicate(e)) break;
 			ret[index] = e;
 			index++;
 		}
@@ -191,7 +190,7 @@
 		var index = 0;
 		foreach(var e in this)
 		{
-			if(!yielding && !predicate(e, index++)) yielding = true;
+			if(!yielding && !predicate(e)) yielding = true;
 			if(yielding) ret[retIndex++] = e;
 		}
 		
@@ -202,10 +201,9 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var index = 0;
 		foreach(var e in this)
 		{
-			action(e, index++);
+			action(e);
 		}
 	}
 	
@@ -218,7 +216,10 @@
 		if(length < 1)
 			throw ArgumentException();
 		
-		return this[0];
+		foreach(var e in this)
+			return e;
+			
+		throw ArgumentException();
 	}
 	
 	function FirstOrDefault() extension {
@@ -229,7 +230,9 @@
 		
 		if(length < 1) return null;
 		
-		return this[0];
+		foreach(var e in this)
+			return e;
+		return null;
 	}
 	
 	function Last() extension {
@@ -272,10 +275,9 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var index = 0;
 		foreach(var e in this)
 		{
-			if(what(e, index++))
+			if(what(e))
 				return true;
 		}
 		return false;
@@ -285,9 +287,8 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var index = 0;
 		foreach(var e in this)
-			if(!what(e, index++))
+			if(!what(e))
 				return false;
 		return true;
 	}
@@ -327,15 +328,22 @@
 	}
 	
 	function Aggregate(func) extension {
+		return this.Aggregate(null, func);
+	}
+	
+	function Aggregate(init, func) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
 		var length = this.GetType() == "Table" ? this.Length : this.Length();
 		if(length < 1) return null;
 		
-		var result = this[0];
+		var result = init;
 		foreach(var e in this)
-			result = func(result, e);
+			if(result == null)
+				result = e;
+			else
+				result = func(result, e);
 		
 		return result;
 	}
@@ -351,11 +359,11 @@
 		if(this == null || this.GetType() != "Table" || this.Length < 1)
 			throw ArgumentException();
 		
-		var min = this[0];
-		for(var i = 1; i < this.Length; i++)
+		var min = null;
+		foreach(var e in this)
 		{
-			if(this[i] < min)
-				min = this[i];
+			if(min == null || e < min)
+				min = e;
 		}
 		
 		return min;
@@ -372,11 +380,11 @@
 		if(this == null || this.GetType() != "Table" || this.Length < 1)
 			throw ArgumentException();
 		
-		var max = this[0];
-		for(var i = 1; i < this.Length; i++)
+		var max = null;
+		foreach(var e in this)
 		{
-			if(this[i] > max)
-				max = this[i];
+			if(max == null || e > max)
+				max = e;
 		}
 		
 		return max;
@@ -395,9 +403,9 @@
 		
 		var sum = 0;
 		var count = 0;
-		for(var i = 0; i < this.Length; i++)
+		foreach(var e in this)
 		{
-			sum = sum + this[i];
+			sum = sum + e;
 			count++;
 		}
 		
@@ -418,8 +426,8 @@
 		
 		var sum = 0;
 		
-		for(var i = 0; i < this.Length; i++)
-			sum = sum + this[i];
+		foreach(var e in this)
+			sum = sum + e;
 		
 		return sum;
 	}
@@ -456,6 +464,21 @@
 			throw ArgumentException();
 		
 		return this.OrderBy(selector).Reverse();
+	}
+	
+	function Count() extension {
+		return this.Count(x => true);
+	}
+	
+	function Count(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var count = 0;
+		foreach(var e in this)
+			if(filter(e))
+				count++;
+		return count;
 	}
 	
 	return {

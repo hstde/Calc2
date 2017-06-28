@@ -53,6 +53,8 @@
 		return Join(separator, value, 0, value.Length);
 	};
 	
+	extern function StringJoin(separator, value, startIndex, count);
+	
 	function Join(separator, value, startIndex, count) {
 		if(value == null) throw ArgumentNullException("value");
 		if(separator.GetType() != "String") separator = separator.ToString();
@@ -60,7 +62,7 @@
 		if(separator == null) separator = String.Empty;
 		if(value.Length < 1) return String.Empty;
 		
-		var ret = Microsoft.Win32.Win32Native.FastStringJoin(separator, value, startIndex, count);
+		var ret = StringJoin(separator, value, startIndex, count);
 		
 		return ret;
 	}

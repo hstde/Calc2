@@ -1,4 +1,4 @@
-using "runtime";
+using Runtime;
 
 function encrypt(key, data)
 {
@@ -47,22 +47,35 @@ function inputHex(str)
 	for(var i = 0; i < strLength; i += 2)
 		split[i / 2] = str[i] + "" + str[i + 1];
 	
-	return split.Select(function(e, i) return Int32.Parse(e, Number.NumberStyles.HexNumber));
+	return split.Select(e => Int32.Parse(e, Number.NumberStyles.HexNumber));
 }
 
-Console.Write("[1] String input; [2] Hex input: ");
-var inputMode = Console.ReadLine();
+var inputMode;
+var key;
+var data;
 
-Console.WriteLine("Input the key");
-var key = Console.ReadLine();
-Console.WriteLine("Input your data");
-var data = Console.ReadLine();
+if(args.Length < 3)
+{
+	Console.Write("[1] String input; [2] Hex input: ");
+	inputMode = Console.ReadLine();
 
-key = key.Select(function(e, i) return e);
+	Console.WriteLine("Input the key");
+	key = Console.ReadLine();
+	Console.WriteLine("Input your data");
+	data = Console.ReadLine();
+}
+else
+{
+	inputMode = args[0];
+	key = args[1];
+	data = args[2];
+}
+
+key = String.ToTable(key);
 
 if(inputMode == "1")
 {
-	data = data.Select(function(e, i) return e);
+	data = String.ToTable(data);
 }
 else
 {
@@ -77,4 +90,4 @@ foreach(var e in output)
 	sb.Append(Convert.ToString(e, 16, 2, '0', Convert.NumberFormatFlags.PrintAsI1));
 
 Console.WriteLine("Output byte: {0}", sb.ToString());
-Console.WriteLine("Output text: {0}", String.Concat(output.Select(function(e, i) return e.ToChar())));
+Console.WriteLine("Output text: {0}", String.Concat(output.Select(e => e.ToChar())));

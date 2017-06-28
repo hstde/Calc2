@@ -1,0 +1,92 @@
+﻿Diagnostics["Stopwatch"] = (function() {
+	var TicksPerMillisecond = 10000;
+	var TicksPerSecond = TicksPerMillisecond * 1000;
+	var IsHighResolution = false;
+	var Frequency = TicksPerSecond;
+	var tickFrequency = 1;
+	
+	function ctor() {
+		var isRunning = false;
+		var startTimeStamp = -1;
+		var elapsed = -1;
+	
+		function subctor() {
+			Reset();
+		}
+		
+		function Start() {
+			if(!isRunning)
+			{
+				startTimeStamp = GetTimestamp();
+				isRunning = true;
+			}
+		}
+		
+		function Stop() {
+			if(isRunning)
+			{
+				var endTimeStamp = GetTimestamp();
+				var elapsedThisPeriod = endTimeStamp - startTimeStamp;
+				elapsed += elapsedThisPeriod;
+				isRunning = false;
+				
+				if(elapsed < 0)
+					elapsed = 0;
+			}
+		}
+		
+		function Reset() {
+			elapsed = 0;
+			isRunning = false;
+			startTimeStamp = 0;
+		}
+		
+		function Restart() {
+			elapsed = 0;
+			startTimeStamp = GetTimestamp();
+			isRunning = true;
+		}
+		
+		function IsRunning() return isRunning;
+		
+		function GetElapsed() return TimeSpan(GetElapsedDateTimeTicks());
+		
+		function GetElapsedMilliseconds() return GetElapsedDateTimeTicks() / TicksPerMillisecond;
+		
+		function GetElapsedTicks() return GetRawElapsedTicks();
+		
+		function GetTimestamp() return Environment.GetCurrentTimeTicks();
+		
+		function GetRawElapsedTicks() {
+			var timeElapsed = elapsed;
+			
+			if(isRunning)
+			{
+				var currentTimeStamp = GetTimestamp();
+				var elapsedUntilNow = currentTimeStamp - startTimeStamp;
+				timeElapsed += elapsedUntilNow;
+			}
+			return timeElapsed;
+		}
+		
+		function GetElapsedDateTimeTicks() {
+			var rawTicks = GetRawElapsedTicks();
+			return rawTicks;
+		}
+		
+		subctor();
+		
+		return {
+			Start = Start,
+			Stop = Stop,
+			Reset = Reset,
+			Restart = Restart,
+			GetElapsed = GetElapsed,
+			GetElapsedMilliseconds = GetElapsedMilliseconds,
+			GetElapsedTicks = GetElapsedTicks,
+			GetTimestamp = GetTimestamp
+		};
+	}
+	
+	return ctor;
+})();

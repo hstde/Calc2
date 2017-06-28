@@ -3,7 +3,7 @@
  * Furthermore this is a blatant copy of https://github.com/munificent/wren/blob/master/example/animals.wren
  */
 
-using "runtime";
+using Runtime;
 
 function promptYesNo(prompt)
 {
