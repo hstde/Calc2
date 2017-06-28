@@ -50,13 +50,26 @@ function inputHex(str)
 	return split.Select(e => Int32.Parse(e, Number.NumberStyles.HexNumber));
 }
 
-Console.Write("[1] String input; [2] Hex input: ");
-var inputMode = Console.ReadLine();
+var inputMode;
+var key;
+var data;
 
-Console.WriteLine("Input the key");
-var key = Console.ReadLine();
-Console.WriteLine("Input your data");
-var data = Console.ReadLine();
+if(args.Length < 3)
+{
+	Console.Write("[1] String input; [2] Hex input: ");
+	inputMode = Console.ReadLine();
+
+	Console.WriteLine("Input the key");
+	key = Console.ReadLine();
+	Console.WriteLine("Input your data");
+	data = Console.ReadLine();
+}
+else
+{
+	inputMode = args[0];
+	key = args[1];
+	data = args[2];
+}
 
 key = String.ToTable(key);
 
