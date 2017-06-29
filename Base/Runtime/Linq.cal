@@ -1,11 +1,10 @@
 ﻿var Enumerable = (function() {
 	function Sequence(start, end, step) {
 		var ret = {};
-		var val = start;
 		
-		for(var i = 0; val < end; val = val + step, i++)
+		for(var i = 0; i * step + start < end; i++)
 		{
-			ret[i] = val;
+			ret[i] = i * step + start;
 		}
 		
 		return ret;
@@ -236,10 +235,13 @@
 	}
 	
 	function Last() extension {
-		if(this == null || (this.GetType() != "Table" && this.GetType() != "String") || this.Length() < 1)
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
 		var length = this.GetType() == "Table" ? this.Length : this.Length();
+		
+		if(length < 1)
+			throw ArgumentException();
 		
 		return this[length - 1];
 	}
