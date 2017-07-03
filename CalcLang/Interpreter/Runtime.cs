@@ -629,7 +629,7 @@ namespace CalcLang.Interpreter
 
         private Type GetUpType(Type type)
         {
-            if (type == typeof(int)) return typeof(double);
+            if (type == typeof(int) || type == typeof(long) || type == typeof(decimal)) return typeof(double);
             return null;
         }
 
@@ -661,7 +661,7 @@ namespace CalcLang.Interpreter
         {
             if (!CanOverflow(impl.Key.Op))
                 return false;
-            if (impl.CommonType == typeof(double) || impl.CommonType == typeof(Single))
+            if (impl.CommonType == typeof(double) || impl.CommonType == typeof(float))
                 return false;
             return true;
         }
