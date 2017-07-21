@@ -70,6 +70,10 @@
 		return ret;
 	}
 	
+	function SelectSubset(start, count) extension {
+		return this.Skip(start).Take(count);
+	}
+	
 	function Reverse() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
@@ -222,6 +226,17 @@
 		throw ArgumentException();
 	}
 	
+	function First(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		foreach(var e in this)
+			if(filter(e))
+				return e;
+		
+		throw ArgumentException();
+	}
+	
 	function FirstOrDefault() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
@@ -232,6 +247,17 @@
 		
 		foreach(var e in this)
 			return e;
+		return null;
+	}
+	
+	function FirstOrDefault(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		foreach(var e in this)
+			if(filter(e))
+				return e;
+		
 		return null;
 	}
 	
@@ -247,6 +273,26 @@
 		return this[length - 1];
 	}
 	
+	function Last(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var last = null;
+		var found = false;
+		
+		foreach(var e in this)
+			if(filter(e))
+			{
+				last = e;
+				found = true;
+			}
+		
+		if(!found)
+			throw ArgumentException();
+		else
+			return last;
+	}
+	
 	function LastOrDefault() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
@@ -258,12 +304,28 @@
 		return this[length - 1];
 	}
 	
+	function LastOrDefault(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var last = null;
+		
+		foreach(var e in this)
+			if(filter(e))
+			{
+				last = e;
+				found = true;
+			}
+		
+		return last;
+	}
+	
 	function Single() extension {
 		return this.First();
 	}
 	
 	function Single(what) extension {
-		return this.Where(what).First();
+		return this.First(what);
 	}
 	
 	function Any() extension {
