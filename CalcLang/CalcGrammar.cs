@@ -72,6 +72,7 @@ namespace CalcLang
             NonTerminal objRef = new NonTerminal("objRef");
             NonTerminal memberAccess = new NonTerminal("memberAccess", typeof(MemberAccessNode));
             NonTerminal ternaryIf = new NonTerminal("ternaryIf", typeof(IfNode));
+            NonTerminal coalescence = new NonTerminal("coalescence", typeof(CoalescenceNode));
             NonTerminal functionCall = new NonTerminal("functionCall", typeof(FunctionCallNode));
             NonTerminal varList = new NonTerminal("varList", typeof(ExpressionListNode));
             NonTerminal array = new NonTerminal("array");
@@ -179,7 +180,11 @@ namespace CalcLang
                         | inlineFunctionDef
                         | var | unExpr | binExpr
                         | arrayDef
-                        | assignment;
+                        | assignment
+                        | coalescence;
+
+            coalescence.Rule = expr + "??" + expr;
+
             binExpr.Rule = expr + binOp + expr;
             binOp.Rule = ToTerm("&&") | "||" | "&" | "|" | "^"
                         | ToTerm("==") | "<=" | ">=" | "<" | ">" | "!="
@@ -215,7 +220,7 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>",
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>", "??",
                 "return", "if", "else", "for", "while", "function", "break", "continue",
                 "using", "do", "var", "foreach", "in",
                 "try", "catch", "finally", "throw", "extern");
@@ -230,7 +235,7 @@ namespace CalcLang
             RegisterOperators(30, "+", "-");
             RegisterOperators(40, "*", "/", "%");
             RegisterOperators(60, "!", "~");
-            RegisterOperators(70, "++", "--");
+            RegisterOperators(70, "++", "--", "??");
             MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, lambdaBody, foreachVarDecl, paramsOrEmpty);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
@@ -240,7 +245,7 @@ namespace CalcLang
             AddTermsReportGroup("constant", number, _string, _char);
             AddTermsReportGroup("constant", "null", "false", "true", "this", "@");
             AddTermsReportGroup("unary operator", "+", "-", "!");
-            AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>");
+            AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>", "??");
             AddToNoReportGroup("(", "[", "{", ".", ",", "++", "--");
 
             MarkReservedWords("if", "else", "return", "function", "while",

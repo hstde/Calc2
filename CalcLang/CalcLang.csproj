@@ -55,6 +55,7 @@
     <Compile Include="Ast\BoolValNode.cs" />
     <Compile Include="Ast\BreakNode.cs" />
     <Compile Include="Ast\CatchNode.cs" />
+    <Compile Include="Ast\CoalescenceNode.cs" />
     <Compile Include="Ast\ContinueNode.cs" />
     <Compile Include="Ast\DoWhileNode.cs" />
     <Compile Include="Ast\EmptyNode.cs" />
