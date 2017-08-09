@@ -74,6 +74,24 @@
 		return this.Skip(start).Take(count);
 	}
 	
+	function SelectMany(selector) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var ret = {};
+		var index = 0;
+		
+		foreach(var e in this)
+		{
+			foreach(var ee in selector(e))
+			{
+				ret[index++] = ee;
+			}
+		}
+		
+		return ret;
+	}
+	
 	function Reverse() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
