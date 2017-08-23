@@ -37,8 +37,8 @@ namespace CalcLang.Interpreter
             if (Payload is DataTable)
             {
                 var dt = (DataTable)Payload;
-                var exType = (string)dt.GetString("ExceptionType");
-                msg = (string)dt.GetString("Message");
+                var exType = dt.GetString("ExceptionType").ToString();
+                msg = dt.GetString("Message").ToString();
                 if (msg != null && msg.Length > 0)
                     msg = exType + ": " + msg;
                 else
