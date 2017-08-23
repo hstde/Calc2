@@ -114,7 +114,13 @@ function AppendFile(args)
 
 function ReadFile(args)
 {
-	throw NotImplementedException();
+	if(args.Length < 1) return;
+	var stream = IO.File.OpenText(args[0]);
+	var cont = stream.ReadText();
+	foreach(var line in cont)
+		Console.WriteLine(line);
+	
+	stream.Close();
 }
 
 function Fault(args)

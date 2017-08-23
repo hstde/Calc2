@@ -276,6 +276,7 @@
 		EndsWith = EndsWith,
 		Insert = Insert,
 		Format = Format,
-		ToTable = ToTable
+		ToTable = ToTable,
+		NewLine = "\r\n"
 	};
 })();

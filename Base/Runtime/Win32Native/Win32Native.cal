@@ -11,6 +11,8 @@ var Microsoft = (function() {
 			var FILE_TYPE_CHAR = 0x0002;
 			var FILE_TYPE_PIPE = 0x0003;
 			var ERROR_INVALID_HANDLE = 0x6;
+			var ERROR_PIPE_NOT_CONNECTED = 0xE9;
+			var ERROR_SUCCESS = 0;
 			
 			extern function Win32Native_GetLastWin32Error();
 			extern function Win32Native_SetErrorMode(newMode);
@@ -141,6 +143,8 @@ var Microsoft = (function() {
 				FILE_TYPE_DISK = FILE_TYPE_DISK,
 				FILE_TYPE_CHAR = FILE_TYPE_CHAR,
 				FILE_TYPE_PIPE = FILE_TYPE_PIPE,
+				ERROR_PIPE_NOT_CONNECTED = ERROR_PIPE_NOT_CONNECTED,
+				ERROR_SUCCESS = ERROR_SUCCESS,
 			
 				GetLastWin32Error = GetLastWin32Error,
 				SetErrorMode = SetErrorMode,

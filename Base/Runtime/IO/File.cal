@@ -2,6 +2,8 @@
 	//TODO: Implement File.Read()
 	var Win32Native = Microsoft.Win32.Win32Native;
 	var SeekOrigin = IO.SeekOrigin;
+	extern function Win32Native_DisposeNativeHandle(handle);
+	var __Win32Native_DisposeNativeHandle = Win32Native_DisposeNativeHandle;
 	
 	var useLongPath = true;
 	var bufferSize = 4096;
@@ -11,6 +13,7 @@
 	var FILE_END = 2;
 	
 	var ERROR_NO_DATA = 232;
+	var ERROR_BROKEN_PIPE = 109;
 	
 	var GENERIC_READ = 0x8000_0000;
 	var GENERIC_WRITE = 0x4000_0000;
@@ -194,16 +197,17 @@
 		}
 		
 		function WriteCore(buffer, offset, count) {
+			if(count < 1) return;
 			var res = WriteFileNative(_handle, buffer, offset, count, null);
 			var hr = res.hr;
 			var r = res.r;
 			
 			if(r == -1)
 			{
-				if(hr == ERROR_NO_DATA)
+				if(hr == ERROR_NO_DATA || hr == Win32Native.ERROR_SUCCESS)
 					r = 0;
 				else
-					throw IOException();
+					throw IOException(hr);
 			}
 			
 			_pos = _pos + r;
@@ -272,11 +276,107 @@
 			return pos;
 		}
 		
+		function Read(array, offset, count) {
+			if(array == null)
+				throw ArgumentNullException("array");
+			if(offset < 0)
+				throw ArgumentOutOfRangeException("offset");
+			if(count < 0)
+				throw ArgumentOutOfRangeException("count");
+			
+			var isBlocked = false;
+			var n = _readLen - _readPos;
+			if(n == 0)
+			{
+				if(!_canRead) throw IOException("Read not supported!");
+				if(_writePos > 0) FlushWrite();
+				if(!_canSeek || (count >= _bufferSize))
+				{
+					n = ReadCore(array, offset, count);
+					_readPos = 0;
+					_readLen = 0;
+					return n;
+				}
+				if(_buffer == null) _buffer = {};
+				n = ReadCore(_buffer, 0, _bufferSize);
+				if(n == 0) return n;
+				isBlocked = n < _bufferSize;
+				_readPos = 0;
+				_readLen = n;
+			}
+			
+			if(n > count) n = count;
+			Buffer.BlockCopy(_buffer, _readPos, array, offset, n);
+			_readPos += n;
+			
+			if(!_isPipe)
+			{
+				if(n < count && !isBlocked)
+				{
+					var moreBytesRead = ReadCore(array, offset + n, count - n);
+					n += moreBytesRead;
+					
+					_readLen = 0;
+					_readPos = 0;
+				}
+			}
+			
+			return n;
+		}
+		
+		function ReadCore(buffer, offset, count) {
+			var res = ReadFileNative(_handle, buffer, offset, count, null);
+			var hr = res.hr;
+			var r = res.r;
+			
+			if(r == -1)
+			{
+				if(hr == ERROR_BROKEN_PIPE || hr == Win32Native.ERROR_SUCCESS)
+					r = 0;
+				else
+				{
+					if(hr == ERROR_INVALID_PARAMETER)
+						throw ArgumentException();
+						
+					throw IOException(hr);
+				}
+			}
+			
+			_pos += r;
+			return r;
+		}
+		
+		function ReadFileNative(handle, bytes, offset, count, overlapped) {
+			if(count == 0)
+				return {hr = 0, r = 0};
+			
+			var numBytesRead = Win32Native.ReadFile(handle, bytes, offset, count);
+			
+			var hr = 0;
+			if(numBytesRead == 0)
+			{
+				hr = Win32Native.GetLastWin32Error();
+				
+				if(hr == ERROR_BROKEN_PIPE || Win32Native.ERROR_PIPE_NOT_CONNECTED)
+					return {r = -1, hr = hr};
+				
+				if(hr == Win32Native.ERROR_INVALID_HANDLE)
+					__Win32Native_DisposeNativeHandle(handle);
+				
+				return {r = -1, hr = hr};
+			}
+			else
+				hr = 0;
+			
+			return {r = numBytesRead, hr = hr};
+		}
+		
 		subctor(path, mode, access);
 		return {
 			Write = Write,
 			Close = Close,
-			Seek = Seek
+			Seek = Seek,
+			Read = Read
 		};
 	}
 	

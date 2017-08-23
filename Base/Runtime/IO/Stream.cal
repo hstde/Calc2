@@ -64,6 +64,10 @@
 IO["StreamReader"] = (function() {
 
 	//stream has to implement ReadBuffer(buffer, offset, count)
+	
+	function ctor(stream, encoding) {
+		return ctor(stream, encoding, 1024);
+	}
 
 	function ctor(stream, encoding, bufferSize) {
 		var byteBuffer = {};
@@ -214,6 +218,12 @@ IO["StreamReader"] = (function() {
 			return sb.ToString();
 		};
 		
+		function ReadText() {
+			if(stream == null) return null;
+			
+			return String.Split(ReadToEnd(), String.NewLine);
+		}
+		
 		function Read() {
 			if(stream == null)
 				return null;
@@ -229,6 +239,7 @@ IO["StreamReader"] = (function() {
 			ReadLine = ReadLine,
 			ReadToEnd = ReadToEnd,
 			Read = Read,
+			ReadText = ReadText,
 			Close = function() { stream.Close(); }
 		};
 	}
