@@ -1,0 +1,69 @@
+Mnemomic
+nop
+ldc_i8
+ldc_r8
+ldnull
+ldtrue
+ldfalse
+ldstr
+pop
+dup
+ldloc
+ldarg
+stloc
+starg
+newtable
+ldelem
+stelem
+call
+calli
+ret
+jmp
+
+add
+sub
+mul
+div
+rem
+and
+or
+not
+xor
+shl
+shr
+
+ceq
+cle
+cge
+
+br
+brtrue
+brfalse
+brnull
+brzero
+breq
+brneq
+brgr
+brge
+brls
+brle
+
+
+functions:
+token:i4 argnum:i4 flags:i4 bodyLength:i4 data[]
+
+flags ->
+EntryPoint hasVarArg 
+
+data:
+token:i4 type:i1 length:i8 data
+
+DebugData:
+token:i4 flags:i4 refToken:i4 length:i8 data
+
+flags ->
+functionRef dataRef hidden
+
+MetaData:
+entryPoint functionToken
+importlist << ??
