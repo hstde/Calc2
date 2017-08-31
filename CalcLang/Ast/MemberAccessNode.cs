@@ -36,7 +36,7 @@ namespace CalcLang.Ast
             var type = targetValue == null || targetValue == thread.Runtime.NullValue ? typeof(NullClass) : targetValue.GetType();
             if (type == typeof(DataTable))
             {
-                result = ((DataTable)targetValue).GetString(memberName);
+                result = ((DataTable)targetValue).GetString(thread, memberName);
             }
 
             if (result == thread.Runtime.NullValue)
@@ -66,7 +66,7 @@ namespace CalcLang.Ast
             var type = targetValue.GetType();
             if (type == typeof(DataTable))
             {
-                ((DataTable)targetValue).SetString(memberName, value);
+                ((DataTable)targetValue).SetString(thread, memberName, value);
             }
             else
             {

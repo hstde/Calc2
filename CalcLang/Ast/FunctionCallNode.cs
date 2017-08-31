@@ -59,7 +59,7 @@ namespace CalcLang.Ast
                 int lastIndex = tempArgs.Length - 1;
                 var tempDT = new DataTable(args.Length - lastIndex);
                 for (int i = lastIndex; i < args.Length; i++)
-                    tempDT.SetInt(i - lastIndex, args[i]);
+                    tempDT.SetInt(thread, i - lastIndex, args[i]);
                 tempArgs[lastIndex] = tempDT;
                 args = tempArgs;
             }

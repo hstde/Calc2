@@ -54,12 +54,12 @@ namespace CalcLang.Ast
 
                     if (sIndex != null)
                     {
-                        result = dtTarget.GetString(sIndex);
+                        result = dtTarget.GetString(thread, sIndex);
                     }
                     else
                     {
                         int iIndex = Convert.ToInt32(indexValue);
-                        result = dtTarget.GetInt(iIndex);
+                        result = dtTarget.GetInt(thread, iIndex);
                     }
                 }
                 catch(Exception)
@@ -115,12 +115,12 @@ namespace CalcLang.Ast
 
                     if (sIndex != null)
                     {
-                        dtTarget.SetString(sIndex, value);
+                        dtTarget.SetString(thread, sIndex, value);
                     }
                     else
                     {
                         int iIndex = Convert.ToInt32(indexValue);
-                        dtTarget.SetInt(iIndex, value);
+                        dtTarget.SetInt(thread, iIndex, value);
                     }
                 }
                 catch(OutOfMemoryException e)

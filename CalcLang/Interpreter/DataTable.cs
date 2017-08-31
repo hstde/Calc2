@@ -9,8 +9,19 @@ namespace CalcLang.Interpreter
 {
     public class DataTable : IEnumerable<object>
     {
+        private const string KEYS = "Keys";
+        private const string LENGTH = "Length";
+        private const string GETINDEX = "__getIndex";
+        private const string SETINDEX = "__setIndex";
+
+        private readonly List<string> specialIndicies = new List<string> { KEYS, LENGTH, GETINDEX, SETINDEX };
+
         private Dictionary<string, object> stringIndexed;
         private readonly Dictionary<int, object> intIndexed;
+
+        private bool indexerLocked = false;
+        private ICallTarget indexGetter = null;
+        private ICallTarget indexSetter = null;
 
         public decimal Length => length;
 
@@ -26,15 +37,15 @@ namespace CalcLang.Interpreter
 
         }
 
-        public DataTable(string value) : this()
+        public DataTable(string value, ScriptThread thread) : this()
         {
             for (int i = 0; i < value.Length; i++)
             {
-                SetInt(i, value[i]);
+                SetInt(thread, i, value[i]);
             }
         }
 
-        public DataTable(IEnumerable value) : this()
+        public DataTable(IEnumerable value, ScriptThread thread) : this()
         {
             int i = 0;
             foreach (var e in value)
@@ -42,11 +53,11 @@ namespace CalcLang.Interpreter
                 var kv = e as KeyValuePair<string, object>?;
                 if (kv != null)
                 {
-                    SetString(kv.Value.Key, kv.Value.Value);
+                    SetString(thread, kv.Value.Key, kv.Value.Value);
                 }
                 else
                 {
-                    SetInt(i++, e);
+                    SetInt(thread, i++, e);
                 }
             }
         }
@@ -59,16 +70,22 @@ namespace CalcLang.Interpreter
             invalidated = true;
         }
 
-        public object GetString(string key)
+        public object GetString(ScriptThread thread, string key)
         {
-            if (key == "Length" || key == "Keys")
+            object value;
+            if (indexGetter != null && !indexerLocked)
+            {
+                indexerLocked = true;
+                var ret = indexGetter.Call(thread, this, new object[] { key });
+                indexerLocked = false;
+                return ret;
+            }
+            else if (specialIndicies.Contains(key))
             {
                 Invalidated();
                 return GetSpecialString(key);
             }
-
-            object value;
-            if (stringIndexed.TryGetValue(key, out value))
+            else if (stringIndexed.TryGetValue(key, out value))
                 return value;
             return NullClass.NullValue;
         }
@@ -77,18 +94,42 @@ namespace CalcLang.Interpreter
         {
             switch (key)
             {
-                case "Length":
+                case LENGTH:
                     return length;
-                case "Keys":
+                case KEYS:
                     return keys;
+                case GETINDEX:
+                    return (object)indexGetter ?? NullClass.NullValue;
+                case SETINDEX:
+                    return (object)indexSetter ?? NullClass.NullValue;
                 default:
                     return null;
             }
         }
 
-        public void SetString(string key, object value)
+        public void SetString(ScriptThread thread, string key, object value)
         {
-            if (value == NullClass.NullValue)
+            if (indexSetter != null && !indexerLocked)
+            {
+                indexerLocked = true;
+                indexSetter.Call(thread, this, new object[] { key, value });
+                indexerLocked = false;
+            }
+            else if (key == SETINDEX)
+            {
+                indexSetter = value as Closure;
+                if (indexSetter == null)
+                    indexSetter = (value as MethodTable).GetIndex(2);
+                return;
+            }
+            else if(key == GETINDEX)
+            {
+                indexGetter = value as Closure;
+                if (indexGetter == null)
+                    indexGetter = (value as MethodTable).GetIndex(1);
+                return;
+            }
+            else if (value == NullClass.NullValue)
             {
                 stringIndexed.Remove(key);
             }
@@ -99,17 +140,30 @@ namespace CalcLang.Interpreter
             invalidated = true;
         }
 
-        public object GetInt(int key)
+        public object GetInt(ScriptThread thread, int key)
         {
             object value;
-            if (intIndexed.TryGetValue(key, out value))
+            if (indexGetter != null && !indexerLocked)
+            {
+                indexerLocked = true;
+                var ret = indexGetter.Call(thread, this, new object[] { key });
+                indexerLocked = false;
+                return ret;
+            }
+            else if (intIndexed.TryGetValue(key, out value))
                 return value;
             return NullClass.NullValue;
         }
 
-        public void SetInt(int key, object value)
+        public void SetInt(ScriptThread thread, int key, object value)
         {
-            if (value == NullClass.NullValue)
+            if(indexSetter != null && !indexerLocked)
+            {
+                indexerLocked = true;
+                indexSetter.Call(thread, this, new object[] { key, value });
+                indexerLocked = false;
+            }
+            else if (value == NullClass.NullValue)
             {
                 intIndexed.Remove(key);
                 length = intIndexed.Select(x => x.Key).Max() + 1;
@@ -129,7 +183,7 @@ namespace CalcLang.Interpreter
             var keys = stringIndexed.Keys.ToArray();
             var dt = new DataTable(keys.Length);
             for (int i = 0; i < keys.Length; i++)
-                dt.SetInt(i, keys[i]);
+                dt.SetInt(null, i, keys[i]);
 
             this.keys = dt;
             invalidated = false;

@@ -49,7 +49,7 @@ namespace CalcLang.Ast
             var rawobject = InExpr.Evaluate(thread);
             if (rawobject is string)
             {
-                foreachObject = new DataTable((string)rawobject);
+                foreachObject = new DataTable((string)rawobject, thread);
             }
             else if (rawobject is DataTable)
             {
@@ -57,7 +57,7 @@ namespace CalcLang.Ast
             }
             else if(rawobject is IEnumerable)
             {
-                foreachObject = new DataTable((IEnumerable)rawobject);
+                foreachObject = new DataTable((IEnumerable)rawobject, thread);
             }
             else
             {
