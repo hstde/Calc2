@@ -1,0 +1,46 @@
+/*
+shamelessly ripping of some lua code here
+see https://www.lua.org/pil/13.1.html
+*/
+
+using Runtime;
+
+var Set = {
+	new = function(t) {
+		var set = {};
+		foreach(var e in t) set[e] = true;
+		
+		set["_+_"] = Set.union;
+		set["_*_"] = Set.intersection;
+		set["ToString"] = function() return Set.tostring(this);
+		
+		return set;
+	},
+	union = function(a, b) {
+		var res = Set.new({});
+		for(var i = 0; i < a.Length; i++) if(a[i]) res[i] = true;
+		for(var i = 0; i < b.Length; i++) if(b[i]) res[i] = true;
+		return res;
+	},
+	intersection = function(a, b) {
+		var res = Set.new({});
+		for(var i = 0; i < a.Length; i++) if(b[i]) res[i] = true;
+		return res;
+	},
+	tostring = function(set) {
+		var s = "{";
+		var sep = "";
+		for(var i = 0; i < set.Length; i++)
+		{
+			if(set[i])
+			{
+				s = s + sep + i;
+				sep = ", ";
+			}
+		}
+		return s + "}";
+	},
+	print = function(s) {
+		Console.WriteLine(Set.tostring(s));
+	}
+};
