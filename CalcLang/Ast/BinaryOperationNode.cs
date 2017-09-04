@@ -42,7 +42,7 @@ namespace CalcLang.Ast
         {
             thread.CurrentNode = this;
 
-            switch(Op)
+            switch (Op)
             {
                 case ExpressionType.AndAlso:
                     Evaluate = EvaluateAndAlso;
@@ -56,7 +56,7 @@ namespace CalcLang.Ast
             }
 
             var result = Evaluate(thread);
-            if(IsConstant())
+            if (IsConstant())
             {
                 constValue = result;
                 AsString = Op + " (operator) Const= " + constValue;
@@ -85,11 +85,25 @@ namespace CalcLang.Ast
             thread.CurrentNode = this;
             var arg1 = Left.Evaluate(thread);
             var arg2 = Right.Evaluate(thread);
+            object result = null;
 
-            if ((Op == ExpressionType.Divide || Op == ExpressionType.Modulo) && Convert.ToDecimal(arg2) == 0)
-                thread.ThrowScriptError("DivideByZeroException", null);
+            if (arg1.GetType() == typeof(DataTable) || arg2.GetType() == typeof(DataTable))
+            {
+                var dt1 = arg1 as DataTable;
+                var dt2 = arg2 as DataTable;
 
-            var result = thread.Runtime.ExecuteBinaryOperator(Op, arg1, arg2, ref lastUsed);
+                var callTarget = dt1?.GetOperatorCallTarget(Op) ?? dt2?.GetOperatorCallTarget(Op);
+
+                result = callTarget?.Call(thread, null, new[] { dt1 ?? arg1, dt2 ?? arg2 });
+            }
+
+            if (result == null)
+            {
+                if ((Op == ExpressionType.Divide || Op == ExpressionType.Modulo) && Convert.ToDecimal(arg2) == 0)
+                    thread.ThrowScriptError("DivideByZeroException", null);
+                result = thread.Runtime.ExecuteBinaryOperator(Op, arg1, arg2, ref lastUsed);
+            }
+
             thread.CurrentNode = Parent;
             return result;
         }

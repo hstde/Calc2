@@ -442,7 +442,6 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => checked((long)x < (long)y));
             AddBinary(op, typeof(double), (x, y) => (double)x < (double)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x < (decimal)y);
-            //AddBinary(op, typeof(string), (x, y) => ((string)x)[0] < ((string)y)[0]);
             AddBinary(op, typeof(char), (x, y) => (char)x < (char)y);
 
             op = ExpressionType.GreaterThan;
@@ -450,7 +449,6 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => checked((long)x > (long)y));
             AddBinary(op, typeof(double), (x, y) => (double)x > (double)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x > (decimal)y);
-            //AddBinary(op, typeof(string), (x, y) => ((string)x)[0] > ((string)y)[0]);
             AddBinary(op, typeof(char), (x, y) => (char)x > (char)y);
 
             op = ExpressionType.LessThanOrEqual;
@@ -458,7 +456,6 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => checked((long)x <= (long)y));
             AddBinary(op, typeof(double), (x, y) => (double)x <= (double)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x <= (decimal)y);
-            //AddBinary(op, typeof(string), (x, y) => ((string)x)[0] <= ((string)y)[0]);
             AddBinary(op, typeof(char), (x, y) => (char)x <= (char)y);
 
             op = ExpressionType.GreaterThanOrEqual;
@@ -466,7 +463,6 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => checked((long)x >= (long)y));
             AddBinary(op, typeof(double), (x, y) => (double)x >= (double)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x >= (decimal)y);
-            //AddBinary(op, typeof(string), (x, y) => ((string)x)[0] >= ((string)y)[0]);
             AddBinary(op, typeof(char), (x, y) => (char)x >= (char)y);
 
             op = ExpressionType.Equal;
