@@ -12,27 +12,27 @@ namespace CalcLang.Interpreter
     {
         private const string KEYS = "Keys";
         private const string LENGTH = "Length";
-        private const string GETINDEX = "__getIndex";
-        private const string SETINDEX = "__setIndex";
-        private const string ADD = "__add";
-        private const string SUB = "__sub";
-        private const string MUL = "__mul";
-        private const string DIV = "__div";
-        private const string MOD = "__mod";
-        private const string AND = "__and";
-        private const string OR = "__or";
-        private const string XOR = "__xor";
-        private const string LSH = "__lsh";
-        private const string RSH = "__rsh";
-        private const string UPL = "__upl";
-        private const string NEG = "__neg";
-        private const string NOT = "__not";
-        private const string EQU = "__equ";
-        private const string NEQ = "__neq";
-        private const string GEQ = "__geq";
-        private const string LEQ = "__leq";
-        private const string LES = "__les";
-        private const string GRE = "__gre";
+        private const string GETINDEX = "_[]";
+        private const string SETINDEX = "_[]=";
+        private const string ADD = "_+_";
+        private const string SUB = "_-_";
+        private const string MUL = "_*_";
+        private const string DIV = "_/_";
+        private const string MOD = "_%_";
+        private const string AND = "_&&_";
+        private const string OR = "_||_";
+        private const string XOR = "_^_";
+        private const string LSH = "_<<_";
+        private const string RSH = "_>>_";
+        private const string UPL = "+_";
+        private const string NEG = "-_";
+        private const string NOT = "!_";
+        private const string EQU = "_==_";
+        private const string NEQ = "_!=_";
+        private const string GEQ = "_>=_";
+        private const string LEQ = "_<=_";
+        private const string LES = "_<_";
+        private const string GRE = "_>_";
 
         private readonly List<string> specialIndices = new List<string> { KEYS, LENGTH, GETINDEX, SETINDEX,
             ADD, SUB, MUL, DIV, MOD, AND, OR, XOR, LSH, RSH, UPL, NEG, NOT, EQU, NEQ, GEQ, LEQ, LES, GRE };
