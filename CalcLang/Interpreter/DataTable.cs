@@ -46,11 +46,9 @@ namespace CalcLang.Interpreter
         private ICallTarget indexGetter = null;
         private ICallTarget indexSetter = null;
 
-        private Dictionary<ExpressionType, ICallTarget> operators = new Dictionary<ExpressionType, ICallTarget>
-        {
-            [ExpressionType.AddChecked] = null
-        };
-        private Dictionary<string, ExpressionType> operatorType = new Dictionary<string, ExpressionType>
+        private Dictionary<ExpressionType, ICallTarget> operators = new Dictionary<ExpressionType, ICallTarget>();
+
+        private static readonly Dictionary<string, ExpressionType> operatorType = new Dictionary<string, ExpressionType>
         {
             [ADD] = ExpressionType.AddChecked,
             [SUB] = ExpressionType.SubtractChecked,
@@ -58,7 +56,7 @@ namespace CalcLang.Interpreter
             [DIV] = ExpressionType.Divide,
             [MOD] = ExpressionType.Modulo,
             [AND] = ExpressionType.And,
-            [OR] = ExpressionType.Or,
+            [OR] =  ExpressionType.Or,
             [XOR] = ExpressionType.ExclusiveOr,
             [LSH] = ExpressionType.LeftShift,
             [RSH] = ExpressionType.RightShift,
@@ -80,7 +78,9 @@ namespace CalcLang.Interpreter
 
         private bool invalidated;
 
-        public DataTable() : this(8) { }
+        public DataTable() : this(8)
+        {
+        }
 
         public DataTable(int size) : this(size, size)
         {
@@ -118,6 +118,11 @@ namespace CalcLang.Interpreter
             intIndexed = new Dictionary<int, object>(intSize);
             length = 0;
             invalidated = true;
+
+            foreach(var ot in operatorType)
+            {
+                operators.Add(ot.Value, null);
+            }
         }
 
         public object GetString(ScriptThread thread, string key)
@@ -171,7 +176,7 @@ namespace CalcLang.Interpreter
                 case LEQ:
                 case LES:
                 case GRE:
-                    return (object)operators[operatorType[key]] == NullClass.NullValue;
+                    return (object)operators[operatorType[key]] ?? NullClass.NullValue;
                 default:
                     return null;
             }
