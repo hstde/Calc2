@@ -128,20 +128,20 @@ namespace CalcLang.Interpreter
         public object GetString(ScriptThread thread, string key)
         {
             object value;
-            if (indexGetter != null && !indexerLocked)
-            {
-                indexerLocked = true;
-                var ret = indexGetter.Call(thread, this, new object[] { key });
-                indexerLocked = false;
-                return ret;
-            }
-            else if (specialIndices.Contains(key))
+            if (specialIndices.Contains(key))
             {
                 Invalidated();
                 return GetSpecialString(key);
             }
             else if (stringIndexed.TryGetValue(key, out value))
                 return value;
+            else if (indexGetter != null /*&& !indexerLocked*/)
+            {
+                indexerLocked = true;
+                var ret = indexGetter.Call(thread, this, new object[] { key });
+                indexerLocked = false;
+                return ret;
+            }
             return NullClass.NullValue;
         }
 
@@ -227,15 +227,15 @@ namespace CalcLang.Interpreter
         public object GetInt(ScriptThread thread, int key)
         {
             object value;
-            if (indexGetter != null && !indexerLocked)
+            if (intIndexed.TryGetValue(key, out value))
+                return value;
+            else if (indexGetter != null /*&& !indexerLocked*/)
             {
                 indexerLocked = true;
                 var ret = indexGetter.Call(thread, this, new object[] { key });
                 indexerLocked = false;
                 return ret;
             }
-            else if (intIndexed.TryGetValue(key, out value))
-                return value;
             return NullClass.NullValue;
         }
 
