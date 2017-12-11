@@ -77,6 +77,7 @@ namespace CalcLang
             NonTerminal varList = new NonTerminal("varList", typeof(ExpressionListNode));
             NonTerminal array = new NonTerminal("array");
             NonTerminal singleDimArray = new NonTerminal("singleDimArray", typeof(IndexedAccessNode));
+            NonTerminal rangeArrayDef = new NonTerminal("rangeArrayDef", typeof(RangeArrayDefNode));
 
             IdentifierTerminal name = new IdentifierTerminal("name", IdOptions.IsNotKeyword);
             IdentifierTerminal newName = new IdentifierTerminal("newName", IdOptions.IsNotKeyword);
@@ -176,10 +177,13 @@ namespace CalcLang
             arrayDefListItem.Rule = namedArrayItem | expr;
             namedArrayItem.Rule = (name + ReduceHere() | _string) + "=" + expr;
 
+            rangeArrayDef.Rule = "[" + expr + ".." + expr + "]";
+
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | inlineFunctionDef
                         | var | unExpr | binExpr
                         | arrayDef
+                        | rangeArrayDef
                         | assignment
                         | coalescence;
 
@@ -220,7 +224,7 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>", "??",
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>", "??", "..",
                 "return", "if", "else", "for", "while", "function", "break", "continue",
                 "using", "do", "var", "foreach", "in",
                 "try", "catch", "finally", "throw", "extern");
@@ -245,7 +249,7 @@ namespace CalcLang
             AddTermsReportGroup("constant", number, _string, _char);
             AddTermsReportGroup("constant", "null", "false", "true", "this", "@");
             AddTermsReportGroup("unary operator", "+", "-", "!");
-            AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>", "??");
+            AddTermsReportGroup("operator", "+", "-", "*", "/", "%", "**", "&", "&&", "|", "||", "^", "?", "==", "<=", "<", ">=", ">", "!=", "<<", ">>", "??", "..");
             AddToNoReportGroup("(", "[", "{", ".", ",", "++", "--");
 
             MarkReservedWords("if", "else", "return", "function", "while",

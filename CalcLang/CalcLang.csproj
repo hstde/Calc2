@@ -76,6 +76,7 @@
     <Compile Include="Ast\NullValueNode.cs" />
     <Compile Include="Ast\ParamListNode.cs" />
     <Compile Include="Ast\ParamNode.cs" />
+    <Compile Include="Ast\RangeArrayDefNode.cs" />
     <Compile Include="Ast\ReturnNode.cs" />
     <Compile Include="Ast\StatementListNode.cs" />
     <Compile Include="Ast\StringTemplateNode.cs" />
