@@ -430,6 +430,13 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x / (decimal)y);
             AddBinary(op, typeof(char), (x, y) => (char)x / (char)y);
 
+            op = ExpressionType.Power;
+            AddBinary(op, typeof(int), (x, y) => (int)Math.Pow((int)x, (int)y));
+            AddBinary(op, typeof(long), (x, y) => (long)Math.Pow((long)x, (long)y));
+            AddBinary(op, typeof(double), (x, y) => Math.Pow((double)x, (double)y));
+            AddBinary(op, typeof(decimal), (x, y) => (decimal)Math.Pow((double)(decimal)x, (double)(decimal)y));
+            AddBinary(op, typeof(char), (x, y) => (char)Math.Pow((char)x, (char)y));
+
             op = ExpressionType.Modulo;
             AddBinary(op, typeof(int), (x, y) => checked((int)x % (int)y));
             AddBinary(op, typeof(long), (x, y) => checked((long)x % (long)y));

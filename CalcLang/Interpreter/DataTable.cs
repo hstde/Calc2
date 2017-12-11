@@ -10,6 +10,7 @@ namespace CalcLang.Interpreter
 {
     public class DataTable : IEnumerable<object>
     {
+        //metatables?
         private const string KEYS = "Keys";
         private const string LENGTH = "Length";
         private const string GETINDEX = "_[]";
@@ -18,6 +19,7 @@ namespace CalcLang.Interpreter
         private const string SUB = "_-_";
         private const string MUL = "_*_";
         private const string DIV = "_/_";
+        private const string POT = "_**_";
         private const string MOD = "_%_";
         private const string AND = "_&&_";
         private const string OR = "_||_";
@@ -35,8 +37,8 @@ namespace CalcLang.Interpreter
         private const string GRE = "_>_";
 
         private readonly List<string> specialIndices = new List<string> { KEYS, LENGTH, GETINDEX, SETINDEX,
-            ADD, SUB, MUL, DIV, MOD, AND, OR, XOR, LSH, RSH, UPL, NEG, NOT, EQU, NEQ, GEQ, LEQ, LES, GRE };
-        private readonly List<string> operatorIndices = new List<string> { ADD, SUB, MUL, DIV, MOD, AND, OR, XOR, LSH, RSH, UPL, NEG, NOT, EQU, NEQ, GEQ, LEQ, LES, GRE };
+            ADD, SUB, MUL, DIV, POT, MOD, AND, OR, XOR, LSH, RSH, UPL, NEG, NOT, EQU, NEQ, GEQ, LEQ, LES, GRE };
+        private readonly List<string> operatorIndices = new List<string> { ADD, SUB, MUL, DIV, POT, MOD, AND, OR, XOR, LSH, RSH, UPL, NEG, NOT, EQU, NEQ, GEQ, LEQ, LES, GRE };
         private readonly List<ExpressionType> unary = new List<ExpressionType> { ExpressionType.UnaryPlus, ExpressionType.Negate, ExpressionType.Not };
 
         private Dictionary<string, object> stringIndexed;
@@ -54,6 +56,7 @@ namespace CalcLang.Interpreter
             [SUB] = ExpressionType.SubtractChecked,
             [MUL] = ExpressionType.MultiplyChecked,
             [DIV] = ExpressionType.Divide,
+            [POT] = ExpressionType.Power,
             [MOD] = ExpressionType.Modulo,
             [AND] = ExpressionType.And,
             [OR] =  ExpressionType.Or,

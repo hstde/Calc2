@@ -150,7 +150,7 @@ namespace CalcLang
             varDeclaration.Rule = "var" + name;
             varDeclarationAndAssign.Rule = "var" + name + "=" + expr;
             assignment.Rule = objRef + assignmentOp + expr;
-            assignmentOp.Rule = ToTerm("=") | "+=" | "-=" | "*=" | "/=" | "%=" | "|=" | "^=" | "&=" | "<<=" | ">>=";
+            assignmentOp.Rule = ToTerm("=") | "+=" | "-=" | "*=" | "/=" | "%=" | "|=" | "^=" | "&=" | "<<=" | ">>=" | "**=";
             objRef.Rule = name | array | memberAccess;
             memberAccess.Rule = var + PreferShiftHere() + "." + name;
 
@@ -167,7 +167,7 @@ namespace CalcLang
             lambdaParamList.Rule = MakeStarRule(lambdaParamList, ToTerm(","), lambdaParam);
             singleLambdaParamList.Rule = lambdaParam;
 
-            lambdaParam.Rule = name + ReduceIf("=>", "+", "-", "*", "/", "%", "&", "&&", "|", "||", "^", "==", "<=", ">=", "<", ">", "!=", "<<", ">>", ";", "(");
+            lambdaParam.Rule = name + ReduceIf("=>", "+", "-", "*", "/", "%", "**", "&", "&&", "|", "||", "^", "==", "<=", ">=", "<", ">", "!=", "<<", ">>", ";", "(");
             param.Rule = paramsOrEmpty + name;
             paramsOrEmpty.Rule = ToTerm("params") | Empty;
 
@@ -189,7 +189,7 @@ namespace CalcLang
             binOp.Rule = ToTerm("&&") | "||" | "&" | "|" | "^"
                         | ToTerm("==") | "<=" | ">=" | "<" | ">" | "!="
                         | ToTerm("+") | "-"
-                        | ToTerm("*") | "/" | "%"
+                        | ToTerm("*") | "/" | "%" | "**"
                         | ToTerm("<<") | ">>";
             prefixExpr.Rule = incDecOp + objRef + ReduceHere();
             postfixExpr.Rule = objRef + PreferShiftHere() + incDecOp;
@@ -233,7 +233,7 @@ namespace CalcLang
             RegisterOperators(20, "==", "<", "<=", ">", ">=", "!=");
             RegisterOperators(25, "<<", ">>");
             RegisterOperators(30, "+", "-");
-            RegisterOperators(40, "*", "/", "%");
+            RegisterOperators(40, "*", "/", "%", "**");
             RegisterOperators(60, "!", "~");
             RegisterOperators(70, "++", "--", "??");
             MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, lambdaBody, foreachVarDecl, paramsOrEmpty);
