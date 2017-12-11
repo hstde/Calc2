@@ -114,10 +114,14 @@ namespace CalcLang.Interpreter
                 return (bool)value;
             if (value is int)
                 return (int)value != 0;
+            if (value is long)
+                return (long)value != 0;
             if (Equals(value, NullValue))
                 return false;
             if (value is double)
                 return (double)value != 0;
+            if (value is decimal)
+                return (decimal)value != 0;
             return value != null;
         }
 
