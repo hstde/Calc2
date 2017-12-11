@@ -165,6 +165,7 @@ namespace CalcLang.Interpreter
                 case MUL:
                 case DIV:
                 case MOD:
+                case POT:
                 case AND:
                 case OR:
                 case XOR:
