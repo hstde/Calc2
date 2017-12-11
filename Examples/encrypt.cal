@@ -7,7 +7,7 @@ function encrypt(key, data)
 
 	var output = {};
 
-	var S = Enumerable.Range(0, 256);
+	var S = [0 .. 255];
 
 	//Key processing
 	var j = 0;
