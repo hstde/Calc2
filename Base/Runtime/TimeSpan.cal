@@ -41,6 +41,8 @@
 		function ToString() return TimeSpanFormat.Format(this, null, null);
 		function ToString(format) return TimeSpanFormat.Format(this, format, null);
 		
+		function AddOp(a, b) return TimeSpan(a.GetTicks() + b.GetTicks());
+		
 		return {
 			GetTicks = GetTicks,
 			GetDays = GetDays,
@@ -58,6 +60,8 @@
 			Add = Add,
 			CompareTo = CompareTo,
 			Equals = Equals,
+			
+			"_+_" = AddOp,
 			
 			ToString = ToString
 		};

@@ -114,10 +114,14 @@ namespace CalcLang.Interpreter
                 return (bool)value;
             if (value is int)
                 return (int)value != 0;
+            if (value is long)
+                return (long)value != 0;
             if (Equals(value, NullValue))
                 return false;
             if (value is double)
                 return (double)value != 0;
+            if (value is decimal)
+                return (decimal)value != 0;
             return value != null;
         }
 
@@ -361,22 +365,26 @@ namespace CalcLang.Interpreter
             AddConverter(typeof(decimal), targetType, ConvertAnyToString);
             AddConverter(typeof(int), targetType, ConvertAnyToString);
             AddConverter(typeof(NullClass), targetType, value => null);
+            AddConverter(typeof(byte), targetType, ConvertAnyToString);
 
             targetType = typeof(double);
             AddConverter(typeof(char), targetType, value => (double)(char)value);
             AddConverter(typeof(int), targetType, value => (double)(int)value);
             AddConverter(typeof(decimal), targetType, value => (double)(decimal)value);
             AddConverter(typeof(long), targetType, value => (double)(long)value);
+            AddConverter(typeof(byte), targetType, v => (double)(byte)v);
 
             targetType = typeof(decimal);
             AddConverter(typeof(char), targetType, v => (decimal)(char)v);
             AddConverter(typeof(int), targetType, v => (decimal)(int)v);
             AddConverter(typeof(double), targetType, v => (decimal)(double)v);
             AddConverter(typeof(long), targetType, value => (decimal)(long)value);
+            AddConverter(typeof(byte), targetType, v => (decimal)(byte)v);
 
             targetType = typeof(long);
             AddConverter(typeof(char), targetType, v => (long)(char)v);
             AddConverter(typeof(int), targetType, v => (long)(int)v);
+            AddConverter(typeof(byte), targetType, v => (long)(byte)v);
 
             targetType = typeof(NullClass);
             AddConverter(typeof(bool), targetType, value => value == null ? NullValue : NonNullValue);
@@ -426,6 +434,13 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x / (decimal)y);
             AddBinary(op, typeof(char), (x, y) => (char)x / (char)y);
 
+            op = ExpressionType.Power;
+            AddBinary(op, typeof(int), (x, y) => (int)Math.Pow((int)x, (int)y));
+            AddBinary(op, typeof(long), (x, y) => (long)Math.Pow((long)x, (long)y));
+            AddBinary(op, typeof(double), (x, y) => Math.Pow((double)x, (double)y));
+            AddBinary(op, typeof(decimal), (x, y) => (decimal)Math.Pow((double)(decimal)x, (double)(decimal)y));
+            AddBinary(op, typeof(char), (x, y) => (char)Math.Pow((char)x, (char)y));
+
             op = ExpressionType.Modulo;
             AddBinary(op, typeof(int), (x, y) => checked((int)x % (int)y));
             AddBinary(op, typeof(long), (x, y) => checked((long)x % (long)y));
@@ -438,7 +453,6 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => checked((long)x < (long)y));
             AddBinary(op, typeof(double), (x, y) => (double)x < (double)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x < (decimal)y);
-            //AddBinary(op, typeof(string), (x, y) => ((string)x)[0] < ((string)y)[0]);
             AddBinary(op, typeof(char), (x, y) => (char)x < (char)y);
 
             op = ExpressionType.GreaterThan;
@@ -446,7 +460,6 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => checked((long)x > (long)y));
             AddBinary(op, typeof(double), (x, y) => (double)x > (double)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x > (decimal)y);
-            //AddBinary(op, typeof(string), (x, y) => ((string)x)[0] > ((string)y)[0]);
             AddBinary(op, typeof(char), (x, y) => (char)x > (char)y);
 
             op = ExpressionType.LessThanOrEqual;
@@ -454,7 +467,6 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => checked((long)x <= (long)y));
             AddBinary(op, typeof(double), (x, y) => (double)x <= (double)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x <= (decimal)y);
-            //AddBinary(op, typeof(string), (x, y) => ((string)x)[0] <= ((string)y)[0]);
             AddBinary(op, typeof(char), (x, y) => (char)x <= (char)y);
 
             op = ExpressionType.GreaterThanOrEqual;
@@ -462,7 +474,6 @@ namespace CalcLang.Interpreter
             AddBinary(op, typeof(long), (x, y) => checked((long)x >= (long)y));
             AddBinary(op, typeof(double), (x, y) => (double)x >= (double)y);
             AddBinary(op, typeof(decimal), (x, y) => (decimal)x >= (decimal)y);
-            //AddBinary(op, typeof(string), (x, y) => ((string)x)[0] >= ((string)y)[0]);
             AddBinary(op, typeof(char), (x, y) => (char)x >= (char)y);
 
             op = ExpressionType.Equal;
@@ -629,7 +640,7 @@ namespace CalcLang.Interpreter
 
         private Type GetUpType(Type type)
         {
-            if (type == typeof(int)) return typeof(double);
+            if (type == typeof(byte) || type == typeof(int) || type == typeof(long) || type == typeof(decimal)) return typeof(double);
             return null;
         }
 
@@ -642,7 +653,7 @@ namespace CalcLang.Interpreter
         }
 
         private static readonly Irony.TypeList typesSequence = new Irony.TypeList(
-            typeof(char), typeof(int), typeof(long), typeof(double), typeof(decimal), typeof(bool),
+            typeof(byte), typeof(char), typeof(int), typeof(long), typeof(double), typeof(decimal), typeof(bool),
             typeof(DataTable), typeof(BuiltInCallTarget), typeof(Closure), typeof(MethodTable), typeof(NullClass), typeof(string));
 
         private Type GetCommonTypeForOperator(ExpressionType op, Type arg1Type, Type arg2Type)
@@ -661,7 +672,7 @@ namespace CalcLang.Interpreter
         {
             if (!CanOverflow(impl.Key.Op))
                 return false;
-            if (impl.CommonType == typeof(double) || impl.CommonType == typeof(Single))
+            if (impl.CommonType == typeof(double) || impl.CommonType == typeof(float))
                 return false;
             return true;
         }

@@ -16,7 +16,7 @@
 			if(this.Stacktrace != null)
 			{
 				var rev = this.Stacktrace.Reverse();
-				stackTrace = String.Join(Environment.NewLine, rev.Select(function(e, i) return "\t@ " + FunctionInfoToString(e)));
+				stackTrace = String.Join(Environment.NewLine, rev.Select(function(e) return "\t@ " + FunctionInfoToString(e)));
 			}
 			
 			var s;

@@ -44,7 +44,7 @@ namespace CalcLang.Ast
 
                     var iCall = arr[1] as ICallTarget;
 
-                    var mTable = result.GetString(name) as MethodTable;
+                    var mTable = result.GetString(thread, name) as MethodTable;
 
                     if(iCall != null)
                     {
@@ -61,11 +61,11 @@ namespace CalcLang.Ast
                         }
                     }
 
-                    result.SetString(name, arr[1]);
+                    result.SetString(thread, name, arr[1]);
                 }
                 else
                 {
-                    result.SetInt(indexCounter, tmp);
+                    result.SetInt(thread, indexCounter, tmp);
                     indexCounter++;
                 }
             }

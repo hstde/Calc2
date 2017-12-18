@@ -92,6 +92,8 @@ namespace CalcLang.Interpreter
                 case ExpressionType.SubtractAssign:
                 case ExpressionType.SubtractAssignChecked:
                     return ExpressionType.SubtractChecked;
+                case ExpressionType.PowerAssign:
+                    return ExpressionType.Power;
                 default:
                     return (ExpressionType)(-1);
             }
@@ -115,6 +117,7 @@ namespace CalcLang.Interpreter
             dict.Add("^=", ExpressionType.ExclusiveOrAssign, p);
             dict.Add("<<=", ExpressionType.LeftShiftAssign, p);
             dict.Add(">>=", ExpressionType.RightShiftAssign, p);
+            dict.Add("**=", ExpressionType.PowerAssign, p);
 
             p += 10;
             dict.Add("==", ExpressionType.Equal, p);
@@ -151,6 +154,7 @@ namespace CalcLang.Interpreter
             dict.Add("*", ExpressionType.MultiplyChecked, p);
             dict.Add("/", ExpressionType.Divide, p);
             dict.Add("%", ExpressionType.Modulo, p);
+            dict.Add("**", ExpressionType.Power, p);
 
             p += 10;
             dict.Add("??", ExpressionType.Coalesce, p);

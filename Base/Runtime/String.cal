@@ -57,9 +57,10 @@
 	
 	function Join(separator, value, startIndex, count) {
 		if(value == null) throw ArgumentNullException("value");
-		if(separator.GetType() != "String") separator = separator.ToString();
 		
 		if(separator == null) separator = String.Empty;
+		if(separator.GetType() != "String") separator = separator.ToString();
+		
 		if(value.Length < 1) return String.Empty;
 		
 		var ret = StringJoin(separator, value, startIndex, count);
@@ -275,6 +276,7 @@
 		EndsWith = EndsWith,
 		Insert = Insert,
 		Format = Format,
-		ToTable = ToTable
+		ToTable = ToTable,
+		NewLine = "\r\n"
 	};
 })();

@@ -124,7 +124,7 @@ namespace CalcLang.Interpreter
                 }
 
                 LastScript = parsedScript;
-                return EvaluateParsedScript(args == null ? null : new DataTable(args));
+                return EvaluateParsedScript(args == null ? null : new DataTable(args, null));
             }
             catch (ScriptException)
             {
@@ -145,13 +145,13 @@ namespace CalcLang.Interpreter
             var root = parsedScript.Root.AstNode as Ast.AstNode;
             Util.Check(root != null, "Root AST node {0} is not a subclass of AstNode", root.GetType());
             LastScript = parsedScript;
-            return EvaluateParsedScript(args == null ? null : new DataTable(args));
+            return EvaluateParsedScript(args == null ? null : new DataTable(args, null));
         }
 
         public object Evaluate(string[] args = null)
         {
             Util.Check(LastScript != null, "No previously parsed script.");
-            return EvaluateParsedScript(args == null ? null : new DataTable(args));
+            return EvaluateParsedScript(args == null ? null : new DataTable(args, null));
         }
 
         private object EvaluateParsedScript(DataTable args = null)

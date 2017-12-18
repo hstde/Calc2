@@ -55,6 +55,7 @@
     <Compile Include="Ast\BoolValNode.cs" />
     <Compile Include="Ast\BreakNode.cs" />
     <Compile Include="Ast\CatchNode.cs" />
+    <Compile Include="Ast\CoalescenceNode.cs" />
     <Compile Include="Ast\ContinueNode.cs" />
     <Compile Include="Ast\DoWhileNode.cs" />
     <Compile Include="Ast\EmptyNode.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Ast\NullValueNode.cs" />
     <Compile Include="Ast\ParamListNode.cs" />
     <Compile Include="Ast\ParamNode.cs" />
+    <Compile Include="Ast\RangeArrayDefNode.cs" />
     <Compile Include="Ast\ReturnNode.cs" />
     <Compile Include="Ast\StatementListNode.cs" />
     <Compile Include="Ast\StringTemplateNode.cs" />

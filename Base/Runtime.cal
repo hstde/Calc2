@@ -48,7 +48,7 @@ function Throw(params p)
 {
 	var msg = "ScriptException";
 	if(p.Length > 0)
-		msg += "(" + String.Join(", ", p.Select(function(e, i) return e != null ? e.ToString() : "null")) + ")";
+		msg += "(" + String.Join(", ", p.Select(function(e) return e != null ? e.ToString() : "null")) + ")";
 	throw msg;
 }
 

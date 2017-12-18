@@ -88,9 +88,9 @@ namespace Base
                 securityAttrs, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 
             DataTable ret = new DataTable();
-            ret.SetString("Handle", handle.DangerousGetHandle());
-            ret.SetString("NativeHandle", handle);
-            ret.SetString("IsInvalid", handle.IsInvalid);
+            ret.SetString(thread, "Handle", handle.DangerousGetHandle());
+            ret.SetString(thread, "NativeHandle", handle);
+            ret.SetString(thread, "IsInvalid", handle.IsInvalid);
 
             return ret;
         }
@@ -109,7 +109,7 @@ namespace Base
         public static object DisposeNativeHandle(ScriptThread thread, object instance, object[] parameters)
         {
             DataTable handleHolder = (DataTable)parameters[0];
-            SafeFileHandle handle = (SafeFileHandle)handleHolder.GetString("NativeHandle");
+            SafeFileHandle handle = (SafeFileHandle)handleHolder.GetString(thread, "NativeHandle");
             handle.Dispose();
 
             return null;
@@ -186,7 +186,7 @@ namespace Base
             }
 
             for (int i = 0; i < numBytesToRead; i++)
-                bytesDT.SetInt(i, bytes[i]);
+                bytesDT.SetInt(thread, i, bytes[i]);
 
             return numBytesRead;
         }
@@ -230,7 +230,7 @@ namespace Base
             var bytesDT = new DataTable(resultBytes.Length, 0);
 
             for (int i = 0; i < resultBytes.Length; i++)
-                bytesDT.SetInt(i, (decimal)resultBytes[i]);
+                bytesDT.SetInt(thread, i, (decimal)resultBytes[i]);
 
             return bytesDT;
         }
@@ -258,7 +258,7 @@ namespace Base
             DataTable ret = new DataTable(preamble.Length, 0);
 
             for (int i = 0; i < preamble.Length; i++)
-                ret.SetInt(i, (decimal)preamble[i]);
+                ret.SetInt(thread, i, (decimal)preamble[i]);
 
             return ret;
         }
@@ -285,7 +285,7 @@ namespace Base
 
             for (int i = 0; i < chars; i++)
             {
-                charsDT.SetInt(i + charIndex, charBuff[i].ToString());
+                charsDT.SetInt(thread, i + charIndex, charBuff[i].ToString());
             }
 
             return chars;

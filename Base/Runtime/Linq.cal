@@ -1,10 +1,11 @@
 ﻿var Enumerable = (function() {
 	function Sequence(start, end, step) {
 		var ret = {};
+		var val = 0;
 		
-		for(var i = 0; i * step + start < end; i++)
+		for(var i = 0; (val = i * step + start) < end; i++)
 		{
-			ret[i] = i * step + start;
+			ret[i] = val;
 		}
 		
 		return ret;
@@ -64,6 +65,28 @@
 		{
 			ret[index] = selector(e);
 			index++;
+		}
+		
+		return ret;
+	}
+	
+	function SelectSubset(start, count) extension {
+		return this.Skip(start).Take(count);
+	}
+	
+	function SelectMany(selector) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var ret = {};
+		var index = 0;
+		
+		foreach(var e in this)
+		{
+			foreach(var ee in selector(e))
+			{
+				ret[index++] = ee;
+			}
 		}
 		
 		return ret;
@@ -221,6 +244,17 @@
 		throw ArgumentException();
 	}
 	
+	function First(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		foreach(var e in this)
+			if(filter(e))
+				return e;
+		
+		throw ArgumentException();
+	}
+	
 	function FirstOrDefault() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
@@ -231,6 +265,17 @@
 		
 		foreach(var e in this)
 			return e;
+		return null;
+	}
+	
+	function FirstOrDefault(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		foreach(var e in this)
+			if(filter(e))
+				return e;
+		
 		return null;
 	}
 	
@@ -246,6 +291,26 @@
 		return this[length - 1];
 	}
 	
+	function Last(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var last = null;
+		var found = false;
+		
+		foreach(var e in this)
+			if(filter(e))
+			{
+				last = e;
+				found = true;
+			}
+		
+		if(!found)
+			throw ArgumentException();
+		else
+			return last;
+	}
+	
 	function LastOrDefault() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
@@ -257,20 +322,38 @@
 		return this[length - 1];
 	}
 	
+	function LastOrDefault(filter) extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var last = null;
+		
+		foreach(var e in this)
+			if(filter(e))
+			{
+				last = e;
+				found = true;
+			}
+		
+		return last;
+	}
+	
 	function Single() extension {
 		return this.First();
 	}
 	
 	function Single(what) extension {
-		return this.Where(what).First();
+		return this.First(what);
 	}
 	
 	function Any() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
-		return length > 0;
+		foreach(var e in this)
+			return true;
+		
+		return false;
 	}
 	
 	function Any(what) extension {

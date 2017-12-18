@@ -37,8 +37,8 @@ namespace CalcLang.Interpreter
             if (Payload is DataTable)
             {
                 var dt = (DataTable)Payload;
-                var exType = (string)dt.GetString("ExceptionType");
-                msg = (string)dt.GetString("Message");
+                var exType = dt.GetString(null, "ExceptionType").ToString();
+                msg = dt.GetString(null, "Message").ToString();
                 if (msg != null && msg.Length > 0)
                     msg = exType + ": " + msg;
                 else
@@ -54,12 +54,12 @@ namespace CalcLang.Interpreter
             {
                 foreach (var e in ((DataTable)Payload).GetStringIndexDict())
                 {
-                    ret.SetString(e.Key, e.Value);
+                    ret.SetString(null, e.Key, e.Value);
                 }
             }
             else
             {
-                ret.SetString("Message", Payload);
+                ret.SetString(null, "Message", Payload);
             }
 
             var dataStackTrace = new DataTable();
@@ -67,35 +67,35 @@ namespace CalcLang.Interpreter
             foreach (var e in ScriptStackTrace.CallStack)
             {
                 var stackEntry = new DataTable();
-                stackEntry.SetString("Name", e.Name);
-                stackEntry.SetString("ParamCount", e.ParamCount);
+                stackEntry.SetString(null, "Name", e.Name);
+                stackEntry.SetString(null, "ParamCount", e.ParamCount);
                 if (e.ParamNames != null)
-                    stackEntry.SetString("ParamNames", new DataTable(e.ParamNames));
+                    stackEntry.SetString(null, "ParamNames", new DataTable(e.ParamNames, null));
                 else
-                    stackEntry.SetString("ParamNames", new DataTable());
-                stackEntry.SetString("CallLocation", new DataTable(
+                    stackEntry.SetString(null, "ParamNames", new DataTable());
+                stackEntry.SetString(null, "CallLocation", new DataTable(
                     new Dictionary<string, object>()
                     {
                         ["Filename"] = e.CallLocation.FileName,
                         ["Column"] = e.CallLocation.SourceLocation.Column,
                         ["Line"] = e.CallLocation.SourceLocation.Line,
                         ["Position"] = e.CallLocation.SourceLocation.Position
-                    }));
-                stackEntry.SetString("HasParamsArg", e.HasParamsArg);
+                    }, null));
+                stackEntry.SetString(null, "HasParamsArg", e.HasParamsArg);
 
-                dataStackTrace.SetInt(index++, stackEntry);
+                dataStackTrace.SetInt(null, index++, stackEntry);
             }
 
-            ret.SetString("Stacktrace", dataStackTrace);
+            ret.SetString(null, "Stacktrace", dataStackTrace);
 
-            ret.SetString("Location", new DataTable(
+            ret.SetString(null, "Location", new DataTable(
                 new Dictionary<string, object>()
                 {
                     ["Filename"] = Location.FileName,
                     ["Column"] = Location.SourceLocation.Column,
                     ["Line"] = Location.SourceLocation.Line,
                     ["Position"] = Location.SourceLocation.Position
-                }));
+                }, null));
 
             return ret;
         }

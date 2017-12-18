@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,8 +10,69 @@ namespace CalcLang.Interpreter
 {
     public class DataTable : IEnumerable<object>
     {
+        //metatables?
+        private const string KEYS = "Keys";
+        private const string LENGTH = "Length";
+        private const string GETINDEX = "_[]";
+        private const string SETINDEX = "_[]=";
+        private const string ADD = "_+_";
+        private const string SUB = "_-_";
+        private const string MUL = "_*_";
+        private const string DIV = "_/_";
+        private const string POT = "_**_";
+        private const string MOD = "_%_";
+        private const string AND = "_&&_";
+        private const string OR = "_||_";
+        private const string XOR = "_^_";
+        private const string LSH = "_<<_";
+        private const string RSH = "_>>_";
+        private const string UPL = "+_";
+        private const string NEG = "-_";
+        private const string NOT = "!_";
+        private const string EQU = "_==_";
+        private const string NEQ = "_!=_";
+        private const string GEQ = "_>=_";
+        private const string LEQ = "_<=_";
+        private const string LES = "_<_";
+        private const string GRE = "_>_";
+
+        private readonly List<string> specialIndices = new List<string> { KEYS, LENGTH, GETINDEX, SETINDEX,
+            ADD, SUB, MUL, DIV, POT, MOD, AND, OR, XOR, LSH, RSH, UPL, NEG, NOT, EQU, NEQ, GEQ, LEQ, LES, GRE };
+        private readonly List<string> operatorIndices = new List<string> { ADD, SUB, MUL, DIV, POT, MOD, AND, OR, XOR, LSH, RSH, UPL, NEG, NOT, EQU, NEQ, GEQ, LEQ, LES, GRE };
+        private readonly List<ExpressionType> unary = new List<ExpressionType> { ExpressionType.UnaryPlus, ExpressionType.Negate, ExpressionType.Not };
+
         private Dictionary<string, object> stringIndexed;
         private readonly Dictionary<int, object> intIndexed;
+
+        private bool indexerLocked = false;
+        private ICallTarget indexGetter = null;
+        private ICallTarget indexSetter = null;
+
+        private Dictionary<ExpressionType, ICallTarget> operators = new Dictionary<ExpressionType, ICallTarget>();
+
+        private static readonly Dictionary<string, ExpressionType> operatorType = new Dictionary<string, ExpressionType>
+        {
+            [ADD] = ExpressionType.AddChecked,
+            [SUB] = ExpressionType.SubtractChecked,
+            [MUL] = ExpressionType.MultiplyChecked,
+            [DIV] = ExpressionType.Divide,
+            [POT] = ExpressionType.Power,
+            [MOD] = ExpressionType.Modulo,
+            [AND] = ExpressionType.And,
+            [OR] =  ExpressionType.Or,
+            [XOR] = ExpressionType.ExclusiveOr,
+            [LSH] = ExpressionType.LeftShift,
+            [RSH] = ExpressionType.RightShift,
+            [UPL] = ExpressionType.UnaryPlus,
+            [NEG] = ExpressionType.Negate,
+            [NOT] = ExpressionType.Not,
+            [EQU] = ExpressionType.Equal,
+            [NEQ] = ExpressionType.NotEqual,
+            [GEQ] = ExpressionType.GreaterThanOrEqual,
+            [LEQ] = ExpressionType.LessThanOrEqual,
+            [LES] = ExpressionType.LessThan,
+            [GRE] = ExpressionType.GreaterThan
+        };
 
         public decimal Length => length;
 
@@ -19,22 +81,24 @@ namespace CalcLang.Interpreter
 
         private bool invalidated;
 
-        public DataTable() : this(8) { }
+        public DataTable() : this(8)
+        {
+        }
 
         public DataTable(int size) : this(size, size)
         {
 
         }
 
-        public DataTable(string value) : this()
+        public DataTable(string value, ScriptThread thread) : this()
         {
             for (int i = 0; i < value.Length; i++)
             {
-                SetInt(i, value[i]);
+                SetInt(thread, i, value[i]);
             }
         }
 
-        public DataTable(IEnumerable value) : this()
+        public DataTable(IEnumerable value, ScriptThread thread) : this()
         {
             int i = 0;
             foreach (var e in value)
@@ -42,11 +106,11 @@ namespace CalcLang.Interpreter
                 var kv = e as KeyValuePair<string, object>?;
                 if (kv != null)
                 {
-                    SetString(kv.Value.Key, kv.Value.Value);
+                    SetString(thread, kv.Value.Key, kv.Value.Value);
                 }
                 else
                 {
-                    SetInt(i++, e);
+                    SetInt(thread, i++, e);
                 }
             }
         }
@@ -57,19 +121,30 @@ namespace CalcLang.Interpreter
             intIndexed = new Dictionary<int, object>(intSize);
             length = 0;
             invalidated = true;
+
+            foreach(var ot in operatorType)
+            {
+                operators.Add(ot.Value, null);
+            }
         }
 
-        public object GetString(string key)
+        public object GetString(ScriptThread thread, string key)
         {
-            if (key == "Length" || key == "Keys")
+            object value;
+            if (specialIndices.Contains(key))
             {
                 Invalidated();
                 return GetSpecialString(key);
             }
-
-            object value;
-            if (stringIndexed.TryGetValue(key, out value))
+            else if (stringIndexed.TryGetValue(key, out value))
                 return value;
+            else if (indexGetter != null /*&& !indexerLocked*/)
+            {
+                indexerLocked = true;
+                var ret = indexGetter.Call(thread, this, new object[] { key });
+                indexerLocked = false;
+                return ret;
+            }
             return NullClass.NullValue;
         }
 
@@ -77,18 +152,72 @@ namespace CalcLang.Interpreter
         {
             switch (key)
             {
-                case "Length":
+                case LENGTH:
                     return length;
-                case "Keys":
+                case KEYS:
                     return keys;
+                case GETINDEX:
+                    return (object)indexGetter ?? NullClass.NullValue;
+                case SETINDEX:
+                    return (object)indexSetter ?? NullClass.NullValue;
+                case ADD:
+                case SUB:
+                case MUL:
+                case DIV:
+                case MOD:
+                case POT:
+                case AND:
+                case OR:
+                case XOR:
+                case LSH:
+                case RSH:
+                case UPL:
+                case NEG:
+                case NOT:
+                case EQU:
+                case NEQ:
+                case GEQ:
+                case LEQ:
+                case LES:
+                case GRE:
+                    return (object)operators[operatorType[key]] ?? NullClass.NullValue;
                 default:
                     return null;
             }
         }
 
-        public void SetString(string key, object value)
+        public void SetString(ScriptThread thread, string key, object value)
         {
-            if (value == NullClass.NullValue)
+            ExpressionType opType;
+            if (indexSetter != null && !indexerLocked)
+            {
+                indexerLocked = true;
+                indexSetter.Call(thread, this, new object[] { key, value });
+                indexerLocked = false;
+            }
+            else if (key == SETINDEX)
+            {
+                indexSetter = value as Closure;
+                if (indexSetter == null)
+                    indexSetter = (value as MethodTable)?.GetIndex(2);
+                return;
+            }
+            else if (key == GETINDEX)
+            {
+                indexGetter = value as Closure;
+                if (indexGetter == null)
+                    indexGetter = (value as MethodTable)?.GetIndex(1);
+                return;
+            }
+            else if (operatorType.TryGetValue(key, out opType))
+            {
+                ICallTarget closure = value as Closure;
+                if (closure == null)
+                    closure = unary.Contains(opType) ? (value as MethodTable)?.GetIndex(1) : (value as MethodTable)?.GetIndex(2);
+                operators[opType] = closure;
+                return;
+            }
+            else if (value == NullClass.NullValue)
             {
                 stringIndexed.Remove(key);
             }
@@ -99,17 +228,30 @@ namespace CalcLang.Interpreter
             invalidated = true;
         }
 
-        public object GetInt(int key)
+        public object GetInt(ScriptThread thread, int key)
         {
             object value;
             if (intIndexed.TryGetValue(key, out value))
                 return value;
+            else if (indexGetter != null /*&& !indexerLocked*/)
+            {
+                indexerLocked = true;
+                var ret = indexGetter.Call(thread, this, new object[] { key });
+                indexerLocked = false;
+                return ret;
+            }
             return NullClass.NullValue;
         }
 
-        public void SetInt(int key, object value)
+        public void SetInt(ScriptThread thread, int key, object value)
         {
-            if (value == NullClass.NullValue)
+            if (indexSetter != null && !indexerLocked)
+            {
+                indexerLocked = true;
+                indexSetter.Call(thread, this, new object[] { key, value });
+                indexerLocked = false;
+            }
+            else if (value == NullClass.NullValue)
             {
                 intIndexed.Remove(key);
                 length = intIndexed.Select(x => x.Key).Max() + 1;
@@ -129,7 +271,7 @@ namespace CalcLang.Interpreter
             var keys = stringIndexed.Keys.ToArray();
             var dt = new DataTable(keys.Length);
             for (int i = 0; i < keys.Length; i++)
-                dt.SetInt(i, keys[i]);
+                dt.SetInt(null, i, keys[i]);
 
             this.keys = dt;
             invalidated = false;
@@ -143,8 +285,17 @@ namespace CalcLang.Interpreter
 
         public IEnumerator<object> GetEnumerator()
         {
-            foreach (var e in intIndexed.OrderBy(e=>e.Key))
+            foreach (var e in intIndexed.OrderBy(e => e.Key))
                 yield return e.Value;
+        }
+
+        public ICallTarget GetOperatorCallTarget(ExpressionType op)
+        {
+            ICallTarget ret;
+            if (operators.TryGetValue(op, out ret))
+                return ret;
+            else
+                return null;
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

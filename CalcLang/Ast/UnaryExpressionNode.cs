@@ -29,8 +29,20 @@ namespace CalcLang.Ast
         protected override object DoEvaluate(ScriptThread thread)
         {
             thread.CurrentNode = this;
+            object result = null;
             var arg = Argument.Evaluate(thread);
-            var result = thread.Runtime.ExecuteUnaryOperator(ExpressionType, arg, ref lastUsed);
+
+            if (arg.GetType() == typeof(DataTable))
+            {
+                var dt = arg as DataTable;
+                var callTarget = dt?.GetOperatorCallTarget(ExpressionType);
+
+                result = callTarget?.Call(thread, null, new[] { dt ?? arg });
+            }
+
+            if (result == null)
+                result = thread.Runtime.ExecuteUnaryOperator(ExpressionType, arg, ref lastUsed);
+
             thread.CurrentNode = Parent;
             return result;
         }
