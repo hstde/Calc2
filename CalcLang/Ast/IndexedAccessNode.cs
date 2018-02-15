@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
 using System.Reflection;
+using CalcLang.Interpreter;
 
 namespace CalcLang.Ast
 {
@@ -23,7 +24,7 @@ namespace CalcLang.Ast
             AsString = target + "[" + index + "]";
         }
 
-        protected override object DoEvaluate(Interpreter.ScriptThread thread)
+        protected override object DoEvaluate(ScriptThread thread)
         {
             thread.CurrentNode = this;
             object result = thread.Runtime.NullValue;
@@ -45,16 +46,21 @@ namespace CalcLang.Ast
                 else
                     result = '\0';
             }
-            else if (type == typeof(Interpreter.DataTable))
+            else if (type == typeof(DataTable))
             {
                 try
                 {
-                    var dtTarget = targetValue as Interpreter.DataTable;
+                    var dtTarget = targetValue as DataTable;
                     string sIndex = indexValue as string;
+                    var dtIndex = indexValue as DataTable;
 
                     if (sIndex != null)
                     {
                         result = dtTarget.GetString(thread, sIndex);
+                    }
+                    else if(dtIndex != null)
+                    {
+                        result = dtTarget.Filter(thread, dtIndex);
                     }
                     else
                     {
@@ -64,7 +70,7 @@ namespace CalcLang.Ast
                 }
                 catch(Exception)
                 {
-                    thread.ThrowScriptError("Index must be string or number.");
+                    thread.ThrowScriptError("Index must be string, number or table.");
                 }
             }
             else if (type.IsArray)
@@ -88,7 +94,7 @@ namespace CalcLang.Ast
             return result;
         }
 
-        public override void DoSetValue(Interpreter.ScriptThread thread, object value)
+        public override void DoSetValue(ScriptThread thread, object value)
         {
             thread.CurrentNode = this;
 
@@ -106,11 +112,11 @@ namespace CalcLang.Ast
             {
                 thread.ThrowScriptError("String is read-only");
             }
-            else if (type == typeof(Interpreter.DataTable))
+            else if (type == typeof(DataTable))
             {
                 try
                 {
-                    var dtTarget = targetValue as Interpreter.DataTable;
+                    var dtTarget = targetValue as DataTable;
                     string sIndex = indexValue as string;
 
                     if (sIndex != null)
