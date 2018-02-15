@@ -177,7 +177,7 @@ namespace CalcLang
             arrayDefListItem.Rule = namedArrayItem | expr;
             namedArrayItem.Rule = (name + ReduceHere() | _string) + "=" + expr;
 
-            rangeArrayDef.Rule = "[" + expr + ".." + expr + "]";
+            rangeArrayDef.Rule = "[" + expr + ".." + expr + (":" + expr).Q() + "]";
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | inlineFunctionDef

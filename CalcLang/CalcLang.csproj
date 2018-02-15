@@ -104,6 +104,8 @@
     <Compile Include="Interpreter\OperationHandler.cs" />
     <Compile Include="Interpreter\OperatorImplementation.cs" />
     <Compile Include="Interpreter\Operators.cs" />
+    <Compile Include="Interpreter\Range.cs" />
+    <Compile Include="Interpreter\RangeWithStep.cs" />
     <Compile Include="Interpreter\Runtime.cs" />
     <Compile Include="Interpreter\Scope.cs" />
     <Compile Include="Interpreter\ScopeInfo.cs" />
