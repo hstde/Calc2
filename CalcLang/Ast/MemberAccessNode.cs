@@ -46,6 +46,10 @@ namespace CalcLang.Ast
             {
                 result = rws.Length;
             }
+            else if(targetValue is string str && memberName == "Length")
+            {
+                result = str.Length;
+            }
 
             if (result == thread.Runtime.NullValue)
                 result = GetExtension(thread, memberName);
