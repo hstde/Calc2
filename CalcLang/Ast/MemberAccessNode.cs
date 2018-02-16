@@ -38,6 +38,14 @@ namespace CalcLang.Ast
             {
                 result = ((DataTable)targetValue).GetString(thread, memberName);
             }
+            else if(targetValue is Range r && memberName == "Length")
+            {
+                result = r.Length;
+            }
+            else if(targetValue is RangeWithStep rws && memberName == "Length")
+            {
+                result = rws.Length;
+            }
 
             if (result == thread.Runtime.NullValue)
                 result = GetExtension(thread, memberName);

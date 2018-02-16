@@ -13,6 +13,8 @@ namespace CalcLang.Interpreter
         public long End { get; private set; }
         public long Step { get; private set; }
 
+        public long Length => this.LongCount();
+
         public long this[long index]
         {
             get

@@ -12,6 +12,8 @@ namespace CalcLang.Interpreter
         public long Start { get; private set; }
         public long End { get; private set; }
 
+        public long Length => Math.Abs(End - Start);
+
         private long direction;
 
         public long this[long index]
