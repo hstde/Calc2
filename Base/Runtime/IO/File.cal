@@ -299,7 +299,7 @@
 				}
 				if(_buffer == null) _buffer = {};
 				n = ReadCore(_buffer, 0, _bufferSize);
-				if(n == 0) return n;
+				if(n == 0) return 0;
 				isBlocked = n < _bufferSize;
 				_readPos = 0;
 				_readLen = n;

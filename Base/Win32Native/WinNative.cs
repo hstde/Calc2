@@ -185,7 +185,7 @@ namespace Base
                 NativeMethods.ReadFile(handle, p + offset, numBytesToRead, out numBytesRead, (NativeOverlapped*)IntPtr.Zero);
             }
 
-            for (int i = 0; i < numBytesToRead; i++)
+            for (int i = 0; i < numBytesRead; i++)
                 bytesDT.SetInt(thread, i, bytes[i]);
 
             return numBytesRead;
