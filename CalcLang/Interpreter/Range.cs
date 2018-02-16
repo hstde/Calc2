@@ -12,11 +12,13 @@ namespace CalcLang.Interpreter
         public long Start { get; private set; }
         public long End { get; private set; }
 
+        private long direction;
+
         public long this[long index]
         {
             get
             {
-                return Start + index;
+                return Start + direction * index;
             }
         }
 
@@ -24,6 +26,7 @@ namespace CalcLang.Interpreter
         {
             Start = start;
             End = end;
+            direction = Math.Sign(end - start);
         }
 
         public IEnumerator<long> GetEnumerator() => new StructRangeEnumerator(this);
@@ -32,7 +35,7 @@ namespace CalcLang.Interpreter
 
         public RangeWithStep Step(long step)
         {
-            return new RangeWithStep(Start, End, step);
+            return new RangeWithStep(Start, End, direction * step);
         }
 
         public override bool Equals(object obj)
@@ -66,14 +69,22 @@ namespace CalcLang.Interpreter
             internal StructRangeEnumerator(Range range)
             {
                 this.range = range;
-                Current = range.Start - 1;
+                Current = range.Start - range.direction * 1;
             }
 
             public void Dispose()
             {
             }
 
-            public bool MoveNext() => ++Current < range.End;
+            public bool MoveNext() => Compare((Current += range.direction), range.End);
+
+            private bool Compare(long current, long end)
+            {
+                if (range.direction > 0)
+                    return current < end;
+                else
+                    return current > end;
+            }
 
             public void Reset()
             {

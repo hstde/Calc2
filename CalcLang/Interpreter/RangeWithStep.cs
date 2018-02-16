@@ -25,7 +25,7 @@ namespace CalcLang.Interpreter
         {
             Start = start;
             End = end;
-            Step = step;
+            Step = Math.Sign(end - start) * step;
         }
 
         public IEnumerator<long> GetEnumerator()
@@ -56,7 +56,7 @@ namespace CalcLang.Interpreter
         }
 
         public static implicit operator RangeWithStep(Range range)
-            => new RangeWithStep(range.Start, range.End, 1);
+            => new RangeWithStep(range.Start, range.End, Math.Sign(range.End - range.Start));
 
         public class StructRangeWithStepEnumerator : IEnumerator<long>
         {
@@ -76,7 +76,15 @@ namespace CalcLang.Interpreter
             {
             }
 
-            public bool MoveNext() => (Current = Current + range.Step) < range.End;
+            public bool MoveNext() => Compare((Current = Current + range.Step), range.End);
+
+            private bool Compare(long current, long end)
+            {
+                if (range.Step > 0)
+                    return current < end;
+                else
+                    return current > end;
+            }
 
             public void Reset()
             {
