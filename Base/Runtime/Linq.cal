@@ -566,6 +566,17 @@
 		return count;
 	}
 	
+	function ToTable() extension {
+		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
+			throw ArgumentException();
+		
+		var ret = {};
+		var index = 0;
+		foreach(var e in this)
+			ret[index++] = e;
+		return ret;
+	}
+	
 	return {
 		Range = Range,
 		Sequence = Sequence,
