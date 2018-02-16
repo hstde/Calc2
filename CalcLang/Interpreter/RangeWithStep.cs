@@ -13,6 +13,14 @@ namespace CalcLang.Interpreter
         public long End { get; private set; }
         public long Step { get; private set; }
 
+        public long this[long index]
+        {
+            get
+            {
+                return Start + index * Step;
+            }
+        }
+
         public RangeWithStep(long start, long end, long step)
         {
             Start = start;
@@ -29,7 +37,7 @@ namespace CalcLang.Interpreter
 
         public override bool Equals(object obj)
         {
-            return obj != null && Equals((RangeWithStep)obj);
+            return obj != null && obj is RangeWithStep && Equals((RangeWithStep)obj);
         }
 
         public bool Equals(RangeWithStep other)

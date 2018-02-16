@@ -12,6 +12,14 @@ namespace CalcLang.Interpreter
         public long Start { get; private set; }
         public long End { get; private set; }
 
+        public long this[long index]
+        {
+            get
+            {
+                return Start + index;
+            }
+        }
+
         public Range(long start, long end)
         {
             Start = start;
@@ -29,7 +37,7 @@ namespace CalcLang.Interpreter
 
         public override bool Equals(object obj)
         {
-            return obj != null && Equals((Range)obj);
+            return obj != null && obj is Range && Equals((Range)obj);
         }
 
         public bool Equals(Range other)

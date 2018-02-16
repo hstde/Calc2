@@ -26,6 +26,8 @@ namespace Base
                 case "Char":
                     return "Char";
                 case "DataTable":
+                case "Range":
+                case "RangeWithStep":
                     return "Table";
                 case "Closure":
                 case "BuiltInCallTarget":

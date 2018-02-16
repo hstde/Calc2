@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,11 +37,11 @@ namespace CalcLang.Ast
             var step = this.step != null ? (long)this.step.Evaluate(thread) : 1;
 
 
-            DataTable result;
+            IEnumerable result;
             if (this.step == null)
-                result = new DataTable(new Range(from, to), thread);
+                result = new Range(from, to);
             else
-                result = new DataTable(new RangeWithStep(from, to, step), thread);
+                result = new RangeWithStep(from, to, step);
 
             thread.CurrentNode = Parent;
 

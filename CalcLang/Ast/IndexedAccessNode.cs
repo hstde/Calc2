@@ -7,6 +7,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using System.Reflection;
 using CalcLang.Interpreter;
+using System.Collections;
 
 namespace CalcLang.Ast
 {
@@ -52,7 +53,7 @@ namespace CalcLang.Ast
                 {
                     var dtTarget = targetValue as DataTable;
                     string sIndex = indexValue as string;
-                    var dtIndex = indexValue as DataTable;
+                    var dtIndex = indexValue as IEnumerable;
 
                     if (sIndex != null)
                     {

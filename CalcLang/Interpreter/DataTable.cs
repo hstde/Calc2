@@ -148,7 +148,7 @@ namespace CalcLang.Interpreter
             return NullClass.NullValue;
         }
 
-        public DataTable Filter(ScriptThread thread, DataTable filter)
+        public DataTable Filter(ScriptThread thread, IEnumerable filter)
         {
             var ret = new DataTable();
             int index = 0;
