@@ -47,6 +47,18 @@ namespace Base
                 case "DataTable":
                     result = ((DataTable)instance).Length;
                     break;
+                case "Range":
+                    {
+                        var obj = (Range)instance;
+                        result = Math.Abs(obj.End - obj.Start);
+                    }
+                    break;
+                case "RangeWithStep":
+                    {
+                        var obj = (RangeWithStep)instance;
+                        result = obj.LongCount();
+                    }
+                    break;
                 case "String":
                     result = ((string)instance).Length;
                     break;
