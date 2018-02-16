@@ -119,10 +119,15 @@ namespace CalcLang.Ast
                 {
                     var dtTarget = targetValue as DataTable;
                     string sIndex = indexValue as string;
+                    var dtIndex = indexValue as IEnumerable;
 
                     if (sIndex != null)
                     {
                         dtTarget.SetString(thread, sIndex, value);
+                    }
+                    else if (dtIndex != null)
+                    {
+                        dtTarget.FilterSet(thread, dtIndex, value);
                     }
                     else
                     {
@@ -136,7 +141,7 @@ namespace CalcLang.Ast
                 }
                 catch(Exception e)
                 {
-                    thread.ThrowScriptError("Index must be string or number. Exception was " + e.GetType() + " " + e.Message);
+                    thread.ThrowScriptError("Index must be string, number or table. Exception was " + e.GetType() + " " + e.Message);
                 }
             }
             else if (type.IsArray)
