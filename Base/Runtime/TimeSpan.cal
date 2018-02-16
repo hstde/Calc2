@@ -106,10 +106,10 @@ var TimeSpanFormat = (function() {
 	var TicksPerDay = TicksPerHour * 24;
 
 	function Format(ts, format, provider) {
-		if(format == null || format.Length() == 0)
+		if(format == null || format.Length == 0)
 			format = "c";
 		
-		if(format.Length() == 1)
+		if(format.Length == 1)
 		{
 			var f = format[0];
 			

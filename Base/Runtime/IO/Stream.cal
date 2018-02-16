@@ -26,7 +26,7 @@
 			if(str.GetType() != "String")
 				str = str.ToString();
 				
-			for(var i = 0; i < str.Length(); i++)
+			for(var i = 0; i < str.Length; i++)
 				this.WriteChar(str[i]);
 		}
 		

@@ -50,7 +50,7 @@
 			var format = value;
 			
 			var pos = 0;
-			var len = value.Length();
+			var len = value.Length;
 			var ch = "\0";
 			
 			while(true)
@@ -137,7 +137,7 @@
 					s = arg.ToString();
 				
 				if(s == null) s = String.Empty;
-				var pad = width - s.Length();
+				var pad = width - s.Length;
 				if(!leftJustify && pad > 0) Append(' ', pad);
 				Append(s);
 				if(leftJustify && pad > 0) Append(' ', pad);

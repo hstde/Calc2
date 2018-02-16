@@ -96,7 +96,7 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
+		var length = this.Length;
 		
 		
 		var ret = {};
@@ -114,8 +114,8 @@
 			|| (other.GetType() != "Table" && other.GetType() != "String"))
 			throw ArgumentException();
 		
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
-		var olength = other.GetType() == "Table" ? other.Length : other.Length();
+		var length = this.Length();
+		var olength = other.Length();
 		
 		if(length != olength) return false;
 		
@@ -233,7 +233,7 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 			
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
+		var length = this.Length;
 		
 		if(length < 1)
 			throw ArgumentException();
@@ -259,7 +259,7 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
+		var length = this.Length;
 		
 		if(length < 1) return null;
 		
@@ -283,7 +283,7 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
+		var length = this.Length;
 		
 		if(length < 1)
 			throw ArgumentException();
@@ -315,7 +315,7 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
+		var length = this.Length;
 		
 		if(length < 1) return null;
 		
@@ -400,8 +400,8 @@
 			|| (other.GetType() != "Table" && other.GetType() != "String"))
 			throw ArgumentException();
 		
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
-		var olength = other.GetType() == "Table" ? other.Length : other.Length();
+		var length = this.Length;
+		var olength = other.Length;
 		
 		var ret = {};
 		length = Math.Min(length, olength);
@@ -420,7 +420,7 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		var length = this.GetType() == "Table" ? this.Length : this.Length();
+		var length = this.Length;
 		if(length < 1) return null;
 		
 		var result = init;

@@ -316,10 +316,10 @@
 	}
 	
 	function MatchChars(s, sIndex, str, strIndex) {
-		if(strIndex >= str.Length())
+		if(strIndex >= str.Length)
 			return null;
 		
-		for(; strIndex < str.Length(); sIndex++, strIndex++)
+		for(; strIndex < str.Length; sIndex++, strIndex++)
 		{
 			if(str[strIndex] != s[sIndex])
 			{
