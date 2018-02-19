@@ -63,7 +63,7 @@ namespace CalcLang.Ast
             return result;
         }
 
-        public override void DoSetValue(ScriptThread thread, object value)
+        public override void DoSetValue(ScriptThread thread, object value, TypeInfo type = TypeInfo.NotDefined)
         {
             thread.CurrentNode = this;
 
@@ -75,8 +75,8 @@ namespace CalcLang.Ast
             if (targetValue == thread.Runtime.NullValue)
                 thread.ThrowScriptError("NullReferenceException. target was null (" + Target.AsString + ")");
 
-            var type = targetValue.GetType();
-            if (type == typeof(DataTable))
+            var valueType = targetValue.GetType();
+            if (valueType == typeof(DataTable))
             {
                 ((DataTable)targetValue).SetString(thread, memberName, value);
             }
@@ -90,7 +90,7 @@ namespace CalcLang.Ast
 
         private object GetBuiltIn(ScriptThread thread, string member)
         {
-            var bind = thread.Runtime.BuiltIns.Bind(new BindingRequest(thread, this, member, BindingRequestFlags.Read));
+            var bind = thread.Runtime.BuiltIns.Bind(new BindingRequest(thread, this, member, TypeInfo.NotDefined, BindingRequestFlags.Read));
 
             if (bind != null)
                 return bind.GetValueRef(thread);
@@ -100,7 +100,7 @@ namespace CalcLang.Ast
 
         private object GetExtension(ScriptThread thread, string member)
         {
-            var bind = thread.Runtime.ExtensionFunctions.Bind(new BindingRequest(thread, this, member, BindingRequestFlags.Read));
+            var bind = thread.Runtime.ExtensionFunctions.Bind(new BindingRequest(thread, this, member, TypeInfo.NotDefined, BindingRequestFlags.Read));
 
             if (bind != null)
                 return bind.GetValueRef(thread);

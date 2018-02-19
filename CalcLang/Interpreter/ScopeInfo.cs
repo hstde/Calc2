@@ -61,12 +61,12 @@ namespace CalcLang.Interpreter
             return null;
         }
 
-        public SlotInfo AddSlot(string name, SlotType type)
+        public SlotInfo AddSlot(string name, SlotType type, TypeInfo valueType)
         {
             lock (LockObject)
             {
                 var index = type == SlotType.Value ? ValuesCount++ : ParametersCount++;
-                var slot = new SlotInfo(this, type, name, index);
+                var slot = new SlotInfo(this, type, valueType, name, index);
                 slots.Add(name, slot);
                 return slot;
             }

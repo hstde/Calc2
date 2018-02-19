@@ -80,9 +80,9 @@ namespace CalcLang.Ast
             var closure = Lambda.EvaluateNamed(thread, mTable);
 
             if (createNew)
-                NameNode.DoCreate(thread, mTable);
+                NameNode.DoCreate(thread, mTable, TypeInfo.Function);
             else
-                NameNode.DoSetValue(thread, mTable);
+                NameNode.DoSetValue(thread, mTable, TypeInfo.Function);
             return closure;
         }
     }

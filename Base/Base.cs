@@ -33,6 +33,8 @@ namespace Base
                 case "BuiltInCallTarget":
                 case "MethodTable":
                     return "Function";
+                case "Bool":
+                    return "Bool";
             }
 
             return result;

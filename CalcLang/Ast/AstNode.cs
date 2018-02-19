@@ -11,12 +11,12 @@ using CalcLang.Interpreter;
 namespace CalcLang.Ast
 {
     public delegate object EvaluateMethod(ScriptThread thread);
-    public delegate void ValueSetterMethod(ScriptThread thread, object value);
+    public delegate void ValueSetterMethod(ScriptThread thread, object value, TypeInfo type);
 
     [Flags]
     public enum AstNodeType
     {
-        Unkown = 0,
+        Unknown = 0,
         BindingName = 1 << 1,
         CallTarget = 1 << 2,
         ValueRead = 1 << 3,
@@ -110,7 +110,7 @@ namespace CalcLang.Ast
             ChildNodes = new AstNodeList();
             Evaluate = DoEvaluate;
             SetValue = DoSetValue;
-            NodeType = AstNodeType.Unkown;
+            NodeType = AstNodeType.Unknown;
         }
 
         public virtual void Init(Irony.Ast.AstContext context, ParseTreeNode parseNode)
@@ -133,7 +133,7 @@ namespace CalcLang.Ast
 
         protected virtual object DoEvaluate(ScriptThread thread) => null;
 
-        public virtual void DoSetValue(ScriptThread thread, object value)
+        public virtual void DoSetValue(ScriptThread thread, object value, TypeInfo type = TypeInfo.NotDefined)
         {
         }
 
@@ -141,7 +141,7 @@ namespace CalcLang.Ast
 
         public IEnumerable GetChildNodes() => ChildNodes;
 
-        protected AstNode AddChild(string role, ParseTreeNode childParseNode) => AddChild(AstNodeType.Unkown, role, childParseNode);
+        protected AstNode AddChild(string role, ParseTreeNode childParseNode) => AddChild(AstNodeType.Unknown, role, childParseNode);
         protected AstNode AddChild(AstNodeType type, string role, ParseTreeNode childParseNode)
         {
             var child = (AstNode)childParseNode.AstNode ?? new NothingNode(childParseNode.Term);

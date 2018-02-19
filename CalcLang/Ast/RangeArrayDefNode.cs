@@ -23,7 +23,7 @@ namespace CalcLang.Ast
             var nodes = parseNode.GetMappedChildNodes();
             from = AddChild("from", nodes[0]);
             to = AddChild("to", nodes[1]);
-            step = nodes[2].ChildNodes[0].ChildNodes.Count > 0 ? AddChild("step", nodes[2].ChildNodes[0].ChildNodes[0]) : null;
+            step = nodes[2].ChildNodes.Count > 0 ? AddChild("step", nodes[2].ChildNodes[0]) : null;
 
             AsString = "Range from " + from + " to " + to + (step != null ? " step " + step : "");
         }

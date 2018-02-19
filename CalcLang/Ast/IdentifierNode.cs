@@ -39,29 +39,29 @@ namespace CalcLang.Ast
             return result;
         }
 
-        public override void DoSetValue(ScriptThread thread, object value)
+        public override void DoSetValue(ScriptThread thread, object value, TypeInfo type = TypeInfo.NotDefined)
         {
             thread.CurrentNode = this;
             if (binding == null || binding is NullBinding)
-                binding = thread.Bind(Symbol, BindingRequestFlags.Write | BindingRequestFlags.ExistingOrNew | BindingRequestFlags.PreferExisting);
+                binding = thread.Bind(Symbol, type, BindingRequestFlags.Write | BindingRequestFlags.ExistingOrNew | BindingRequestFlags.PreferExisting);
 
             if (binding.SetValueRef == null)
                 thread.ThrowScriptError("ups {0} is not writable", Symbol);
 
-            binding.SetValueRef(thread, value);
+            binding.SetValueRef(thread, value, Runtime.TypeToTypeInfo(value.GetType()));
             thread.CurrentNode = Parent;
         }
 
-        public void DoCreate(ScriptThread thread, object value)
+        public void DoCreate(ScriptThread thread, object value, TypeInfo type)
         {
             thread.CurrentNode = this;
             if (binding == null || binding is NullBinding)
-                binding = thread.Bind(Symbol, BindingRequestFlags.Write | BindingRequestFlags.NewOnly);
+                binding = thread.Bind(Symbol, type, BindingRequestFlags.Write | BindingRequestFlags.NewOnly);
 
             if (binding.SetValueRef == null)
                 thread.ThrowScriptError("could not create {0} for writing", Symbol);
 
-            binding.SetValueRef(thread, value);
+            binding.SetValueRef(thread, value, Runtime.TypeToTypeInfo(value.GetType()));
             thread.CurrentNode = Parent;
         }
     }

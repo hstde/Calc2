@@ -56,7 +56,7 @@ namespace CalcLang.Ast
                 thread.Runtime.ExtensionFunctions.Add(ident, targetInfo);
             }
 
-            var binding = thread.Runtime.BuiltIns.Bind(new BindingRequest(thread, this, ident, BindingRequestFlags.Existing | BindingRequestFlags.Extern | BindingRequestFlags.Read));
+            var binding = thread.Runtime.BuiltIns.Bind(new BindingRequest(thread, this, ident, TypeInfo.Function, BindingRequestFlags.Existing | BindingRequestFlags.Extern | BindingRequestFlags.Read));
 
             if (binding == null)
                 thread.ThrowScriptError("Extern Symbol {0} not found.", ident);
@@ -65,7 +65,7 @@ namespace CalcLang.Ast
             if (obj == null)
                 thread.ThrowScriptError("Extern symbol {0} was not a method table!", ident);
 
-            var tar = obj.GetIndex(parameters.ChildNodes.Count) as BuiltInCallTarget;
+            var tar = obj.GetIndex(parameters.ParamTypes) as BuiltInCallTarget;
 
             if (tar == null)
                 thread.ThrowScriptError("Extern symbol {0} with {1} parameters was not found.", target.Symbol, parameters.ChildNodes.Count);
@@ -73,6 +73,7 @@ namespace CalcLang.Ast
             tar.ParamCount = parameters.ChildNodes.Count;
             tar.ParamNames = parameters.ParamNames;
             tar.HasParamsArg = parameters.HasParamsArg;
+            tar.ParamTypes = parameters.ParamTypes;
 
             mTable.Add(tar);
         }
@@ -82,7 +83,7 @@ namespace CalcLang.Ast
             var mTable = target.Evaluate(thread) as MethodTable;
             bool createNew = mTable == null;
 
-            var binding = thread.Runtime.BuiltIns.Bind(new BindingRequest(thread, this, target.Symbol, BindingRequestFlags.Existing | BindingRequestFlags.Extern | BindingRequestFlags.Read));
+            var binding = thread.Runtime.BuiltIns.Bind(new BindingRequest(thread, this, target.Symbol, TypeInfo.NotDefined, BindingRequestFlags.Existing | BindingRequestFlags.Extern | BindingRequestFlags.Read));
 
 
             if (binding == null)
@@ -93,7 +94,7 @@ namespace CalcLang.Ast
             if (obj == null)
                 thread.ThrowScriptError("Extern symbol {0} was not a method table!", target.Symbol);
 
-            var tar = obj.GetIndex(parameters.ChildNodes.Count) as BuiltInCallTarget;
+            var tar = obj.GetIndex(parameters.ParamTypes) as BuiltInCallTarget;
 
             if (tar == null)
                 thread.ThrowScriptError("Extern symbol {0} with {1} parameters was not found.", target.Symbol, parameters.ChildNodes.Count);
@@ -101,17 +102,18 @@ namespace CalcLang.Ast
             tar.ParamCount = parameters.ChildNodes.Count;
             tar.ParamNames = parameters.ParamNames;
             tar.HasParamsArg = parameters.HasParamsArg;
+            tar.ParamTypes = parameters.ParamTypes;
 
             if (createNew)
             {
                 mTable = new MethodTable(target.Symbol);
                 mTable.Add(tar);
-                target.DoCreate(thread, mTable);
+                target.DoCreate(thread, mTable, TypeInfo.Function);
             }
             else
             {
                 mTable.Add(tar);
-                target.DoSetValue(thread, mTable);
+                target.DoSetValue(thread, mTable, TypeInfo.Function);
             }
         }
     }

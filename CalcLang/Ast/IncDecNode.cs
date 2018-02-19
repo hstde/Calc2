@@ -47,7 +47,7 @@ namespace CalcLang.Ast
             thread.CurrentNode = this;
             var oldVal = Argument.Evaluate(thread);
             var newVal = thread.Runtime.ExecuteBinaryOperator(BinaryOp, oldVal, 1, ref lastUsed);
-            Argument.SetValue(thread, newVal);
+            Argument.SetValue(thread, newVal, TypeInfo.NotDefined);
             var result = IsPostfix ? oldVal : newVal;
             thread.CurrentNode = Parent;
             return result;

@@ -11,7 +11,7 @@ namespace CalcLang.Interpreter
         public NullBinding() : base("Null", BindingTargetType.SpecialForm)
         {
             GetValueRef = t => t.Runtime.NullValue;
-            SetValueRef = (t, v) => t.ThrowScriptError("Tried setting a NullBinding.");
+            SetValueRef = (t, v, ty) => t.ThrowScriptError("Tried setting a NullBinding.");
         }
     }
 }

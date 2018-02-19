@@ -59,7 +59,7 @@ namespace CalcLang.Interpreter
             [POT] = ExpressionType.Power,
             [MOD] = ExpressionType.Modulo,
             [AND] = ExpressionType.And,
-            [OR] =  ExpressionType.Or,
+            [OR] = ExpressionType.Or,
             [XOR] = ExpressionType.ExclusiveOr,
             [LSH] = ExpressionType.LeftShift,
             [RSH] = ExpressionType.RightShift,
@@ -122,7 +122,7 @@ namespace CalcLang.Interpreter
             length = 0;
             invalidated = true;
 
-            foreach(var ot in operatorType)
+            foreach (var ot in operatorType)
             {
                 operators.Add(ot.Value, null);
             }
@@ -234,21 +234,21 @@ namespace CalcLang.Interpreter
             {
                 indexSetter = value as Closure;
                 if (indexSetter == null)
-                    indexSetter = (value as MethodTable)?.GetIndex(2);
+                    indexSetter = (value as MethodTable)?.GetIndex(new[] { TypeInfo.NotDefined, TypeInfo.NotDefined });
                 return;
             }
             else if (key == GETINDEX)
             {
                 indexGetter = value as Closure;
                 if (indexGetter == null)
-                    indexGetter = (value as MethodTable)?.GetIndex(1);
+                    indexGetter = (value as MethodTable)?.GetIndex(new[] { TypeInfo.NotDefined });
                 return;
             }
             else if (operatorType.TryGetValue(key, out opType))
             {
                 ICallTarget closure = value as Closure;
                 if (closure == null)
-                    closure = unary.Contains(opType) ? (value as MethodTable)?.GetIndex(1) : (value as MethodTable)?.GetIndex(2);
+                    closure = unary.Contains(opType) ? (value as MethodTable)?.GetIndex(new[] { TypeInfo.NotDefined }) : (value as MethodTable)?.GetIndex(new[] { TypeInfo.NotDefined, TypeInfo.NotDefined });
                 operators[opType] = closure;
                 return;
             }

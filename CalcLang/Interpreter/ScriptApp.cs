@@ -167,12 +167,12 @@ namespace CalcLang.Interpreter
             try
             {
                 thread = new ScriptThread(this);
-                thread.CurrentFuncInfo = new FunctionInfo("<global>", -1, null, false);
+                thread.CurrentFuncInfo = new FunctionInfo("<global>", -1, null, null, false);
 
                 if (args != null)
                 {
                     var argsBinding = thread.Bind("args", BindingRequestFlags.ExistingOrNew | BindingRequestFlags.Write);
-                    argsBinding.SetValueRef(thread, args);
+                    argsBinding.SetValueRef(thread, args, TypeInfo.NotDefined);
                 }
 
                 var result = root.Evaluate(thread);

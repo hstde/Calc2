@@ -46,7 +46,11 @@ namespace CalcLang.Interpreter
 
         public Binding Bind(string symbol, BindingRequestFlags options)
         {
-            var request = new BindingRequest(this, CurrentNode, symbol, options);
+            return Bind(symbol, TypeInfo.NotDefined, options);
+        }
+        public Binding Bind(string symbol, TypeInfo type, BindingRequestFlags options)
+        {
+            var request = new BindingRequest(this, CurrentNode, symbol, type, options);
             var binding = Bind(request);
             if (binding == null)
                 ThrowScriptError("Unknown symbol '{0}'.", symbol);

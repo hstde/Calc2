@@ -32,7 +32,7 @@ namespace CalcLang.Ast
             return result;
         }
 
-        public override void DoSetValue(ScriptThread thread, object value)
+        public override void DoSetValue(ScriptThread thread, object value, TypeInfo type = TypeInfo.NotDefined)
         {
             thread.CurrentNode = this;
 

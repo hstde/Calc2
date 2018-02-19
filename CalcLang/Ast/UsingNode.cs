@@ -135,6 +135,7 @@ namespace CalcLang.Ast
                     var attr = method.GetCustomAttribute<CalcCallableMethodAttribute>();
                     thread.Runtime.BuiltIns.AddMethod((BuiltInMethod)method.CreateDelegate(typeof(BuiltInMethod)),
                         attr.Name, attr.ParameterCount,
+                        attr.ParamTypes,
                         attr.ParameterNames == null ? null : string.Join(",", attr.ParameterNames));
                 }
             }

@@ -28,13 +28,15 @@ namespace CalcLang.Interpreter
         public AstNode FromNode;
         public BindingRequestFlags Flags;
         public string Symbol;
+        public TypeInfo Type;
         public ScopeInfo FromScopeInfo;
 
-        public BindingRequest(ScriptThread thread, AstNode fromNode, string symbol, BindingRequestFlags flags)
+        public BindingRequest(ScriptThread thread, AstNode fromNode, string symbol, TypeInfo type, BindingRequestFlags flags)
         {
             Thread = thread;
             FromNode = fromNode;
             Symbol = symbol;
+            Type = type;
             Flags = flags;
             FromScopeInfo = thread.CurrentScope.ScopeInfo;
         }

@@ -46,9 +46,14 @@ namespace CalcLang.Interpreter
 
         public void Add(string key, object value)
         {
+            Add(key, TypeInfo.NotDefined, value);
+        }
+
+        public void Add(string key, TypeInfo type, object value)
+        {
             var slot = scope.ScopeInfo.GetSlot(key);
             if (slot == null)
-                slot = scope.AddSlot(key);
+                slot = scope.AddSlot(key, type);
             scope.SetValue(slot.Index, value);
         }
 
