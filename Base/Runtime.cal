@@ -2,7 +2,6 @@
 
 extern function ToString() extension;
 extern function GetType() extension;
-extern function Length() extension;
 extern function ToChar() extension;
 
 var Int32 = (function() {

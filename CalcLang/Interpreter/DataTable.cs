@@ -148,6 +148,41 @@ namespace CalcLang.Interpreter
             return NullClass.NullValue;
         }
 
+        public DataTable Filter(ScriptThread thread, IEnumerable filter)
+        {
+            var ret = new DataTable();
+            int index = 0;
+            foreach (var e in filter)
+            {
+                try
+                {
+                    int i = Convert.ToInt32(e);
+                    ret.SetInt(thread, index++, this.GetInt(thread, i));
+                }
+                catch
+                {
+
+                }
+            }
+            return ret;
+        }
+
+        public void FilterSet(ScriptThread thread, IEnumerable filter, object value)
+        {
+            foreach (var e in filter)
+            {
+                try
+                {
+                    int index = Convert.ToInt32(e);
+                    SetInt(thread, index, value);
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
         private object GetSpecialString(string key)
         {
             switch (key)

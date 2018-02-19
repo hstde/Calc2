@@ -177,7 +177,7 @@ namespace CalcLang
             arrayDefListItem.Rule = namedArrayItem | expr;
             namedArrayItem.Rule = (name + ReduceHere() | _string) + "=" + expr;
 
-            rangeArrayDef.Rule = "[" + expr + ".." + expr + "]";
+            rangeArrayDef.Rule = expr + ".." + expr + (":" + expr).Q();
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | inlineFunctionDef
@@ -285,7 +285,7 @@ namespace CalcLang
         {
             //return;
             var opHandler = new OperatorHandler();
-            Util.Check(!parseTree.HasErrors(), "ParseTree has erros, cannot build AST.");
+            Util.Check(!parseTree.HasErrors(), "ParseTree has errors, cannot build AST.");
             var astContext = new AstContext(parseTree.FileName, language, opHandler);
             var astBuilder = new Irony.Ast.AstBuilder(astContext);
             astBuilder.BuildAst(parseTree);

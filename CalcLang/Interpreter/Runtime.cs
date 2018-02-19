@@ -399,6 +399,8 @@ namespace CalcLang.Interpreter
             AddConverter(typeof(Closure), targetType, value => value == null ? NullValue : NonNullValue);
             AddConverter(typeof(object), targetType, value => value == null ? NullValue : NonNullValue);
             AddConverter(typeof(MethodTable), targetType, value => value == null ? NullValue : NonNullValue);
+            AddConverter(typeof(Range), targetType, value => value == null ? NullValue : NonNullValue);
+            AddConverter(typeof(RangeWithStep), targetType, value => value == null ? NullValue : NonNullValue);
         }
 
         public static object ConvertAnyToString(object value) => value == null ? string.Empty : value.ToString();
@@ -653,7 +655,7 @@ namespace CalcLang.Interpreter
         }
 
         private static readonly Irony.TypeList typesSequence = new Irony.TypeList(
-            typeof(byte), typeof(char), typeof(int), typeof(long), typeof(double), typeof(decimal), typeof(bool),
+            typeof(byte), typeof(char), typeof(int), typeof(long), typeof(double), typeof(decimal), typeof(bool), typeof(Range), typeof(RangeWithStep),
             typeof(DataTable), typeof(BuiltInCallTarget), typeof(Closure), typeof(MethodTable), typeof(NullClass), typeof(string));
 
         private Type GetCommonTypeForOperator(ExpressionType op, Type arg1Type, Type arg2Type)

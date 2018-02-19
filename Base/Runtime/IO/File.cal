@@ -299,7 +299,7 @@
 				}
 				if(_buffer == null) _buffer = {};
 				n = ReadCore(_buffer, 0, _bufferSize);
-				if(n == 0) return n;
+				if(n == 0) return 0;
 				isBlocked = n < _bufferSize;
 				_readPos = 0;
 				_readLen = n;
@@ -415,11 +415,11 @@ IO["File"] = (function(){
 	function Exists(path) {
 		if(path == null)
 			return false;
-		if(path.Length() == 0)
+		if(path.Length == 0)
 			return false;
 		path = IO.Path.GetFullPathInternal(path);
 		
-		if(path.Length() > 0 && IO.Path.IsDirectorySeparator(path[path.Length() - 1]))
+		if(path.Length > 0 && IO.Path.IsDirectorySeparator(path[path.Length - 1]))
 			return false;
 		
 		//TODO

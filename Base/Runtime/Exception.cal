@@ -20,7 +20,7 @@
 			}
 			
 			var s;
-			if(this.Message == null || this.Message.Length() <= 0)
+			if(this.Message == null || this.Message.Length <= 0)
 				s = this.ExceptionType;
 			else
 				s = this.ExceptionType + ": " + this.Message;
