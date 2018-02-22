@@ -25,7 +25,7 @@ namespace CalcLang.Ast
             to = AddChild("to", nodes[1]);
             step = nodes[2].ChildNodes.Count > 0 ? AddChild("step", nodes[2].ChildNodes[0]) : null;
 
-            AsString = "Range from " + from + " to " + to + (step != null ? " step " + step : "");
+            AsString = "Range " + from + " " + to + (step != null ? " " + step : "");
         }
 
         protected override object DoEvaluate(ScriptThread thread)
