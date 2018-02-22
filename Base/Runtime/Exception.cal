@@ -168,3 +168,13 @@ var PathTooLongException = (function() {
 	}
 	return ctor;
 })();
+
+var ArithmeticException = (function() {
+	function ctor() {
+		return ctor("");
+	}
+	function ctor(message) {
+		return Exception("ArithmeticException", message);
+	}
+	return ctor;
+})();
