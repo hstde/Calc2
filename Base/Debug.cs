@@ -44,5 +44,11 @@ namespace Base
 
             return coll;
         }
+
+        [CalcCallableMethod("GetTotalMemory")]
+        public static object GetTotalMemory(ScriptThread t, object thisRef, object[] parmametrs)
+        {
+            return GC.GetTotalMemory(true);
+        }
     }
 }
