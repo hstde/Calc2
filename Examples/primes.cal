@@ -1,0 +1,20 @@
+using Runtime;
+
+function generatePrimes(num, maxTest) {
+	var channel = 2 .. maxTest;
+	var ret = {};
+	
+	foreach(var i in 0 .. num) {
+		ret[i] = channel.First();
+		channel = filter(channel, ret[i]);
+	}
+	
+	return ret;
+}
+
+function filter(input, prime) {
+	return input.Where(e => e % prime != 0);
+}
+
+Console.WriteLine("The first 50 primes:");
+generatePrimes(50, 1000).ForEach(Console.WriteLine);
