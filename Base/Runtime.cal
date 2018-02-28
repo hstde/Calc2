@@ -3,6 +3,7 @@
 extern function ToString() extension;
 extern function GetType() extension;
 extern function ToChar() extension;
+extern function GetFunctionInfo() extension;
 
 var Int32 = (function() {
 	function Parse(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)

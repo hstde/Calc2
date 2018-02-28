@@ -74,6 +74,13 @@ namespace CalcLang.Interpreter
             return null;
         }
 
+        public IEnumerable<ICallTarget> AsEnumerable()
+        {
+            foreach (var list in elements.Where(e => e.Value != null))
+                foreach (var e in list.Value.Where(e => e != null))
+                    yield return e;
+        }
+
         public override string ToString() => "Function";
     }
 }
