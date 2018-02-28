@@ -13,18 +13,33 @@ var Set = {
 		set["_+_"] = Set.union;
 		set["_*_"] = Set.intersection;
 		set["ToString"] = function() return Set.tostring(this);
+		set["GetType"] = function() return "Set";
 		
 		return set;
 	},
 	union = function(a, b) {
-		var res = Set.new({});
-		for(var i = 0; i < a.Length; i++) if(a[i]) res[i] = true;
-		for(var i = 0; i < b.Length; i++) if(b[i]) res[i] = true;
-		return res;
+		function union(a: table, b: table) {
+			var res = Set.new({});
+			for(var i = 0; i < a.Length; i++) if(a[i]) res[i] = true;
+			for(var i = 0; i < b.Length; i++) if(b[i]) res[i] = true;
+			return res;
+		}
+		function union(a: number, b: table) {
+			var res = Set.new({});
+			for(var i = 0; i < b.Length; i++) if(b[i]) res[i] = true;
+			res[a] = true;
+			return res;
+		}
+		
+		function union(a: table, b: number) {
+			return union(b, a);
+		}
+		
+		return union(a, b);
 	},
 	intersection = function(a, b) {
 		var res = Set.new({});
-		for(var i = 0; i < a.Length; i++) if(b[i]) res[i] = true;
+		for(var i = 0; i < a.Length; i++) if(b[i] && a[i]) res[i] = true;
 		return res;
 	},
 	tostring = function(set) {
