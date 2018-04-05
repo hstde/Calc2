@@ -226,8 +226,8 @@ namespace CalcLang
 
             typeInfoOrEmpty.Rule = ":" + typeInfo | Empty;
             typeInfo.Rule = ToTerm("string")
-                            | "number"
                             | "function"
+                            | "number"
                             | "bool"
                             | "table"
                             | "char";
@@ -237,7 +237,7 @@ namespace CalcLang
             incDecOp.Rule = ToTerm("++") | "--";
 
             MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>", "??", "..",
-                "return", "if", "else", "for", "while", "function", "break", "continue",
+                "return", "if", "else", "for", "while", "break", "continue",
                 "using", "do", "var", "foreach", "in",
                 "try", "catch", "finally", "throw", "extern");
             RegisterBracePair("(", ")");

@@ -19,9 +19,9 @@ namespace CalcLang.Ast
         {
             base.Init(context, parseNode);
             var nodes = parseNode.GetMappedChildNodes();
-            target = AddChild("Target", nodes[0]) as IdentifierNode;
-            parameters = AddChild("Parameters", nodes[1]) as ParamListNode;
-            isExtension = string.Equals(nodes[2].FindTokenAndGetText(), "extension", StringComparison.CurrentCultureIgnoreCase);
+            target = AddChild("Target", nodes[1]) as IdentifierNode;
+            parameters = AddChild("Parameters", nodes[2]) as ParamListNode;
+            isExtension = string.Equals(nodes[3].FindTokenAndGetText(), "extension", StringComparison.CurrentCultureIgnoreCase);
 
             AsString = "<extern " + (isExtension ? "Extension " : "") + "Function " + target.AsString + "[" + parameters.ChildNodes.Count + "]>";
         }
