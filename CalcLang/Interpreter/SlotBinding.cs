@@ -195,6 +195,11 @@ namespace CalcLang.Interpreter
             thread.App.StaticScopes[StaticScopeIndex].SetValue(SlotIndex, value);
         }
 
+        private void CheckTypeMatch(ScriptThread thread, TypeInfo valueType, TypeInfo type)
+        {
+            Runtime.CheckTypeMatch(thread, valueType, type);
+        }
+
         private object FastGetStaticValue(ScriptThread thread)
         {
             try
@@ -217,13 +222,6 @@ namespace CalcLang.Interpreter
             {
                 thread.CurrentNode = FromNode;
                 throw;
-            }
-        }
-        private static void CheckTypeMatch(ScriptThread thread, TypeInfo expectedType, TypeInfo actualType)
-        {
-            if (!Runtime.IsTypeMatch(expectedType, actualType))
-            {
-                thread.ThrowScriptError("Type mismatch! Expected {0} but got {1}", expectedType, actualType);
             }
         }
     }

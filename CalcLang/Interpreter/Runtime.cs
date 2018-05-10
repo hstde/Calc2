@@ -416,6 +416,14 @@ namespace CalcLang.Interpreter
 
         public static object ConvertAnyToString(object value) => value == null ? string.Empty : value.ToString();
 
+        public static void CheckTypeMatch(ScriptThread thread, TypeInfo expectedType, TypeInfo actualType)
+        {
+            if (!Runtime.IsTypeMatch(expectedType, actualType))
+            {
+                thread.ThrowScriptError("Type mismatch! Expected {0} but got {1}", expectedType, actualType);
+            }
+        }
+
         public void InitBinaryOperatorImplementationsForMatchedTypes()
         {
             ExpressionType op = ExpressionType.AddChecked;

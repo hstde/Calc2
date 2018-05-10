@@ -42,26 +42,34 @@ namespace CalcLang.Ast
         public override void DoSetValue(ScriptThread thread, object value, TypeInfo type = TypeInfo.NotDefined)
         {
             thread.CurrentNode = this;
+            var valueType = Runtime.TypeToTypeInfo(value.GetType());
+
+            Runtime.CheckTypeMatch(thread, type, valueType);
+
             if (binding == null || binding is NullBinding)
                 binding = thread.Bind(Symbol, type, BindingRequestFlags.Write | BindingRequestFlags.ExistingOrNew | BindingRequestFlags.PreferExisting);
 
-            if (binding.SetValueRef == null)
+            if (binding?.SetValueRef == null)
                 thread.ThrowScriptError("ups {0} is not writable", Symbol);
 
-            binding.SetValueRef(thread, value, Runtime.TypeToTypeInfo(value.GetType()));
+            binding.SetValueRef(thread, value, valueType);
             thread.CurrentNode = Parent;
         }
 
         public void DoCreate(ScriptThread thread, object value, TypeInfo type)
         {
             thread.CurrentNode = this;
+            var valueType = Runtime.TypeToTypeInfo(value.GetType());
+
+            Runtime.CheckTypeMatch(thread, type, valueType);
+
             if (binding == null || binding is NullBinding)
                 binding = thread.Bind(Symbol, type, BindingRequestFlags.Write | BindingRequestFlags.NewOnly);
 
-            if (binding.SetValueRef == null)
+            if (binding?.SetValueRef == null)
                 thread.ThrowScriptError("could not create {0} for writing", Symbol);
-
-            binding.SetValueRef(thread, value, Runtime.TypeToTypeInfo(value.GetType()));
+            
+            binding.SetValueRef(thread, value, valueType);
             thread.CurrentNode = Parent;
         }
     }
