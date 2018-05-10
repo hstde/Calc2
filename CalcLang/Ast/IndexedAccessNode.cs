@@ -95,7 +95,7 @@ namespace CalcLang.Ast
             return result;
         }
 
-        public override void DoSetValue(ScriptThread thread, object value)
+        public override void DoSetValue(ScriptThread thread, object value, Interpreter.TypeInfo type = Interpreter.TypeInfo.NotDefined)
         {
             thread.CurrentNode = this;
 
@@ -106,14 +106,14 @@ namespace CalcLang.Ast
             if (targetValue == thread.Runtime.NullValue)
                 thread.ThrowScriptError("NullReferenceException. target was null (" + target.AsString + ")");
 
-            var type = targetValue.GetType();
+            var valueType = targetValue.GetType();
             var indexValue = index.Evaluate(thread);
 
-            if (type == typeof(string))
+            if (valueType == typeof(string))
             {
                 thread.ThrowScriptError("String is read-only");
             }
-            else if (type == typeof(DataTable))
+            else if (valueType == typeof(DataTable))
             {
                 try
                 {
@@ -144,7 +144,7 @@ namespace CalcLang.Ast
                     thread.ThrowScriptError("Index must be string, number or table. Exception was " + e.GetType() + " " + e.Message);
                 }
             }
-            else if (type.IsArray)
+            else if (valueType.IsArray)
             {
                 var arr = targetValue as Array;
                 var iIndex = (int)Convert.ToDecimal(indexValue);
@@ -158,7 +158,7 @@ namespace CalcLang.Ast
             else
             {
                 BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.InvokeMethod;
-                type.InvokeMember("set_Item", flags, null, targetValue, new object[] { indexValue, value });
+                valueType.InvokeMember("set_Item", flags, null, targetValue, new object[] { indexValue, value });
             }
 
             thread.CurrentNode = Parent;

@@ -51,10 +51,22 @@ namespace Base
         public static object Sqrt(ScriptThread thread, object instance, object[] parameters) => (decimal)Math.Sqrt(Convert.ToDouble(parameters[0]));
 
         [CalcCallableMethod("Log", 1)]
-        public static object Log(ScriptThread thread, object instance, object[] parameters) => (decimal)Math.Log(Convert.ToDouble(parameters[0]));
+        public static object Log(ScriptThread thread, object instance, object[] parameters)
+        {
+            var param = Convert.ToDouble(parameters[0]);
+            if (param <= 0)
+                thread.ThrowScriptException("ArithmeticException");
+            return (decimal)Math.Log(param);
+        }
 
         [CalcCallableMethod("Log10", 1)]
-        public static object Log10(ScriptThread thread, object instance, object[] parameters) => (decimal)Math.Log10(Convert.ToDouble(parameters[0]));
+        public static object Log10(ScriptThread thread, object instance, object[] parameters)
+        {
+            var param = Convert.ToDouble(parameters[0]);
+            if (param <= 0)
+                thread.ThrowScriptException("ArithmeticException");
+            return (decimal)Math.Log10(param);
+        }
 
         [CalcCallableMethod("Exp", 1)]
         public static object Exp(ScriptThread thread, object instance, object[] parameters) => (decimal)Math.Exp(Convert.ToDouble(parameters[0]));

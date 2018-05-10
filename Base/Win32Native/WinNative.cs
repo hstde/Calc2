@@ -69,7 +69,7 @@ namespace Base
         [CalcCallableMethod("Win32Native_GetLastWin32Error", 0)]
         public static object GetLastWin32Error(ScriptThread thread, object instance, object[] parameters) => Marshal.GetLastWin32Error();
 
-        [CalcCallableMethod("Win32Native_CreateFile", 7, "fileName,dwDesiredAccess,dwShareMode,securityAttrs,dwCreationDisposition,dwFlagsAndAttributes,hTemplateFile")]
+        [CalcCallableMethod("Win32Native_CreateFile", 7, paramNames: "fileName,dwDesiredAccess,dwShareMode,securityAttrs,dwCreationDisposition,dwFlagsAndAttributes,hTemplateFile")]
         public static object CreateFile(ScriptThread thread, object instance, object[] parameters)
         {
             //Create a native fileHandle and return an array with the pointer under Handle
@@ -105,7 +105,7 @@ namespace Base
             return ret;
         }
 
-        [CalcCallableMethod("Win32Native_DisposeNativeHandle", 1, "nativeHandle")]
+        [CalcCallableMethod("Win32Native_DisposeNativeHandle", 1, paramNames: "nativeHandle")]
         public static object DisposeNativeHandle(ScriptThread thread, object instance, object[] parameters)
         {
             DataTable handleHolder = (DataTable)parameters[0];

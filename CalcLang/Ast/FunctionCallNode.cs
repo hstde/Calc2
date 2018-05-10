@@ -31,26 +31,26 @@ namespace CalcLang.Ast
             object result = thread.Runtime.NullValue;
 
             var target = TargetRef.Evaluate(thread);
+            var args = (object[])Arguments.Evaluate(thread);
 
             int argCount = Arguments.ChildNodes.Count;
+            var argsType = args.Select(e => Runtime.TypeToTypeInfo(e.GetType())).ToArray();
 
             var iCall = target as ICallTarget;
             var mTable = target as MethodTable;
 
             if (mTable != null)
             {
-                iCall = mTable.GetIndex(argCount);
+                iCall = mTable.GetIndex(argsType);
                 if (iCall == null)
-                    thread.ThrowScriptError("There is no function with name {0}, that takes {1} arguments.", targetName, argCount);
+                    thread.ThrowScriptError("There is no function with name {0}({2}), that takes {1} arguments.", targetName, argCount, string.Join(", ", argsType));
             }
 
             if (iCall == null)
                 thread.ThrowScriptError("Variable {0} of type {1} is not a callable function.", targetName, target.GetType().Name);
 
             if(iCall.GetParameterCount() != argCount && iCall.GetParameterCount() != -1 && !iCall.GetHasParamsArg())
-                thread.ThrowScriptError("{0}() does not take {1} arguments.", targetName, argCount);
-
-            var args = (object[])Arguments.Evaluate(thread);
+                thread.ThrowScriptError("{0}({2}) does not take {1} arguments.", targetName, argCount, string.Join(", ", iCall.GetFunctionInfo().ParamTypes));
 
             if(iCall.GetHasParamsArg() && (iCall.GetParameterCount() != argCount || !(args[args.Length - 1] is DataTable)))
             {

@@ -21,9 +21,9 @@ namespace CalcLang.Ast
             base.Init(context, parseNode);
 
             var nodes = parseNode.GetMappedChildNodes();
-            NameNode = AddChild("Name", nodes[0]) as IdentifierNode;
-            IsExtension = string.Equals(nodes[2].FindTokenAndGetText(), "extension", StringComparison.CurrentCultureIgnoreCase);
-            Lambda = new LambdaNode(context, NameNode, parseNode, nodes[1], nodes[3]) {Parent = this};
+            NameNode = AddChild("Name", nodes[1]) as IdentifierNode;
+            IsExtension = string.Equals(nodes[3].FindTokenAndGetText(), "extension", StringComparison.CurrentCultureIgnoreCase);
+            Lambda = new LambdaNode(context, NameNode, parseNode, nodes[2], nodes[4]) {Parent = this};
             ChildNodes.Add(Lambda);
             AsString = "<" + (IsExtension ? " Extension " : "") + "Function " + NameNode.AsString + "[" + Lambda.Parameters.ChildNodes.Count + "]" + ">";
             HasParamsArg = Lambda.Parameters.HasParamsArg;
@@ -80,9 +80,9 @@ namespace CalcLang.Ast
             var closure = Lambda.EvaluateNamed(thread, mTable);
 
             if (createNew)
-                NameNode.DoCreate(thread, mTable);
+                NameNode.DoCreate(thread, mTable, TypeInfo.Function);
             else
-                NameNode.DoSetValue(thread, mTable);
+                NameNode.DoSetValue(thread, mTable, TypeInfo.Function);
             return closure;
         }
     }

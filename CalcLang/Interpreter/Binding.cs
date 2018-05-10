@@ -95,20 +95,22 @@ namespace CalcLang.Interpreter
         public readonly BuiltInMethod Method;
         public int ParamCount;
         public string[] ParamNames;
+        public TypeInfo[] ParamTypes;
         public bool HasParamsArg;
 
-        public BuiltInCallTarget(BuiltInMethod method, string name, int paramCount, string paramNames = null)
+        public BuiltInCallTarget(BuiltInMethod method, string name, int paramCount, TypeInfo[] types = null, string paramNames = null)
         {
             Method = method;
             Name = name;
             ParamCount = paramCount;
+            ParamTypes = types;
             if (!string.IsNullOrEmpty(paramNames))
                 ParamNames = paramNames.Split(',');
         }
 
         public object Call(ScriptThread thread, object thisRef, object[] parameters) => Method(thread, thisRef, parameters);
 
-        public FunctionInfo GetFunctionInfo() => new FunctionInfo(Name, ParamCount, ParamNames, HasParamsArg);
+        public FunctionInfo GetFunctionInfo() => new FunctionInfo(Name, ParamCount, ParamNames, ParamTypes, HasParamsArg);
 
         public override string ToString() => "Function";
 

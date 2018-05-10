@@ -11,6 +11,17 @@ namespace CalcLang.Interpreter
     {
         Binding Bind(BindingRequest request);
     }
+    public enum TypeInfo
+    {
+        NotDefined,
+        String,
+        Char,
+        Function,
+        Table,
+        Number,
+        Bool,
+        Null
+    }
 
     public class NullClass
     {
@@ -46,9 +57,9 @@ namespace CalcLang.Interpreter
             return null;
         }
 
-        public BindingTargetInfo AddMethod(BuiltInMethod method, string methodName, int paramCount = -1, string paramNames = null)
+        public BindingTargetInfo AddMethod(BuiltInMethod method, string methodName, int paramCount = -1, TypeInfo[] types = null, string paramNames = null)
         {
-            var callTarget = new BuiltInCallTarget(method, methodName, paramCount, paramNames);
+            var callTarget = new BuiltInCallTarget(method, methodName, paramCount, types, paramNames);
             BuiltInCallableTargetInfo targetInfo = null;
             IBindingSource source;
 
@@ -176,7 +187,7 @@ namespace CalcLang.Interpreter
                     if (existingSlot != null)
                         ThrowScriptError("Var {0} is already defined!", symbol);
 
-                    var newSlot = currScope.AddSlot(request.Symbol);
+                    var newSlot = currScope.AddSlot(request.Symbol, request.Type);
                     return new SlotBinding(newSlot, request.FromNode, request.FromScopeInfo);
                 }
             }
@@ -404,6 +415,14 @@ namespace CalcLang.Interpreter
         }
 
         public static object ConvertAnyToString(object value) => value == null ? string.Empty : value.ToString();
+
+        public static void CheckTypeMatch(ScriptThread thread, TypeInfo expectedType, TypeInfo actualType)
+        {
+            if (!Runtime.IsTypeMatch(expectedType, actualType))
+            {
+                thread.ThrowScriptError("Type mismatch! Expected {0} but got {1}", expectedType, actualType);
+            }
+        }
 
         public void InitBinaryOperatorImplementationsForMatchedTypes()
         {
@@ -680,5 +699,92 @@ namespace CalcLang.Interpreter
         }
 
         private static bool CanOverflow(ExpressionType expression) => overflowOperators.Contains(expression);
+
+        public static TypeInfo StringToTypeInfo(string str)
+        {
+            switch (str)
+            {
+                case "string":
+                    return TypeInfo.String;
+                case "char":
+                    return TypeInfo.Char;
+                case "number":
+                    return TypeInfo.Number;
+                case "table":
+                    return TypeInfo.Table;
+                case "bool":
+                    return TypeInfo.Bool;
+                case "function":
+                    return TypeInfo.Function;
+                default:
+                    return TypeInfo.NotDefined;
+            }
+        }
+
+        public static TypeInfo TypeToTypeInfo(Type type)
+        {
+            switch (type.Name)
+            {
+                case "Double":
+                case "Decimal":
+                case "Int32":
+                case "Int64":
+                    return TypeInfo.Number;
+                case "String":
+                    return TypeInfo.String;
+                case "Char":
+                    return TypeInfo.Char;
+                case "DataTable":
+                case "Range":
+                case "RangeWithStep":
+                    return TypeInfo.Table;
+                case "Closure":
+                case "BuiltInCallTarget":
+                case "MethodTable":
+                    return TypeInfo.Function;
+                case "Boolean":
+                    return TypeInfo.Bool;
+                case "NullClass":
+                    return TypeInfo.Null;
+                default:
+                    return TypeInfo.NotDefined;
+            }
+        }
+
+        public static bool IsTypeMatch(TypeInfo expectedType, TypeInfo actualType)
+        {
+            return expectedType == TypeInfo.NotDefined
+                || (actualType == TypeInfo.Null && IsNullableType(expectedType))
+                || expectedType == actualType;
+        }
+
+        public static bool IsNullableType(TypeInfo type)
+        {
+            switch(type)
+            {
+                case TypeInfo.Table:
+                case TypeInfo.String:
+                case TypeInfo.Null:
+                case TypeInfo.NotDefined:
+                case TypeInfo.Function:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        public static object GetDefaultValue(TypeInfo type)
+        {
+            switch(type)
+            {
+                case TypeInfo.Char:
+                    return '\0';
+                case TypeInfo.Number:
+                    return 0.0;
+                case TypeInfo.Bool:
+                    return false;
+                default:
+                    return NullClass.NullValue;
+            }
+        }
     }
 }

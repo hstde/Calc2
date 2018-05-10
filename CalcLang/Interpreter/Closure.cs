@@ -37,8 +37,9 @@ namespace CalcLang.Interpreter
         public FunctionInfo GetFunctionInfo()
         {
             var paramNames = Lambda.Parameters.ParamNames;
+            var paramTypes = Lambda.Parameters.ParamTypes;
             var name = Lambda.NameNode != null ? Lambda.NameNode.AsString : "<function>";
-            return new FunctionInfo(name, ParamCount, paramNames, HasParamsArg);
+            return new FunctionInfo(name, ParamCount, paramNames, paramTypes, HasParamsArg);
         }
 
         public override string ToString() => "Function";
@@ -54,15 +55,17 @@ namespace CalcLang.Interpreter
         public readonly ICallTarget Target;
         public readonly int ParamCount;
         public readonly string[] ParamNames;
+        public readonly TypeInfo[] ParamTypes;
         public SourceInfo CallLocation;
         public readonly bool HasParamsArg;
 
-        public FunctionInfo(string name, int paramCount, string[] paramNames, bool hasParamsArg = false)
+        public FunctionInfo(string name, int paramCount, string[] paramNames, TypeInfo[] type, bool hasParamsArg = false)
         {
             CallLocation = new SourceInfo();
             Name = name;
             ParamCount = paramCount;
             ParamNames = paramNames;
+            ParamTypes = type;
             HasParamsArg = hasParamsArg;
         }
 

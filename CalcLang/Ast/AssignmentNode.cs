@@ -66,7 +66,7 @@ namespace CalcLang.Ast
 
             var result = thread.Runtime.ExecuteBinaryOperator(BinaryExpressionType, value, exprValue, ref lastUsed);
 
-            Target.SetValue(thread, result);
+            Target.SetValue(thread, result, Runtime.TypeToTypeInfo(result.GetType()));
             thread.CurrentNode = Parent;
             return result;
         }
@@ -75,7 +75,7 @@ namespace CalcLang.Ast
         {
             thread.CurrentNode = this;
             var value = Expression.Evaluate(thread);
-            Target.SetValue(thread, value);
+            Target.SetValue(thread, value, Runtime.TypeToTypeInfo(value.GetType()));
             thread.CurrentNode = Parent;
             return value;
         }

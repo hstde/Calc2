@@ -97,13 +97,15 @@ namespace CalcLang.Interpreter
             catch { thread.CurrentNode = FromNode; throw; }
         }
 
-        private void SetImmediateParentScopeValue(ScriptThread thread, object value)
+        private void SetImmediateParentScopeValue(ScriptThread thread, object value, TypeInfo type)
         {
+            CheckTypeMatch(thread, Slot.ValueType, type);
             thread.CurrentScope.Parent.SetValue(SlotIndex, value);
         }
 
-        private void SetImmediateParentScopeParameter(ScriptThread thread, object value)
+        private void SetImmediateParentScopeParameter(ScriptThread thread, object value, TypeInfo type)
         {
+            CheckTypeMatch(thread, Slot.ValueType, type);
             thread.CurrentScope.Parent.Parameters[SlotIndex] = value;
         }
 
@@ -117,13 +119,15 @@ namespace CalcLang.Interpreter
             var targetScope = GetTargetScope(thread);
             return targetScope.Parameters[SlotIndex];
         }
-        private void SetParentScopeValue(ScriptThread thread, object value)
+        private void SetParentScopeValue(ScriptThread thread, object value, TypeInfo type)
         {
+            CheckTypeMatch(thread, Slot.ValueType, type);
             var targetScope = GetTargetScope(thread);
             targetScope.SetValue(SlotIndex, value);
         }
-        private void SetParentScopeParameter(ScriptThread thread, object value)
+        private void SetParentScopeParameter(ScriptThread thread, object value, TypeInfo type)
         {
+            CheckTypeMatch(thread, Slot.ValueType, type);
             var targetScope = GetTargetScope(thread);
             targetScope.Parameters[SlotIndex] = value;
         }
@@ -136,13 +140,15 @@ namespace CalcLang.Interpreter
             return scope;
         }
 
-        private void SetCurrentScopeParameter(ScriptThread thread, object value)
+        private void SetCurrentScopeParameter(ScriptThread thread, object value, TypeInfo type)
         {
+            CheckTypeMatch(thread, Slot.ValueType, type);
             thread.CurrentScope.Parameters[SlotIndex] = value;
         }
 
-        private void SetCurrentScopeValue(ScriptThread thread, object value)
+        private void SetCurrentScopeValue(ScriptThread thread, object value, TypeInfo type)
         {
+            CheckTypeMatch(thread, Slot.ValueType, type);
             thread.CurrentScope.SetValue(SlotIndex, value);
         }
 
@@ -183,9 +189,15 @@ namespace CalcLang.Interpreter
             }
         }
 
-        private void SetStatic(ScriptThread thread, object value)
+        private void SetStatic(ScriptThread thread, object value, TypeInfo type)
         {
+            CheckTypeMatch(thread, Slot.ValueType, type);
             thread.App.StaticScopes[StaticScopeIndex].SetValue(SlotIndex, value);
+        }
+
+        private void CheckTypeMatch(ScriptThread thread, TypeInfo valueType, TypeInfo type)
+        {
+            Runtime.CheckTypeMatch(thread, valueType, type);
         }
 
         private object FastGetStaticValue(ScriptThread thread)

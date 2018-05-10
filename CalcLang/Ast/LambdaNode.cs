@@ -29,7 +29,11 @@ namespace CalcLang.Ast
         {
             NameNode = null;
             var nodes = parseNode.GetMappedChildNodes();
-            InitImpl(context, parseNode, nodes[0], nodes[1]);
+
+            if (nodes.Count > 2)
+                InitImpl(context, parseNode, nodes[1], nodes[2]);
+            else
+                InitImpl(context, parseNode, nodes[0], nodes[1]);
         }
 
         private void InitImpl(Irony.Ast.AstContext context, ParseTreeNode node, ParseTreeNode parameters, ParseTreeNode body)

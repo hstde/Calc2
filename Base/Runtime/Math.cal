@@ -94,6 +94,12 @@ var Math = (function() {
 	
 	extern function Log10(value);
 	
+	function Log(value, base) {
+		if(value <= 0 || base <= 0)
+			throw ArithmeticException();
+		return Log(value) / Log(base);
+	}
+	
 	extern function Exp(value);
 	
 	extern function Pow(x, y);

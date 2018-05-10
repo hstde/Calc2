@@ -78,6 +78,8 @@ namespace CalcLang
             NonTerminal array = new NonTerminal("array");
             NonTerminal singleDimArray = new NonTerminal("singleDimArray", typeof(IndexedAccessNode));
             NonTerminal rangeArrayDef = new NonTerminal("rangeArrayDef", typeof(RangeArrayDefNode));
+            NonTerminal typeInfo = new NonTerminal("typeInfo");
+            NonTerminal typeInfoOrEmpty = new NonTerminal("typeInfoOrEmpty");
 
             IdentifierTerminal name = new IdentifierTerminal("name", IdOptions.IsNotKeyword);
             IdentifierTerminal newName = new IdentifierTerminal("newName", IdOptions.IsNotKeyword);
@@ -148,8 +150,9 @@ namespace CalcLang
 
             usingNamespace.Rule = (name + "." + usingNamespace) | name;
 
-            varDeclaration.Rule = "var" + name;
-            varDeclarationAndAssign.Rule = "var" + name + "=" + expr;
+            varDeclaration.Rule = "var" + name + typeInfoOrEmpty;
+            varDeclarationAndAssign.Rule = "var" + name + typeInfoOrEmpty + "=" + expr;
+
             assignment.Rule = objRef + assignmentOp + expr;
             assignmentOp.Rule = ToTerm("=") | "+=" | "-=" | "*=" | "/=" | "%=" | "|=" | "^=" | "&=" | "<<=" | ">>=" | "**=";
             objRef.Rule = name | array | memberAccess;
@@ -169,7 +172,7 @@ namespace CalcLang
             singleLambdaParamList.Rule = lambdaParam;
 
             lambdaParam.Rule = name + ReduceIf("=>", "+", "-", "*", "/", "%", "**", "&", "&&", "|", "||", "^", "==", "<=", ">=", "<", ">", "!=", "<<", ">>", ";", "(");
-            param.Rule = paramsOrEmpty + name;
+            param.Rule = paramsOrEmpty + name + typeInfoOrEmpty;
             paramsOrEmpty.Rule = ToTerm("params") | Empty;
 
             arrayDef.Rule = "{" + arrayDefList + "}";
@@ -177,7 +180,7 @@ namespace CalcLang
             arrayDefListItem.Rule = namedArrayItem | expr;
             namedArrayItem.Rule = (name + ReduceHere() | _string) + "=" + expr;
 
-            rangeArrayDef.Rule = expr + ".." + expr + (":" + expr).Q();
+            rangeArrayDef.Rule = expr + PreferShiftHere() + ".." + expr + ((PreferShiftHere() + ":" + expr) | Empty);
 
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | inlineFunctionDef
@@ -221,11 +224,20 @@ namespace CalcLang
             nullVal.Rule = ToTerm("null");
             thisVal.Rule = ToTerm("this");
 
+            typeInfoOrEmpty.Rule = ":" + typeInfo | Empty;
+            typeInfo.Rule = ToTerm("string")
+                            | "function"
+                            | "number"
+                            | "bool"
+                            | "table"
+                            | "char";
+
+
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
             MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>", "??", "..",
-                "return", "if", "else", "for", "while", "function", "break", "continue",
+                "return", "if", "else", "for", "while", "break", "continue",
                 "using", "do", "var", "foreach", "in",
                 "try", "catch", "finally", "throw", "extern");
             RegisterBracePair("(", ")");
@@ -240,7 +252,7 @@ namespace CalcLang
             RegisterOperators(40, "*", "/", "%", "**");
             RegisterOperators(60, "!", "~");
             RegisterOperators(70, "++", "--", "??");
-            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, lambdaBody, foreachVarDecl, paramsOrEmpty);
+            MarkTransient(var, expr, binOp, unaryOp, block, instruction, embeddedInstruction, objRef, array, arrayDef, assignmentOp, arrayDefListItem, incDecOp, functionBody, lambdaBody, foreachVarDecl, paramsOrEmpty, typeInfoOrEmpty);
 
             AddTermsReportGroup("assignment", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=");
             AddTermsReportGroup("statement", "if", "while", "for", "return", "break", "continue", "using", "do", "try", "throw", "foreach");

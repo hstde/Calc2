@@ -39,9 +39,9 @@ namespace CalcLang.Interpreter
             Values = new object[scopeInfo.ValuesCount == 0 ? 8 : scopeInfo.ValuesCount];
         }
 
-        public SlotInfo AddSlot(string name)
+        public SlotInfo AddSlot(string name, TypeInfo type)
         {
-            var slot = ScopeInfo.AddSlot(name, SlotType.Value);
+            var slot = ScopeInfo.AddSlot(name, SlotType.Value, type);
             if (slot.Index >= Values.Length)
                 Resize(Values.Length * 2);
             return slot;

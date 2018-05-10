@@ -42,7 +42,7 @@ namespace CalcLang.Ast
             {
                 var bind = thread.Bind(exceptionVar.Symbol, BindingRequestFlags.ExistingOrNew | BindingRequestFlags.Write);
                 if (bind != null && !(bind is NullBinding) && bind.SetValueRef != null)
-                    bind.SetValueRef(thread, se.ToScriptObject());
+                    bind.SetValueRef(thread, se.ToScriptObject(), TypeInfo.Table);
             }
 
             block.Evaluate(thread);

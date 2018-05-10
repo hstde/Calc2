@@ -113,7 +113,7 @@ namespace Calc2
                 if (partial)
                     input += "\n" + Console.ReadLine();
                 else
-                    input = Console.ReadLine();
+                   input = Console.ReadLine();
 
                 if (input.StartsWith("#"))
                 {
