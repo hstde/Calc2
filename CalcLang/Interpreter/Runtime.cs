@@ -742,7 +742,7 @@ namespace CalcLang.Interpreter
                 case "BuiltInCallTarget":
                 case "MethodTable":
                     return TypeInfo.Function;
-                case "Bool":
+                case "Boolean":
                     return TypeInfo.Bool;
                 case "NullClass":
                     return TypeInfo.Null;
