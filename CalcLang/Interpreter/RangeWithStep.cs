@@ -12,6 +12,7 @@ namespace CalcLang.Interpreter
         public long Start { get; private set; }
         public long End { get; private set; }
         public long Step { get; private set; }
+        public bool Inclusive { get; private set; }
 
         public long Length => this.LongCount();
 
@@ -23,10 +24,11 @@ namespace CalcLang.Interpreter
             }
         }
 
-        public RangeWithStep(long start, long end, long step)
+        public RangeWithStep(long start, long end, long step, bool inclusive)
         {
             Start = start;
             End = end;
+            Inclusive = inclusive;
             Step = Math.Sign(end - start) * step;
         }
 
@@ -54,11 +56,11 @@ namespace CalcLang.Interpreter
 
         public override string ToString()
         {
-            return $"[{Start}..{End}:{Step}]";
+            return $"[{Start}{(Inclusive ? "..." : "..")}{End}:{Step}]";
         }
 
         public static implicit operator RangeWithStep(Range range)
-            => new RangeWithStep(range.Start, range.End, Math.Sign(range.End - range.Start));
+            => new RangeWithStep(range.Start, range.End, Math.Sign(range.End - range.Start), range.Inclusive);
 
         public class StructRangeWithStepEnumerator : IEnumerator<long>
         {
@@ -68,25 +70,34 @@ namespace CalcLang.Interpreter
 
             private RangeWithStep range;
 
+            private Func<long, long, bool> compare;
+
             public StructRangeWithStepEnumerator(RangeWithStep range)
             {
                 this.range = range;
                 Current = range.Start - range.Step;
+
+                if (range.Inclusive)
+                {
+                    if (range.Step > 0)
+                        compare = (a, b) => a <= b;
+                    else
+                        compare = (a, b) => a >= b;
+                }
+                else
+                {
+                    if (range.Step > 0)
+                        compare = (a, b) => a < b;
+                    else
+                        compare = (a, b) => a > b;
+                }
             }
 
             public void Dispose()
             {
             }
 
-            public bool MoveNext() => Compare((Current = Current + range.Step), range.End);
-
-            private bool Compare(long current, long end)
-            {
-                if (range.Step > 0)
-                    return current < end;
-                else
-                    return current > end;
-            }
+            public bool MoveNext() => compare((Current = Current + range.Step), range.End);
 
             public void Reset()
             {

@@ -11,6 +11,7 @@ namespace CalcLang.Interpreter
     {
         public long Start { get; private set; }
         public long End { get; private set; }
+        public bool Inclusive { get; private set; }
 
         public long Length => Math.Abs(End - Start);
 
@@ -24,10 +25,11 @@ namespace CalcLang.Interpreter
             }
         }
 
-        public Range(long start, long end)
+        public Range(long start, long end, bool inclusive)
         {
             Start = start;
             End = end;
+            Inclusive = inclusive;
             direction = Math.Sign(end - start);
         }
 
@@ -37,7 +39,7 @@ namespace CalcLang.Interpreter
 
         public RangeWithStep Step(long step)
         {
-            return new RangeWithStep(Start, End, direction * step);
+            return new RangeWithStep(Start, End, direction * step, Inclusive);
         }
 
         public override bool Equals(object obj)
@@ -52,7 +54,7 @@ namespace CalcLang.Interpreter
 
         public override string ToString()
         {
-            return $"[{Start}..{End}]";
+            return $"[{Start}{(Inclusive ? "..." : "..")}{End}]";
         }
 
         public override int GetHashCode()
@@ -67,26 +69,34 @@ namespace CalcLang.Interpreter
             object IEnumerator.Current => Current;
 
             private Range range;
+            private Func<long, long, bool> compare;
 
             internal StructRangeEnumerator(Range range)
             {
                 this.range = range;
                 Current = range.Start - range.direction * 1;
+
+                if(range.Inclusive)
+                {
+                    if (range.direction > 0)
+                        compare = (a, b) => a <= b;
+                    else
+                        compare = (a, b) => a >= b;
+                }
+                else
+                {
+                    if (range.direction > 0)
+                        compare = (a, b) => a < b;
+                    else
+                        compare = (a, b) => a > b;
+                }
             }
 
             public void Dispose()
             {
             }
 
-            public bool MoveNext() => Compare((Current += range.direction), range.End);
-
-            private bool Compare(long current, long end)
-            {
-                if (range.direction > 0)
-                    return current < end;
-                else
-                    return current > end;
-            }
+            public bool MoveNext() => compare((Current += range.direction), range.End);
 
             public void Reset()
             {

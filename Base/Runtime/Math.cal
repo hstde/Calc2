@@ -23,11 +23,11 @@ var Math = (function() {
 		return val1;
 	}
 	
-	extern function Floor(value);
+	extern function Floor(value : number);
 	
-	extern function Ceiling(value);
+	extern function Ceiling(value : number);
 	
-	function InternalRound(value, digits, mode) {
+	function InternalRound(value : number, digits, mode) {
 		var power10 = roundPower10[digits];
 		value *= power10;
 		if(mode == MidpointRounding.AwayFromZero)
@@ -44,20 +44,16 @@ var Math = (function() {
 		return value;
 	}
 	
-	function Round(value, digits) {
+	function Round(value : number, digits : number) {
 		if(digits < 0 || digits > maxRoundingDigits)
 			throw ArgumentOutOfRangeException("digits");
 		
 		return InternalRound(value, digits, MidpointRounding.ToEven);
 	}
 	
-	extern function Round(value);
+	extern function Round(value : number);
 	
-	function Int(value) {
-		if(value.GetType() != "Number") throw ArgumentException();
-		extern function Int(value);
-		return Int(value);
-	}
+	extern function Int(value : number);
 	
 	function Sign(value) {
 		if(value < 0)
@@ -68,43 +64,43 @@ var Math = (function() {
 			return 0;
 	}
 	
-	extern function Acos(value);
+	extern function Acos(value : number);
 	
-	extern function Asin(value);
+	extern function Asin(value : number);
 	
-	extern function Atan(value);
+	extern function Atan(value : number);
 	
-	extern function Atan2(y, x);
+	extern function Atan2(y : number, x : number);
 	
-	extern function Cos(value);
+	extern function Cos(value : number);
 	
-	extern function Cosh(value);
+	extern function Cosh(value : number);
 	
-	extern function Sin(value);
+	extern function Sin(value : number);
 	
-	extern function Tan(value);
+	extern function Tan(value : number);
 	
-	extern function Sinh(value);
+	extern function Sinh(value : number);
 	
-	extern function Tanh(value);
+	extern function Tanh(value : number);
 	
-	extern function Sqrt(value);
+	extern function Sqrt(value : number);
 	
-	extern function Log(value);
+	extern function Log(value : number);
 	
-	extern function Log10(value);
+	extern function Log10(value : number);
 	
-	function Log(value, base) {
+	function Log(value : number, base : number) {
 		if(value <= 0 || base <= 0)
 			throw ArithmeticException();
 		return Log(value) / Log(base);
 	}
 	
-	extern function Exp(value);
+	extern function Exp(value : number);
 	
-	extern function Pow(x, y);
+	extern function Pow(x : number, y : number);
 	
-	function IEEERemainder(x, y) {
+	function IEEERemainder(x : number, y : number) {
 		var regularMod = x % y;
 		if(regularMod == 0 && x < 0)
 			return -0;
@@ -133,7 +129,7 @@ var Math = (function() {
 		}
 	}
 	
-	function DivRem(a, b) {
+	function DivRem(a : number, b : number) {
 		return { div = a / b, rem = a % b };
 	}
 	
