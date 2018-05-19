@@ -78,6 +78,7 @@ namespace CalcLang
             NonTerminal array = new NonTerminal("array");
             NonTerminal singleDimArray = new NonTerminal("singleDimArray", typeof(IndexedAccessNode));
             NonTerminal rangeArrayDef = new NonTerminal("rangeArrayDef", typeof(RangeArrayDefNode));
+            NonTerminal rangeInclusiveArrayDef = new NonTerminal("rangeInclusiveArrayDef", typeof(RangeArrayDefNode));
             NonTerminal typeInfo = new NonTerminal("typeInfo");
             NonTerminal typeInfoOrEmpty = new NonTerminal("typeInfoOrEmpty");
 
@@ -182,11 +183,14 @@ namespace CalcLang
 
             rangeArrayDef.Rule = expr + PreferShiftHere() + ".." + expr + ((PreferShiftHere() + ":" + expr) | Empty);
 
+            rangeInclusiveArrayDef.Rule = expr + PreferShiftHere() + "..." + expr + ((PreferShiftHere() + ":" + expr) | Empty);
+
             expr.Rule = prefixExpr | postfixExpr | ternaryIf
                         | inlineFunctionDef
                         | var | unExpr | binExpr
                         | arrayDef
                         | rangeArrayDef
+                        | rangeInclusiveArrayDef
                         | assignment
                         | coalescence;
 
@@ -236,7 +240,7 @@ namespace CalcLang
             unaryOp.Rule = ToTerm("-") | "!" | "~";
             incDecOp.Rule = ToTerm("++") | "--";
 
-            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>", "??", "..",
+            MarkPunctuation("(", ")", "?", ":", "[", "]", ";", "{", "}", ".", ",", "@", "=>", "??",
                 "return", "if", "else", "for", "while", "break", "continue",
                 "using", "do", "var", "foreach", "in",
                 "try", "catch", "finally", "throw", "extern");
