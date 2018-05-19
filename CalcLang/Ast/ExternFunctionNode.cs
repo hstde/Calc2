@@ -112,6 +112,8 @@ namespace CalcLang.Ast
             }
             else
             {
+                if (mTable.GetIndex(parameters.ParamTypes) != null)
+                    thread.ThrowScriptError("Function {0}({1}) is already defined!", target.Symbol, string.Join(", ", parameters.ParamNames));
                 mTable.Add(tar);
                 target.DoSetValue(thread, mTable, TypeInfo.Function);
             }

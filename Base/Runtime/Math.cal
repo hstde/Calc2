@@ -53,11 +53,7 @@ var Math = (function() {
 	
 	extern function Round(value);
 	
-	function Int(value) {
-		if(value.GetType() != "Number") throw ArgumentException();
-		extern function Int(value);
-		return Int(value);
-	}
+	extern function Int(value : number);
 	
 	function Sign(value) {
 		if(value < 0)
