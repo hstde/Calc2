@@ -40,12 +40,33 @@ namespace CalcLang.Ast
             if (type == typeof(string))
             {
                 var sTarget = targetValue as string;
-                var iIndex = Convert.ToInt32(indexValue);
-
-                if (iIndex < sTarget.Length)
-                    result = sTarget[iIndex];
+                if (indexValue is Range r)
+                {
+                    if (r.Start <= r.End)
+                    {
+                        int start = (int)r.Start;
+                        start = start > 0 ? start : 0;
+                        start = start < sTarget.Length ? start : sTarget.Length - 1;
+                        int length = (int)r.Length;
+                        length = length + start <= sTarget.Length ? length : sTarget.Length - start;
+                        result = sTarget.Substring(start, length);
+                    }
+                    else
+                        result = string.Join("", sTarget.Reverse().Skip((int)r.End).Take((int)r.Length));
+                }
+                else if (indexValue is RangeWithStep rs)
+                {
+                    result = string.Join("", rs.Where(e => e >= 0 && e < sTarget.Length).Select(e => sTarget[(int)e]));
+                }
                 else
-                    result = '\0';
+                {
+                    var iIndex = Convert.ToInt32(indexValue);
+
+                    if (iIndex < sTarget.Length)
+                        result = sTarget[iIndex];
+                    else
+                        result = '\0';
+                }
             }
             else if (type == typeof(DataTable))
             {
@@ -59,7 +80,7 @@ namespace CalcLang.Ast
                     {
                         result = dtTarget.GetString(thread, sIndex);
                     }
-                    else if(dtIndex != null)
+                    else if (dtIndex != null)
                     {
                         result = dtTarget.Filter(thread, dtIndex);
                     }
@@ -69,7 +90,7 @@ namespace CalcLang.Ast
                         result = dtTarget.GetInt(thread, iIndex);
                     }
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     thread.ThrowScriptError("Index must be string, number or table.");
                 }
@@ -135,11 +156,11 @@ namespace CalcLang.Ast
                         dtTarget.SetInt(thread, iIndex, value);
                     }
                 }
-                catch(OutOfMemoryException e)
+                catch (OutOfMemoryException e)
                 {
                     thread.ThrowScriptError("Out of Memory exception!");
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     thread.ThrowScriptError("Index must be string, number or table. Exception was " + e.GetType() + " " + e.Message);
                 }

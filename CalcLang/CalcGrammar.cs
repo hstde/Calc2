@@ -172,7 +172,7 @@ namespace CalcLang
             lambdaParamList.Rule = MakeStarRule(lambdaParamList, ToTerm(","), lambdaParam);
             singleLambdaParamList.Rule = lambdaParam;
 
-            lambdaParam.Rule = name + ReduceIf("=>", "+", "-", "*", "/", "%", "**", "&", "&&", "|", "||", "^", "==", "<=", ">=", "<", ">", "!=", "<<", ">>", ";", "(");
+            lambdaParam.Rule = name + ReduceIf("=>", "+", "-", "*", "/", "%", "**", "&", "&&", "|", "||", "^", "==", "<=", ">=", "<", ">", "!=", "<<", ">>", ";", "(", "??");
             param.Rule = paramsOrEmpty + name + typeInfoOrEmpty;
             paramsOrEmpty.Rule = ToTerm("params") | Empty;
 
