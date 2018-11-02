@@ -37,6 +37,12 @@ namespace CalcLang.Ast
             var type = targetValue.GetType();
             var indexValue = index.Evaluate(thread);
 
+            if(type == typeof(Range) || type == typeof(RangeWithStep))
+            {
+                targetValue = new DataTable(targetValue as IEnumerable, thread);
+                type = typeof(DataTable);
+            }
+
             if (type == typeof(string))
             {
                 var sTarget = targetValue as string;
