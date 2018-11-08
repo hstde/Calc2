@@ -13,7 +13,7 @@ namespace CalcLang.Interpreter
         public long End { get; private set; }
         public bool Inclusive { get; private set; }
 
-        public long Length => Math.Abs(End - Start);
+        public long Length => Math.Abs(End - Start) + (Inclusive ? 1 : 0);
 
         private long direction;
 
@@ -76,7 +76,7 @@ namespace CalcLang.Interpreter
                 this.range = range;
                 Current = range.Start - range.direction * 1;
 
-                if(range.Inclusive)
+                if (range.Inclusive)
                 {
                     if (range.direction > 0)
                         compare = (a, b) => a <= b;
