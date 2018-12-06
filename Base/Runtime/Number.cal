@@ -150,6 +150,12 @@
 				state |= StateSign;
 				index = next - 1;
 			}
+			else if(signFlag && (next = MatchChars(p, index, numfmt.NegativeSign)) != null)
+			{
+				state |= StateSign;
+				number.sign = true;
+				index = next - 1;
+			}
 			else if(ch == '(' && ((options & NumberStyles.AllowParentheses) != 0) && ((state & StateSign) == 0))
 			{
 				state |= StateSign | StateParens;
