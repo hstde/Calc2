@@ -107,9 +107,8 @@ namespace CalcLang.Ast
                 var iIndex = Convert.ToInt32(indexValue);
                 result = arr.GetValue(iIndex);
             }
-            else if (targetValue is System.Collections.IDictionary)
+            else if (targetValue is System.Collections.IDictionary dict)
             {
-                var dict = (System.Collections.IDictionary)targetValue;
                 result = dict[indexValue];
             }
             else
