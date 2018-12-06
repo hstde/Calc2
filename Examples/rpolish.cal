@@ -1,0 +1,46 @@
+using Runtime;
+
+var stack = {
+    sp = 0,
+    push = function(e) {this[this.sp++] = e;},
+    pop = function() {return this[--this.sp];}
+};
+
+var commands = {
+    "+" = function() {stack.push(stack.pop() + stack.pop());},
+    "-" = function() {var b = stack.pop(); stack.push(stack.pop() - b);},
+    "*" = function() {stack.push(stack.pop() * stack.pop());},
+    "/" = function() {var b = stack.pop(); stack.push(stack.pop() / b);},
+    "**" = function() {var b = stack.pop(); stack.push(stack.pop() ** b);},
+    "++" = function() {stack.push(stack.pop() + 1);},
+    "--" = function() {stack.push(stack.pop() - 1);},
+    "v" = function() {stack.pop();}
+};
+
+function execute(input){
+    if(input == null || input == "") return;
+    
+    var cmd = commands[input];
+    if(cmd == null)
+    {
+        var number = Int32.TryParse(input);
+        if(number == null)
+            Console.WriteLine("Please validate your input");
+        else
+            stack.push(number * 1.0);
+    }
+    else
+        cmd();
+}
+
+while(true) {
+    Console.Write(">");
+    var input = Console.ReadLine();
+    
+    var tokens = String.Split(input, " ");
+    
+    foreach(var e in tokens)
+        execute(e);
+    
+    Console.WriteLine(String.Join(" ", stack.Take(stack.sp)));
+}
