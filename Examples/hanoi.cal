@@ -1,0 +1,16 @@
+using runtime;
+
+function hanoi(n, a, b, c)
+{
+    if(n < 1) return;
+    hanoi(n - 1, a, c, b);
+    Console.WriteLine($"move {n} from {a} to {c}");
+    hanoi(n - 1, b, a, c);
+}
+
+function hanoi(n)
+{
+    hanoi(n, "A", "B", "C");
+}
+
+hanoi(3);

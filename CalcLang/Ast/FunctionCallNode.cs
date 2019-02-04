@@ -83,9 +83,10 @@ namespace CalcLang.Ast
                 if (bind != null && !(bind is NullBinding) && bind.GetValueRef != null)
                     thisRef = bind.GetValueRef(thread);
             }
-
+            var flowBackup = Parent.FlowControl;
             result = iCall.Call(thread, thisRef, args);
             thread.CallStack.Pop();
+            Parent.FlowControl = flowBackup;
             thread.CurrentFuncInfo = back;
 
             thread.CurrentNode = Parent;
