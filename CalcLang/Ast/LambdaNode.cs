@@ -95,6 +95,7 @@ namespace CalcLang.Ast
 
         public object Call(Scope creatorScope, ScriptThread thread, object thisRef, object[] parameters)
         {
+            FlowControl = FlowControl.Next;
             var save = thread.CurrentNode;
             thread.CurrentNode = this;
 
@@ -116,10 +117,11 @@ namespace CalcLang.Ast
             if (!(Body is BlockNode) && !(Body is ReturnNode))
                 FlowControl = FlowControl.Return;
 
-            if (FlowControl == FlowControl.Return)
-                return result;
-            else
-                return thread.Runtime.NullValue;
+            if (Body.FlowControl != FlowControl.Return && FlowControl != FlowControl.Return)
+                result = thread.Runtime.NullValue;
+
+            FlowControl = FlowControl.Next;
+            return result;
         }
 
         private void CheckParams(ScriptThread thread, ref object thisRef, ref object[] parameters)

@@ -38,17 +38,22 @@ namespace CalcLang.Ast
             if (DependentScopeInfo == null)
                 DependentScopeInfo = new ScopeInfo(this, Parent?.AsString ?? "");
             FlowControl = FlowControl.Next;
+            var lastFlowControl = FlowControl.Next;
 
             object result = thread.Runtime.NullValue;
 
             thread.PushScope(DependentScopeInfo, null);
-            for (int i = 0; i < ChildNodes.Count && FlowControl == FlowControl.Next; i++)
+
+            for (int i = 0; i < ChildNodes.Count && lastFlowControl == FlowControl.Next; i++)
+            {
                 result = ChildNodes[i].Evaluate(thread);
+                lastFlowControl = ChildNodes[i].FlowControl;
+            }
 
             thread.PopScope();
 
-            if (FlowControl != FlowControl.Next && Parent != null)
-                Parent.FlowControl = FlowControl;
+            if (lastFlowControl != FlowControl.Next)
+                FlowControl = lastFlowControl;
 
             thread.CurrentNode = Parent;
             return result;

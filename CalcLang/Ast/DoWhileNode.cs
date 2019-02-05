@@ -36,21 +36,21 @@ namespace CalcLang.Ast
             {
                 result = Body.Evaluate(thread);
 
-                if (FlowControl == FlowControl.Break)
+                if (Body.FlowControl == FlowControl.Break)
                     break;
 
-                if (FlowControl == FlowControl.Continue)
+                if (Body.FlowControl == FlowControl.Continue)
                     FlowControl = FlowControl.Next;
 
-                if (FlowControl == FlowControl.Return)
+                if (Body.FlowControl == FlowControl.Return)
                     break;
 
                 cond = thread.Runtime.IsTrue(Condition.Evaluate(thread));
 
             } while (cond);
 
-            if (FlowControl == FlowControl.Return && Parent != null)
-                Parent.FlowControl = FlowControl.Return;
+            if (Body.FlowControl == FlowControl.Return)
+                FlowControl = FlowControl.Return;
 
             thread.CurrentNode = Parent;
             return result;

@@ -56,14 +56,18 @@ namespace CalcLang.Ast
         {
             thread.CurrentNode = this;
             FlowControl = FlowControl.Next;
+            var lastFlowControl = FlowControl.Next;
 
             object result = thread.Runtime.NullValue;
 
-            for (int i = 0; i < ChildNodes.Count && FlowControl == FlowControl.Next; i++)
+            for (int i = 0; i < ChildNodes.Count && lastFlowControl == FlowControl.Next; i++)
+            {
                 result = ChildNodes[i].Evaluate(thread);
+                lastFlowControl = ChildNodes[i].FlowControl;
+            }
 
-            if (FlowControl != FlowControl.Next && Parent != null)
-                Parent.FlowControl = FlowControl;
+            if (lastFlowControl != FlowControl.Next)
+                FlowControl = lastFlowControl;
 
             thread.CurrentNode = Parent;
             return result;
@@ -78,8 +82,8 @@ namespace CalcLang.Ast
 
             object result = singleChild.Evaluate(thread);
 
-            if (FlowControl != FlowControl.Next && Parent != null)
-                Parent.FlowControl = FlowControl;
+            if (singleChild.FlowControl != FlowControl.Next)
+                FlowControl = singleChild.FlowControl;
 
             thread.CurrentNode = Parent;
             return result;

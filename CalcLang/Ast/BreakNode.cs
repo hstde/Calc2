@@ -20,8 +20,7 @@ namespace CalcLang.Ast
         {
             thread.CurrentNode = this;
 
-            if (Parent != null)
-                Parent.FlowControl = FlowControl.Break;
+            FlowControl = FlowControl.Break;
 
             thread.CurrentNode = Parent;
             return thread.Runtime.NullValue;
