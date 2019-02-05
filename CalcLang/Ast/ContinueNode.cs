@@ -21,8 +21,7 @@ namespace CalcLang.Ast
         {
             thread.CurrentNode = this;
 
-            if (Parent != null)
-                Parent.FlowControl = FlowControl.Continue;
+            FlowControl = FlowControl.Continue;
 
             thread.CurrentNode = Parent;
             return thread.Runtime.NullValue;

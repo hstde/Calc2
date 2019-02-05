@@ -83,7 +83,6 @@ namespace CalcLang.Ast
                 if (bind != null && !(bind is NullBinding) && bind.GetValueRef != null)
                     thisRef = bind.GetValueRef(thread);
             }
-
             result = iCall.Call(thread, thisRef, args);
             thread.CallStack.Pop();
             thread.CurrentFuncInfo = back;

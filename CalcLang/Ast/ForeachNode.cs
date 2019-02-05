@@ -69,19 +69,19 @@ namespace CalcLang.Ast
                 IterVarBlock.SetValue(thread, e, TypeInfo.NotDefined);
                 result = Block.Evaluate(thread);
 
-                if (FlowControl == FlowControl.Break)
+                if (Block.FlowControl == FlowControl.Break)
                     break;
 
-                if (FlowControl == FlowControl.Continue)
+                if (Block.FlowControl == FlowControl.Continue)
                     FlowControl = FlowControl.Next;
 
-                if (FlowControl == FlowControl.Return)
+                if (Block.FlowControl == FlowControl.Return)
                     break;
             }
             thread.PopScope();
 
-            if (FlowControl == FlowControl.Return && Parent != null)
-                Parent.FlowControl = FlowControl.Return;
+            if (Block.FlowControl == FlowControl.Return)
+                FlowControl = FlowControl.Return;
 
             thread.CurrentNode = Parent;
             return result;

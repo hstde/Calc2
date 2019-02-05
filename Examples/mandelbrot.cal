@@ -34,7 +34,7 @@ foreach(var yPixel in 0 .. yPixelMax)
 			var d = (x0 * x0) + (y0 * y0);
 			if(d > 4)
 			{
-				pixel = pixelString[iter % pixelString.Length()];
+				pixel = pixelString[iter % pixelString.Length];
 				break;
 			}
 		}

@@ -1,0 +1,15 @@
+using runtime;
+
+function fib(n)
+{
+    if(n <= 2) return 1;
+    var n1 = fib(n - 1);
+    var n2 = fib(n - 2);
+    return n1 + n2;
+}
+
+var n = 5;
+if(args.Length > 0)
+    n = Int32.TryParse(args[0]) ?? 5;
+
+Console.WriteLine(fib(n));

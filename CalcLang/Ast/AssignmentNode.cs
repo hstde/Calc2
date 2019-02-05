@@ -63,7 +63,6 @@ namespace CalcLang.Ast
             thread.CurrentNode = this;
             var value = Target.Evaluate(thread);
             var exprValue = Expression.Evaluate(thread);
-
             var result = thread.Runtime.ExecuteBinaryOperator(BinaryExpressionType, value, exprValue, ref lastUsed);
 
             Target.SetValue(thread, result, Runtime.TypeToTypeInfo(result.GetType()));

@@ -32,22 +32,29 @@ namespace CalcLang.Ast
             object result = thread.Runtime.NullValue;
 
             FlowControl = FlowControl.Next;
+            var childControl = FlowControl.Next;
 
             var cond = Condition.Evaluate(thread);
             var isTrue = thread.Runtime.IsTrue(cond);
             if(isTrue)
             {
                 if (IfBlock != null)
+                {
                     result = IfBlock.Evaluate(thread);
+                    childControl = IfBlock.FlowControl;
+                }
             }
             else
             {
                 if (ElseBlock != null)
+                {
                     result = ElseBlock.Evaluate(thread);
+                    childControl = ElseBlock.FlowControl;
+                }
             }
 
-            if (FlowControl != FlowControl.Next && Parent != null)
-                Parent.FlowControl = FlowControl;
+            if (childControl != FlowControl.Next)
+                FlowControl = childControl;
 
             thread.CurrentNode = Parent;
             return result;

@@ -54,16 +54,15 @@ namespace CalcLang.Ast
 
             while ((Condition == null || cond) && FlowControl == FlowControl.Next)
             {
-                if (Block != null)
-                    result = Block.Evaluate(thread);
+                result = Block.Evaluate(thread);
 
-                if (FlowControl == FlowControl.Break)
+                if (Block.FlowControl == FlowControl.Break)
                     break;
 
-                if (FlowControl == FlowControl.Continue)
+                if (Block.FlowControl == FlowControl.Continue)
                     FlowControl = FlowControl.Next;
 
-                if (FlowControl == FlowControl.Return)
+                if (Block.FlowControl == FlowControl.Return)
                     break;
 
                 IterBlock?.Evaluate(thread);
@@ -73,8 +72,8 @@ namespace CalcLang.Ast
             }
             thread.PopScope();
 
-            if (FlowControl == FlowControl.Return && Parent != null)
-                Parent.FlowControl = FlowControl.Return;
+            if (Block.FlowControl == FlowControl.Return)
+                FlowControl = FlowControl.Return;
 
             thread.CurrentNode = Parent;
             return result;

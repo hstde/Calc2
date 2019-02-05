@@ -35,8 +35,7 @@ namespace CalcLang.Ast
             if (Expression != null)
                 result = Expression.Evaluate(thread);
 
-            if (Parent != null)
-                Parent.FlowControl = FlowControl.Return;
+            FlowControl = FlowControl.Return;
 
             thread.CurrentNode = Parent;
             return result;
