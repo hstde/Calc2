@@ -437,7 +437,7 @@
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
 			throw ArgumentException();
 		
-		return this.Any(function(e, i) return e == what);
+		return this.Any(function(e) return e == what);
 	}
 	
 	function Min() extension {
