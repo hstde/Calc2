@@ -6,11 +6,11 @@ extern function ToChar() extension;
 extern function GetFunctionInfo() extension;
 
 var Int32 = (function() {
-	function Parse(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
-	function Parse(s, style) return Number.ParseInt32(s, style, Number.NumberFormatInfo)
+	function Parse(s) return Number.ParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo);
+	function Parse(s, style) return Number.ParseInt32(s, style, Number.NumberFormatInfo);
 	
-	function TryParse(s) return Number.TryParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo)
-	function TryParse(s, style) return Number.TryParseInt32(s, style, Number.NumberFormatInfo)
+	function TryParse(s) return Number.TryParseInt32(s, Number.NumberStyles.Integer, Number.NumberFormatInfo);
+	function TryParse(s, style) return Number.TryParseInt32(s, style, Number.NumberFormatInfo);
 	return {
 		MaxValue = 0x7fff_ffff,
 		MinValue = -0x7fff_ffff,
@@ -30,6 +30,21 @@ var Int64 = (function() {
 	return {
 		MaxValue = 0x7fff_ffff_ffff_ffff,
 		MinValue = -0x7fff_ffff_ffff_ffff
+	};
+})();
+
+var Double = (function() {
+	function Parse(s) return Number.ParseDouble(s,  Number.NumberStyles.Float | Number.NumberStyles.AllowThousands, Number.NumberFormatInfo);
+	function Parse(s, style) return Number.ParseDouble(s, style, Number.NumberFormatInfo);
+	
+	function TryParse(s) return Number.TryParseDouble(s, Number.NumberStyles.Float | Number.NumberStyles.AllowThousands, Number.NumberFormatInfo);
+	function TryParse(s, style) return Number.TryParseDouble(s, style, Number.NumberFormatInfo);
+	
+	return {
+		MaxValue = 0x7fff_ffff,
+		MinValue = -0x7fff_ffff,
+		Parse = Parse,
+		TryParse = TryParse
 	};
 })();
 
