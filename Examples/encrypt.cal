@@ -7,7 +7,7 @@ function encrypt(key, data)
 
 	var output = {};
 
-	var S = [0 .. 255];
+	var S = (0 ... 255).ToTable();
 
 	//Key processing
 	var j = 0;
@@ -38,11 +38,11 @@ function encrypt(key, data)
 
 function inputHex(str)
 {
-	if(str.Length() % 2 != 0)
+	if(str.Length % 2 != 0)
 		throw ArgumentException("Input must have a length divisible by two.");
 	
 	var split = {};
-	var strLength = str.Length();
+	var strLength = str.Length;
 	
 	for(var i = 0; i < strLength; i += 2)
 		split[i / 2] = str[i] + "" + str[i + 1];
