@@ -41,7 +41,7 @@
 	
 	function Where(filter) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var ret = {};
 		var retIndex = 0;
@@ -56,7 +56,7 @@
 	
 	function Select(selector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var ret = {};
 		var index = 0;
@@ -76,7 +76,7 @@
 	
 	function SelectMany(selector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var ret = {};
 		var index = 0;
@@ -94,7 +94,7 @@
 	
 	function Reverse() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var length = this.Length;
 		
@@ -112,7 +112,7 @@
 		if(this == null || other == null 
 			|| (this.GetType() != "Table" && this.GetType() != "String") 
 			|| (other.GetType() != "Table" && other.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" and \"other\" must be of type Table or String, but where " + this.GetType() + "/" + other.GetType() +" .");
 		
 		var length = this.Length();
 		var olength = other.Length();
@@ -128,7 +128,7 @@
 	
 	function ToDictionary(keySelector, valueSelector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var ret = {};
 		var index = 0;
@@ -143,7 +143,7 @@
 	
 	function ToListDictionary(keySelector, valueSelector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 			
 		var ret = {};
 		var index = 0;
@@ -159,7 +159,7 @@
 	function Take(number) extension {
 		var arg = this;
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		if(this.GetType() == "String") arg = String.ToTable(this);
 		
@@ -173,7 +173,7 @@
 	
 	function TakeWhile(predicate) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var ret = {};
 		var index = 0;
@@ -190,7 +190,7 @@
 	function Skip(number) extension {
 		var arg = this;
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		if(this.GetType() == "String") arg = String.ToTable(this);
 		
@@ -204,7 +204,7 @@
 	
 	function SkipWhile(predicate) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var ret = {};
 		var retIndex = 0;
@@ -221,7 +221,7 @@
 	
 	function ForEach(action) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		foreach(var e in this)
 		{
@@ -231,7 +231,7 @@
 	
 	function First() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 			
 		var length = this.Length;
 		
@@ -246,7 +246,7 @@
 	
 	function First(filter) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		foreach(var e in this)
 			if(filter(e))
@@ -257,7 +257,7 @@
 	
 	function FirstOrDefault() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var length = this.Length;
 		
@@ -270,7 +270,7 @@
 	
 	function FirstOrDefault(filter) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		foreach(var e in this)
 			if(filter(e))
@@ -281,7 +281,7 @@
 	
 	function Last() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var length = this.Length;
 		
@@ -293,7 +293,7 @@
 	
 	function Last(filter) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var last = null;
 		var found = false;
@@ -313,7 +313,7 @@
 	
 	function LastOrDefault() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var length = this.Length;
 		
@@ -324,7 +324,7 @@
 	
 	function LastOrDefault(filter) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var last = null;
 		
@@ -348,7 +348,7 @@
 	
 	function Any() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		foreach(var e in this)
 			return true;
@@ -358,7 +358,7 @@
 	
 	function Any(what) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		foreach(var e in this)
 		{
@@ -370,7 +370,7 @@
 	
 	function All(what) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		foreach(var e in this)
 			if(!what(e))
@@ -382,7 +382,7 @@
 		if(this == null || other == null 
 			|| (this.GetType() != "Table" && this.GetType() != "String") 
 			|| (other.GetType() != "Table" && other.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" and \"other\" must be of type Table or String, but where " + this.GetType() + "/" + other.GetType() +" .");
 		
 		var ret = {};
 		var index = 0;
@@ -398,7 +398,7 @@
 		if(this == null || other == null 
 			|| (this.GetType() != "Table" && this.GetType() != "String") 
 			|| (other.GetType() != "Table" && other.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" and \"other\" must be of type Table or String, but where " + this.GetType() + "/" + other.GetType() +" .");
 		
 		var length = this.Length;
 		var olength = other.Length;
@@ -418,7 +418,7 @@
 	
 	function Aggregate(init, func) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var length = this.Length;
 		if(length < 1) return null;
@@ -435,14 +435,14 @@
 	
 	function Contains(what) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		return this.Any(function(e) return e == what);
 	}
 	
 	function Min() extension {
 		if(this == null || this.GetType() != "Table" || this.Length < 1)
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table, but was " + this.GetType() + ".");
 		
 		var min = null;
 		foreach(var e in this)
@@ -456,14 +456,14 @@
 	
 	function Min(selector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		return this.Select(selector).Min();
 	}
 	
 	function Max() extension {
 		if(this == null || this.GetType() != "Table" || this.Length < 1)
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table, but was " + this.GetType() + ".");
 		
 		var max = null;
 		foreach(var e in this)
@@ -477,14 +477,14 @@
 	
 	function Max(selector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		return this.Select(selector).Max();
 	}
 	
 	function Average() extension {
 		if(this == null || this.GetType() != "Table")
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table, but was " + this.GetType() + ".");
 		
 		var sum = 0;
 		var count = 0;
@@ -500,14 +500,14 @@
 	
 	function Average(selector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		return this.Select(selector).Average();
 	}
 	
 	function Sum() extension {
 		if(this == null || this.GetType() != "Table")
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table, but was " + this.GetType() + ".");
 		
 		var sum = 0;
 		
@@ -519,14 +519,14 @@
 	
 	function Sum(selector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		return this.Select(selector).Sum();
 	}
 	
 	function OrderBy(selector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var keys = {};
 		var ret = {};
@@ -546,7 +546,7 @@
 	
 	function OrderByDescending(selector) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		return this.OrderBy(selector).Reverse();
 	}
@@ -557,7 +557,7 @@
 	
 	function Count(filter) extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var count = 0;
 		foreach(var e in this)
@@ -568,7 +568,7 @@
 	
 	function ToTable() extension {
 		if(this == null || (this.GetType() != "Table" && this.GetType() != "String"))
-			throw ArgumentException();
+			throw ArgumentException("\"this\" must be of type Table or String, but was " + this.GetType() + ".");
 		
 		var ret = {};
 		var index = 0;
