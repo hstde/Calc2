@@ -80,6 +80,11 @@ namespace CalcLang.Interpreter
                 {
                     if (range.direction > 0)
                         compare = (a, b) => a <= b;
+                    else if (range.direction == 0)
+                        compare = (a, b) => {
+                            compare = (aa, bb) => false;
+                            return true;
+                        };
                     else
                         compare = (a, b) => a >= b;
                 }
@@ -87,6 +92,8 @@ namespace CalcLang.Interpreter
                 {
                     if (range.direction > 0)
                         compare = (a, b) => a < b;
+                    else if (range.direction == 0)
+                        compare = (a, b) => false;
                     else
                         compare = (a, b) => a > b;
                 }
@@ -100,7 +107,7 @@ namespace CalcLang.Interpreter
 
             public void Reset()
             {
-                Current = range.Start - 1;
+                Current = range.Start - range.direction * 1;
             }
         }
     }
