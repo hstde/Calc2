@@ -5,10 +5,15 @@ var yMax = 0.1;
 var xMin = -1.5;
 var xMax = -1.1;
 
-var pixelString = " .:;+=xX$&";
+yMin = 0.1120500000000000001100;
+yMax = 0.1133500000000000001100;
+xMin = -0.7461666666666666665900;
+xMax = -0.7444333333333333333000;
+
+var pixelString = ".'`^\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'";
 var yPixelMax = 50;
 var xPixelMax = 180;
-var maxIter = 200;
+var maxIter = 256;
 
 foreach(var yPixel in 0 .. yPixelMax)
 {
