@@ -144,10 +144,9 @@ namespace CalcLang.Ast
                 try
                 {
                     var dtTarget = targetValue as DataTable;
-                    string sIndex = indexValue as string;
                     var dtIndex = indexValue as IEnumerable;
 
-                    if (sIndex != null)
+                    if (indexValue is string sIndex)
                     {
                         dtTarget.SetString(thread, sIndex, value);
                     }
@@ -176,9 +175,8 @@ namespace CalcLang.Ast
                 var iIndex = (int)Convert.ToDecimal(indexValue);
                 arr.SetValue(value, iIndex);
             }
-            else if (targetValue is System.Collections.IDictionary)
+            else if (targetValue is System.Collections.IDictionary dict)
             {
-                var dict = (System.Collections.IDictionary)targetValue;
                 dict[indexValue] = value;
             }
             else
