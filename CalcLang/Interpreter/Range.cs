@@ -80,7 +80,7 @@ namespace CalcLang.Interpreter
                 {
                     if (range.direction > 0)
                         compare = (a, b) => a <= b;
-                    if (range.direction == 0)
+                    else if (range.direction == 0)
                         compare = (a, b) => {
                             compare = (aa, bb) => false;
                             return true;
@@ -92,7 +92,7 @@ namespace CalcLang.Interpreter
                 {
                     if (range.direction > 0)
                         compare = (a, b) => a < b;
-                    if (range.direction == 0)
+                    else if (range.direction == 0)
                         compare = (a, b) => false;
                     else
                         compare = (a, b) => a > b;
