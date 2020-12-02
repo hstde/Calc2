@@ -1,0 +1,58 @@
+using Runtime;
+
+var puts = Console.WriteLine;
+var putchar = c => Console.Write(c.ToChar());
+
+function main_mini()
+{
+    var r=i=R=I=b=n=0;for(i=-1;i<1;i+=.06,puts(""))for(r=-2;(I=i)==i&&(R=r)<1;
+    r+=.03,putchar(n+31))for(n=0;(b=I*I)==b&&26>n++&&R*R+b<4;I=2*R*I+i,R=R*R-b+r);
+}
+
+function main_dirty()
+{
+    var n = 0;
+    var r = 0;
+    var i = 0;
+    var R = 0;
+    var I = 0;
+    var b = 0;
+    
+    for(i = -1; i < 1; i += 0.06, puts(""))
+        for(r = -2; (I = i) == i && (R = r) < 1; r += 0.03, putchar(n + 31))
+            for(n = 0; (b = I * I) == b && 26 > n++ && R * R + b < 4; I = 2 * R * I + i, R = R * R - b + r)
+            ;
+}
+
+function main()
+{
+    var i = -1;
+    while(i < 1)
+    {
+        var r = -2;
+        var R = r;
+        while(r < 1)
+        {
+            var I = i;
+            var R = r;
+            var n = 0;
+            var b = I * I;
+            
+            while(26 > n++ && R * R + (I * I) < 4)
+            {
+                b = I * I;
+                I = 2 * R * I + i;
+                R = R * R - b + r;
+            }
+            
+            r += 0.03;
+            putchar(n + 31);
+        }
+        i += 0.06;
+        puts("");
+    }
+}
+
+//main_mini();
+//main_dirty();
+main();
