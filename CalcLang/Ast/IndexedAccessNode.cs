@@ -160,7 +160,7 @@ namespace CalcLang.Ast
                         dtTarget.SetInt(thread, iIndex, value);
                     }
                 }
-                catch (OutOfMemoryException e)
+                catch (OutOfMemoryException)
                 {
                     thread.ThrowScriptError("Out of Memory exception!");
                 }

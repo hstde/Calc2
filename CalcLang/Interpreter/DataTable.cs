@@ -74,9 +74,9 @@ namespace CalcLang.Interpreter
             [GRE] = ExpressionType.GreaterThan
         };
 
-        public decimal Length => length;
+        public long Length => length;
 
-        private decimal length;
+        private long length;
         private DataTable keys;
 
         private bool invalidated;
