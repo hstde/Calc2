@@ -1,5 +1,8 @@
 ﻿var String = (function() {
 	var Empty = "";
+	var TrimHead = 0;
+	var TrimTail = 1;
+	var TrimBoth = 2;
 
 	function Split(str, split) {
 
@@ -249,6 +252,44 @@
 		sb.AppendFormat(format, args);
 		return sb.ToString();
 	};
+	
+	function Trim() extension {
+		if(this.GetType() != "String") throw ArgumentException("this");
+		return TrimHelper(this, TrimBoth);
+	}
+	
+	function TrimHelper(str : string, trimType : number) {
+		var end = str.Length - 1;
+		var start = 0;
+		var length = str.Length;
+		var ws = {' ', '\t', '\n', '\r'};
+		
+		if(trimType != TrimTail)
+			for(start = 0; start < length; start++)
+				if(!ws.Any(c => c == str[start]))
+					break;
+		
+		if(trimType != TrimHead)
+			for(end = length - 1; end >= start; end--)
+				if(!ws.Any(c => c == str[end]))
+					break;
+		
+		return CreateTrimmedString(str, start, end);
+	}
+	
+	function CreateTrimmedString(str : string, start : number, end : number) {
+		var len = end - start + 1;
+		
+		if(len == str.Length)
+			return str;
+		
+		if(len == 0)
+			return Empty;
+		
+		var tab = ToTable(str);
+		
+		return Join("", tab[start ... end]);
+	}
 	
 	function ToTable(str) {
 		if(str.GetType() != "String") throw ArgumentException("str");
